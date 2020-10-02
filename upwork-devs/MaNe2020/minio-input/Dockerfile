@@ -45,7 +45,7 @@ ENV PATH $PATH:${JMETER_BIN}
 COPY ./Test /usr/share/Test/
 
 EXPOSE 1344
-EXPOSE 9000
+#EXPOSE 9000
 
 RUN chmod +x /usr/share
 ENTRYPOINT ["/usr/share/Test/launch.sh"]
