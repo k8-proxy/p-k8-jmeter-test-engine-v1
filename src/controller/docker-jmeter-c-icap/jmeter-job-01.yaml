@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jmeterjob-01
+  labels:
+    env: test
+    jobgroup: jmeter
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: jmeter
+      labels:
+        jobgroup: jmeter  
+    spec:
+      containers:
+      - name: jmeter
+        image: ggrig/jmeter-c-icap:1.1
+        #imagePullPolicy: Always
+        env:
+          # Source Minio Infromation
+          - name: TARGET_MINIO_URL
+            value: "http://output-queue:9000"
+          - name: TARGET_MINIO_ACCESS_KEY
+            value: test
+          - name: TARGET_MINIO_SECRET_KEY
+            value: test@123
+          - name: TARGET_MINIO_BUCKET
+            value: output
+          # Log Level (Default to Info)
+          - name: LOG_LEVEL
+            value: info
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: MY_POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+        #env:
+        #  - name: MINIO_ACCESS_KEY
+        #    valueFrom:
+        #      secretKeyRef:
+        #        name: minio-creds-secret
+        #        key: accesskey 
+        #  - name: MINIO_SECRET_KEY
+        #    valueFrom:
+        #      secretKeyRef:
+        #        name: minio-creds-secret
+        #        key: secretkey           
+        #workingDir: /mnt/workspace
+        #command: [ "/bin/sh", "-c", "/mnt/workspace/jmeter.sh" ]
+        #volumeMounts:
+        #- name: jmetervol
+        #  mountPath: "/etc/conf"
+        #  readOnly: true
+      #volumes:
+      #- name: jmetervol
+      #  secret:
+      #    secretName: jmeterconf          
+      restartPolicy: Never
