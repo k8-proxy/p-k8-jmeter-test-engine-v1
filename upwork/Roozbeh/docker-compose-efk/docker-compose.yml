@@ -1,0 +1,77 @@
+version: '3.7'
+ 
+services:
+ 
+    nginx:
+      container_name: nginx
+      image: docker.mirrors.alibaba.ir/library/nginx:1.17.10-perl
+      logging:
+          driver: "json-file"
+          options:
+              max-size: "100m"
+              max-file: "10"
+      volumes:
+          - ./jmeter-efk/nginx/nginx.conf:/etc/nginx/nginx.conf
+          - ./jmeter-efk/nginx/conf.d/:/etc/nginx/conf.d/
+      networks:
+          - nginx        
+      ports:
+          - mode: host
+            protocol: tcp
+            published: 8080
+            target: 80
+ 
+    elasticsearch:
+        labels:
+            com.example.service: "elasticsearch"
+            com.example.description: "For searching and indexing data"
+        image: docker.mirrors.alibaba.ir/library/elasticsearch:6.6.1
+        container_name: elasticsearch
+        environment:
+            - cluster.name=dockercluster
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        volumes:
+            - ./elasticsearch:/usr/share/elasticsearch/data
+        networks:
+            - nginx
+        ports:
+          - mode: host
+            protocol: tcp
+            published: 9200
+            target: 9200
+     
+    kibana:
+        labels:
+            com.example.service: "kibana"
+            com.example.description: "Data visualisation and for log aggregation"
+        image: docker.mirrors.alibaba.ir/library/kibana:6.6.1
+        container_name: container_kibana
+        environment:
+        - ELASTICSEARCH_URL=http://elasticsearch:9200
+        depends_on:
+        - elasticsearch
+        networks:
+            - nginx
+        ports:
+          - mode: host
+            protocol: tcp
+            published: 5601
+            target: 5601
+     
+    fluentd:
+        build: ./fluentd
+        volumes:
+        - ./fluentd/conf:/fluentd/etc
+        - ./jmeter/results:/jmeter-results
+        networks:
+            - nginx
+ 
+networks:
+   nginx:    
+      attachable: true
+      external: true
