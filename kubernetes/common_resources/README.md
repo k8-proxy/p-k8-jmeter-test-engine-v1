@@ -52,7 +52,8 @@ Connect to Minio on http://localhost:9000 by running below commands
 Connect to InfluxDB on http://localhost:8086 by running below commands
 
     kubectl port-forward -n inlfuxdb service/influxdb 8086
-
+### Create DB
+> create database jmeter;
 
 ## Prometheus
 
