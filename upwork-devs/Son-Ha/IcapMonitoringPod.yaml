@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: icapmonitor
+spec:
+  volumes:
+  - name: icap-config
+    configMap:
+      name: icap-configmap
+  containers:
+  - name: icapmonitor
+    image: icapservermonitoring:1.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - name: icap-config
+      mountPath: /usr/share/config
+      readOnly: true

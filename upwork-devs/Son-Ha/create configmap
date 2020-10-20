@@ -1,0 +1,2 @@
+kubectl create configmap proxy-configmap --from-file=ICAPServerMonitoring.properties=./Test/ICAPServerMonitoring.properties
+
