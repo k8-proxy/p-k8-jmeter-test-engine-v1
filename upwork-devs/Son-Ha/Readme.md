@@ -18,14 +18,16 @@ It basically
 
 ## Usage
 Clone/Copy main directory and Test sub-folder to local, the directory look like :
-  Test folder
-     |__FetchICAP_Server_metrics.jmx
-	 |__ICAPServerMonitoring.properties
-	 |__launch.sh
-  |__Dockerfile 
-  |__icap_server_monitoring_dashboard.json
-  |__IcapMonitoringPod.yaml
-  |__Readme.md
+
+	 Test folder
+	      |__FetchICAP_Server_metrics.jmx      
+		 |__ICAPServerMonitoring.properties	 
+		 |__launch.sh
+	   __Dockerfile  
+	   __icap_server_monitoring_dashboard.json
+	   __IcapMonitoringPod.yaml
+	   __Readme.md
+
 ### Import Icap server monitoring dashboard to grafana
 Open Grafana > Manage Dashboard > import > Select "icap_server_monitoring_dashboard.json" to import
 
