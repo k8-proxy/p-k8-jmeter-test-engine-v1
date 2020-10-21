@@ -6,6 +6,7 @@ metadata:
     env: test
     jobgroup: jmeter
 spec:
+  parallelism: 10
   ttlSecondsAfterFinished: 60
   template:
     metadata:
