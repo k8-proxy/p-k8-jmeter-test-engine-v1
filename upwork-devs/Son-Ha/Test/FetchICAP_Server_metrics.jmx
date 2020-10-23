@@ -16,24 +16,19 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="ICAPServerAddr" elementType="Argument">
             <stringProp name="Argument.name">ICAPServerAddr</stringProp>
-            <stringProp name="Argument.value">${__P(p_ICAPServerAddr,)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_url,)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="InfluxDBServerAddr" elementType="Argument">
             <stringProp name="Argument.name">InfluxDBServerAddr</stringProp>
-            <stringProp name="Argument.value">${__P(p_InfluxDBServerAddr,)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_inluxHost,)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="InfluxDBName" elementType="Argument">
             <stringProp name="Argument.name">InfluxDBName</stringProp>
             <stringProp name="Argument.value">${__P(p_InfluxDBName,)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="InfluxDBPort" elementType="Argument">
-            <stringProp name="Argument.name">InfluxDBPort</stringProp>
-            <stringProp name="Argument.value">${__P(p_InfluxDBPort,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
+          </elementProp
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -41,12 +36,12 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${__P(loopCount,)}</stringProp>
+          <stringProp name="LoopController.loops">${__P(p_loopCount,)}</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${__P(noThread,)}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${__P(ramUp,)}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(p_vuserCount,)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(p_rampup,)}</stringProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">${__P(Duration)}</stringProp>
+        <stringProp name="ThreadGroup.duration">${__P(p_duration)}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
@@ -143,7 +138,7 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${InfluxDBServerAddr}</stringProp>
-          <stringProp name="HTTPSampler.port">${InfluxDBPort}</stringProp>
+          <stringProp name="HTTPSampler.port">8086</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/write?db=${InfluxDBName}</stringProp>
@@ -170,7 +165,7 @@
         <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
           <intProp name="ActionProcessor.action">1</intProp>
           <intProp name="ActionProcessor.target">0</intProp>
-          <stringProp name="ActionProcessor.duration">${__P(thinktime)}</stringProp>
+          <stringProp name="ActionProcessor.duration">${__P(p_thinktime)}</stringProp>
         </TestAction>
         <hashTree>
           <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Pause" enabled="true">
