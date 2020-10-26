@@ -13,3 +13,4 @@ mountOptions:
   - cache=strict
 parameters:
   skuName: Standard_LRS
+  allowVolumeExpansion: true
