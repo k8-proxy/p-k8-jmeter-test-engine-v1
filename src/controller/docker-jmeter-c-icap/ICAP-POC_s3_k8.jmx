@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -22,7 +22,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">icap-client.uksouth.cloudapp.azure.com</stringProp>
+            <stringProp name="Argument.value">icap-perf-tm-server.trafficmanager.net</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -52,7 +52,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">${__P(p_url,icap-client.uksouth.cloudapp.azure.com)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_url,icap-perf-tm-server.trafficmanager.net)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -81,13 +81,13 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap-client.uksouth.cloudapp.azure.com)} ${__P(p_influxHost,localhost)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap-perf-tm-server.trafficmanager.net)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">True</boolProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
@@ -290,6 +290,12 @@ log.info(&quot;File copied to in. &quot;+s3cp);
 //
 // ********
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 String uuid=vars.get(&quot;uid&quot;);
 /*log.info(&quot;UUID is &quot;+uuid);
 log.info(&quot;Coping files from s3 to localdisk&quot;);
@@ -301,7 +307,7 @@ s3p.waitFor();
 log.info(&quot;File copied to in. &quot;+s3cp);*/
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
-String command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
+String command1 = &quot;/usr/local/c-icap/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
 String command2=&quot; -f ${path}/${fileName} -o ${outputPath}/&quot;+uuid+&quot;_${fileName} -v&quot;;
 String command=command1+command2;
 // Print the generated status check command
@@ -314,33 +320,179 @@ Process p = Runtime.getRuntime().exec(command);
 p.waitFor();
 
 log.info(&quot;Document Upload Execution complete.&quot;+ p.exitValue());
-/*
-String s3cp_out=&quot;aws s3 cp &quot;+ &quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&quot; s3://&quot;+vars.get(&quot;s3bucketName&quot;)+&quot;/${outputPath}/&quot;+uuid+&quot;_${fileName}&quot;;
 
-Process s3p_out = Runtime.getRuntime().exec(s3cp_out);
-s3p_out.waitFor();
 
-log.info(&quot;Out file copied to s3. &quot;+s3cp_out);
+private static String getFileChecksum(MessageDigest digest, File file) throws IOException
+{
+	
+    //Get file input stream for reading the file content
+    FileInputStream fis = new FileInputStream(file);
+     
+    //Create byte array to read data in chunks
+    byte[] byteArray = new byte[1024];
+    int bytesCount = 0; 
+      
+    //Read file data and update in message digest
+    while ((bytesCount = fis.read(byteArray)) != -1) {
+        digest.update(byteArray, 0, bytesCount);
+    };
+     
+    //close the stream; We don&apos;t need it now.
+    fis.close();
+     
+    //Get the hash&apos;s bytes
+    byte[] bytes = digest.digest();
+     
+    //This bytes[] has bytes in decimal format;
+    //Convert it to hexadecimal format
+   StringBuilder sb = new StringBuilder();
+    for(int i=0; i&lt; bytes.length ;i++)
+    {
+        sb.append(Integer.toString((bytes[i] &amp; 0xff) + 0x100, 16).substring(1));
+    }
+  
+    //return complete hash
+     return sb.toString();
+}
+//checksum md5
 
-//clean out folder
-String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;${fileName}&quot;;
-s3p_out = Runtime.getRuntime().exec(removeOutFile);
-s3p_out.waitFor();*/
+//Create checksum for this file
+File inFile = new File(&quot;${path}/${fileName}&quot;);
+String in_checksum=&quot;in&quot;;
+//Use MD5 algorithm
+MessageDigest in_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
+ try {
+//Get the checksum
+ in_checksum = getFileChecksum(in_Digest, inFile);
+ 
+//see checksum
+log.info(&quot;In file hash is &quot;+in_checksum);
+ }
+ catch (Exception e) {
+
+log.info (&quot;Failed to check in file hash&quot;);
+ }
+
+ 
+//Create checksum for this file
+File outFile = new File(&quot;${outputPath}/&quot;+uuid+&quot;_${fileName}&quot;);
+ 
+//Use MD5 algorithm
+MessageDigest out_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
+String out_checksum=&quot;out&quot;;
+ try {
+//Get the checksum
+ out_checksum = getFileChecksum(out_Digest, outFile);
+ 
+
+ }
+ catch (Exception e) {
+
+log.info (&quot;Failed to check out file hash&quot;);
+
+ }
+
+//see checksum
+log.info(&quot;Out file hash is &quot;+out_checksum);
 
 // Read the output of the command and log it
 BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 StringBuilder logCommandOutput = new StringBuilder();
-in.readLine();
-in.readLine();
-in.readLine();
+//in.readLine();
+//in.readLine();
+//in.readLine();
 SampleResult.setSuccessful(false);
 String line;
+String respCode;
 while( (line = in.readLine()) != null) {
   logCommandOutput.append(line);
   log.info(&quot;line is &quot;+line);
-  if (line.contains(&quot;ICAP/1.0 200 OK&quot;)) {
+
+  if (line.contains(&quot;ICAP/1.0 200 OK&quot;)&amp;&amp;!in_checksum.equals(out_checksum)) {
      SampleResult.setSuccessful(true);
+     SampleResult.setResponseCode(&quot;200&quot;);
      log.info(&quot;My line is &quot;+line);
+  }
+  
+  if (line.contains(&quot;ICAP/1.0 204&quot;)) {
+     SampleResult.setResponseCode(&quot;204&quot;);
+     SampleResult.setResponseMessage(&quot;No modifications needed&quot;);
+     log.info(&quot;Response Code is 204&quot;);
+     break;
+  }
+  if (line.contains(&quot;ICAP/1.0 500&quot;)) {
+     SampleResult.setResponseCode(&quot;500&quot;);
+     SampleResult.setResponseMessage(&quot;500 Internal server error&quot;);
+     log.info(&quot;Response Code is 500&quot;);
+     break;
+  }
+
+  if (line.contains(&quot;ICAP/1.0 503&quot;)) {
+     SampleResult.setResponseCode(&quot;503&quot;);
+     SampleResult.setResponseMessage(&quot;Service overloaded&quot;);
+     log.info(&quot;Response Code is 503&quot;);
+     break;
+  }
+  if (line.contains(&quot;ICAP/1.0 400&quot;)) {
+     SampleResult.setResponseCode(&quot;400&quot;);
+     SampleResult.setResponseMessage(&quot;400 Bad request.&quot;);
+     log.info(&quot;Response Code is 400&quot;);
+     break;
+  }
+  if (line.contains(&quot;ICAP/1.0 502&quot;)) {
+     SampleResult.setResponseCode(&quot;502&quot;);
+     SampleResult.setResponseMessage(&quot;502 Bad gateway.&quot;);
+     log.info(&quot;Response Code is 502&quot;);
+     break;
+  }
+  if (line.contains(&quot;ICAP/1.0 506&quot;)) {
+     SampleResult.setResponseCode(&quot;506&quot;);
+     SampleResult.setResponseMessage(&quot;506 Server too busy.r&quot;);
+     log.info(&quot;Response Code is 506&quot;);
+     break;
+  }
+  if (line.contains(&quot;ICAP/1.0 551&quot;)) {
+     SampleResult.setResponseCode(&quot;551&quot;);
+     SampleResult.setResponseMessage(&quot;551 Resource unavailable.&quot;);
+     log.info(&quot;Response Code is 551&quot;);
+     break;
+  }
+  if (line.contains(&quot;ICAP/1.0 403&quot;)) {
+     SampleResult.setResponseCode(&quot;403&quot;);
+     SampleResult.setResponseMessage(&quot;403 Forbidden&quot;);
+     log.info(&quot;Response Code is 403&quot;);
+     break;
+  }
+   if (line.contains(&quot;ICAP/1.0 404&quot;)) {
+     SampleResult.setResponseCode(&quot;404&quot;);
+     SampleResult.setResponseMessage(&quot;404 Service Not Found&quot;);
+     log.info(&quot;Response Code is 404&quot;);
+     break;
+  }
+    if (line.contains(&quot;ICAP/1.0 405&quot;)) {
+     SampleResult.setResponseCode(&quot;405&quot;);
+     SampleResult.setResponseMessage(&quot;405 Method Not Allowed&quot;);
+     log.info(&quot;Response Code is 405&quot;);
+     break;
+  }
+    if (line.contains(&quot;ICAP/1.0 408&quot;)) {
+     SampleResult.setResponseCode(&quot;408&quot;);
+     SampleResult.setResponseMessage(&quot;408 Request Timeout&quot;);
+     log.info(&quot;Response Code is 408&quot;);
+     break;
+  }
+
+   if (line.contains(&quot;Failed to connect to icap server&quot;)) {
+     SampleResult.setResponseCode(&quot;522&quot;);
+     SampleResult.setResponseMessage(&quot;522 Failed to connect to icap server&quot;);
+     log.info(&quot;Response Code is 522&quot;);
+     break;
+  }
+  if (line.contains(&quot;HTTP/1.0 403 Forbidden&quot;)) {
+     SampleResult.setResponseCode(&quot;403&quot;);
+     SampleResult.setSuccessful(false);
+     SampleResult.setResponseMessage(&quot;403 Fordbidden&quot;);
+     log.info(&quot;Response Code is 403&quot;);
      break;
   }
 }

@@ -1,0 +1,20 @@
+apiVersion: autoscaling/v2beta1 
+kind: HorizontalPodAutoscaler 
+metadata: 
+  name: minio
+spec: 
+  minReplicas: {{ .Values.minio.hpa.minReplicas }}
+  maxReplicas: {{ .Values.minio.hpa.minReplicas }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment 
+    name: minio
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: cpu 
+      targetAverageUtilization: 50
+  - type: Resource 
+    resource: 
+      name: memory 
+      targetAverageUtilization: 50

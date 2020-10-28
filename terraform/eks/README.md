@@ -5,7 +5,7 @@
 * [Terraform_0.12.9](https://releases.hashicorp.com/terraform/0.12.9/)
 * [IAM Permissions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md)
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-* [AWS IAM Authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
+* [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 
 ## Setup Steps
 
@@ -68,7 +68,7 @@ Then, provision your EKS cluster by running `terraform apply`. This will
 take approximately 10 minutes.
 
 ```shell
-$ terraform apply -out plan
+$ terraform apply plan
 
 # Output truncated...
 

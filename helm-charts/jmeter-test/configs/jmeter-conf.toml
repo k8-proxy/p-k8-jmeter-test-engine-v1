@@ -22,7 +22,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">icap-client.uksouth.cloudapp.azure.com</stringProp>
+            <stringProp name="Argument.value">icap-perf-tm-server.trafficmanager.net</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -52,7 +52,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">${__P(p_url,icap-client.uksouth.cloudapp.azure.com)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_url,icap-perf-tm-server.trafficmanager.net)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -77,11 +77,11 @@
           </elementProp>
           <elementProp name="influxHost" elementType="Argument">
             <stringProp name="Argument.name">influxHost</stringProp>
-            <stringProp name="Argument.value">${__P(p_influxHost,http://influxdb.influxdb.svc.cluster.local:8086)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_influxHost,http://influxdb-service.common)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap-client.uksouth.cloudapp.azure.com)} ${__P(p_influxHost,localhost)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap-perf-tm-server.trafficmanager.net)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
@@ -90,10 +90,10 @@
           <boolProp name="LoopController.continue_forever">True</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.num_threads">300</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">${__P(p_duration,600)}</stringProp>
+        <stringProp name="ThreadGroup.duration">${__P(p_duration,200)}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
@@ -486,7 +486,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
             </elementProp>
             <elementProp name="influxdbUrl" elementType="Argument">
               <stringProp name="Argument.name">influxdbUrl</stringProp>
-              <stringProp name="Argument.value">http://influxdb.influxdb.svc.cluster.local:8086/write?db=jmeter</stringProp>
+              <stringProp name="Argument.value">http://influxdb-service.common/write?db=jmeter</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="application" elementType="Argument">

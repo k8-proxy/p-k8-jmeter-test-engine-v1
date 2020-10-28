@@ -136,8 +136,9 @@ spec:
     - metadata:
         name: influxdb-data
       spec:
+        storageClassName: azure-file-storage
         accessModes:
-          - "ReadWriteOnce"
+          - "ReadWriteMany"
         resources:
           requests:
-            storage: "8Gi"
+            storage: "20Gi"

@@ -1,0 +1,13 @@
+FROM glasswallsolutions/jmeter:5.3
+
+ENV PATH $PATH:${JMETER_BIN}
+ARG DATA_PATH="src/controller/docker-jmeter-c-icap"
+COPY  ${DATA_PATH}/Test /usr/share/Test/
+COPY  ${DATA_PATH}/Test/py /usr/share/Test/
+COPY  ${DATA_PATH}/requirement.txt .
+
+RUN chmod +x /usr/share \
+    && chmod +x /usr/share/Test/launch.sh \
+    && pip3 install -r requirement.txt --user
+
+ENTRYPOINT ["/usr/share/Test/launch.sh"]

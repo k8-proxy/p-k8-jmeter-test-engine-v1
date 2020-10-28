@@ -1,0 +1,91 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jmeterjob
+  labels:
+    env: test
+    jobgroup: jmeter
+spec:
+  parallelism: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: jmeter
+      labels:
+        jobgroup: jmeter  
+    spec:
+      tolerations:
+      - key: "sku"
+        operator: "Equal"
+        value: "jmeter"
+        effect: "NoSchedule"       
+      containers:
+      - name: jmeter
+        #image: ggrig/jmeter-c-icap:2.5
+        image:  shashanksinha/docker-jmeter-c-icap:2
+        resources:
+          requests:
+            memory: "1500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1500Mi"
+            cpu: "500m"
+        imagePullPolicy: IfNotPresent
+        env:
+          # Source Minio Infromation
+          - name: TARGET_MINIO_URL
+            value: "http://minio-service.common"
+          - name: TARGET_MINIO_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-creds-secret
+                key: accesskey
+          - name: TARGET_MINIO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: minio-creds-secret
+                key: secretkey
+          - name: TARGET_MINIO_BUCKET
+            value: output
+          # Log Level (Default to Info)
+          - name: LOG_LEVEL
+            value: info
+          # Environment info
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: MY_POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          # JVM
+          - name: JVM_ARGS
+            value: "-Xms512m -Xmx2048m"
+        volumeMounts:
+        - name: jmetervol
+          mountPath: "/usr/share/jmx"
+          readOnly: true
+        - name: filesvol
+          mountPath: "/usr/share/data"
+          readOnly: true
+      volumes:
+      - name: jmetervol
+        secret:
+          secretName: jmeterconf          
+      - name: filesvol
+        secret:
+          secretName: filesconf
+      restartPolicy: Never

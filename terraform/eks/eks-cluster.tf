@@ -15,8 +15,10 @@ module "eks" {
       name                          = "worker-group-1"
       instance_type                 = "m4.2xlarge"
       additional_userdata           = "echo foo bar"
-      asg_desired_capacity          = 2
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
+      asg_desired_capacity          = 2
+      asg_max_size                  = 1000
+      kubelet_extra_args            = "--node-labels=purpose=jmeter --register-with-taints=sku=jmeter:NoSchedule"
     },
     {
       name                          = "worker-group-2"
@@ -24,7 +26,17 @@ module "eks" {
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
       asg_desired_capacity          = 1
+      asg_max_size                  = 50
+      kubelet_extra_args            = "--node-labels=key=monitoring --register-with-taints=key=monitoring:NoSchedule"
     },
+    {
+      name                          = "worker-group-3"
+      instance_type                 = "m4.xlarge"
+      additional_userdata           = "echo foo bar"
+      additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
+      asg_desired_capacity          = 1
+      asg_max_size                  = 50
+    }
   ]
 }
 
