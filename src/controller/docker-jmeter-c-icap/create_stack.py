@@ -5,6 +5,8 @@ import time
 import uuid
 import platform
 import subprocess
+import shutil
+import fileinput
 
 logger = logging.getLogger('s3-to-minio')
 
@@ -24,7 +26,7 @@ class Main():
     @staticmethod
     def sanity_checks():
         try:
-            subprocess.call(["kubectl", "get", "pods"])
+            subprocess.call(["kubectl", "version"])
         except OSError as e:
             if e.errno == errno.ENOENT:
                 logger.error("kubectl is not installed on the system")
@@ -36,7 +38,15 @@ class Main():
     @staticmethod
     def run_it():
         try:
-            os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 ICAP-POC_s3.jmx files.txt 1")
+            a = uuid.uuid4()
+            jmeter_script_name = str(a)
+            shutil.copyfile("ICAP-POC_tmpl.jmx",jmeter_script_name)
+            with fileinput.FileInput(jmeter_script_name, inplace=True, backup='.bak') as file:
+                for line in file:
+                    print(line.replace("${__P(p_duration,$NO)}", "${__P(p_duration,"+ Main.duration +")}"), end='')
+            os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 " + jmeter_script_name + " files.txt 1")
+            os.remove(jmeter_script_name)
+            os.remove(jmeter_script_name + '.bak')
         except Exception as e:
             logger.info(e)
 
