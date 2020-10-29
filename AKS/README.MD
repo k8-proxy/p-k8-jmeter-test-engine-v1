@@ -2,7 +2,7 @@
 
 ## Create 
 
-1. If you don't already have it [install Python](https://www.python.org/downloads/) (please remember to install python package manager - pip, also),.
+1. If you don't already have it [install Python](https://www.python.org/downloads/), please remember to install python package manager - pip (Python and pip 3.6+).
 
 1. We recommend to use a [virtual environnement](https://docs.python.org/3/tutorial/venv.html) to run this example, but it's not mandatory. You can initialize a virtualenv this way:
 
