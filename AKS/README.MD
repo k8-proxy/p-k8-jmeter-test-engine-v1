@@ -40,7 +40,7 @@ or [the portal](https://azure.microsoft.com/documentation/articles/resource-grou
     export AZURE_SUBSCRIPTION_ID={your subscription id}
     ```
 
-1. Run the sample.
+1. Create Azure Kubernetes Service with two node pools - inspect the code for Resource Group Names and parameters.
 
     ```
     python3 azure_deployment.py
