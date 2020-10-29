@@ -41,12 +41,16 @@ class Main():
             a = uuid.uuid4()
             jmeter_script_name = str(a)
             shutil.copyfile("ICAP-POC_tmpl.jmx",jmeter_script_name)
-            with fileinput.FileInput(jmeter_script_name, inplace=True, backup='.bak') as file:
+            with fileinput.FileInput(jmeter_script_name, inplace=True, backup='.bak0') as file:
+                for line in file:
+                    print(line.replace("\"ThreadGroup.num_threads\">$NO</stringProp>", "\"ThreadGroup.num_threads\">"+ Main.users_per_instance +"</stringProp>"), end='')
+            with fileinput.FileInput(jmeter_script_name, inplace=True, backup='.bak1') as file:
                 for line in file:
                     print(line.replace("${__P(p_duration,$NO)}", "${__P(p_duration,"+ Main.duration +")}"), end='')
             os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 " + jmeter_script_name + " files.txt 1")
             os.remove(jmeter_script_name)
-            os.remove(jmeter_script_name + '.bak')
+            os.remove(jmeter_script_name + '.bak0')
+            os.remove(jmeter_script_name + '.bak1')
         except Exception as e:
             logger.info(e)
 
