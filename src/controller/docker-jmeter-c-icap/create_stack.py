@@ -36,6 +36,16 @@ class Main():
                 exit(1)
 
     @staticmethod
+    def stop_jmeter_jobs():
+        try:
+            os.system("kubectl delete --ignore-not-found jobs -l jobgroup=jmeter")
+            os.system("kubectl delete --ignore-not-found secret jmeterconf")
+            os.system("kubectl delete --ignore-not-found secret filesconf")
+        except Exception as e:
+            logger.info(e)
+            exit(1)
+
+    @staticmethod
     def run_it():
         try:
             a = uuid.uuid4()
@@ -79,6 +89,7 @@ class Main():
         logger.info(Main.duration)
 
         Main.sanity_checks()
+        Main.stop_jmeter_jobs()
         Main.run_it()
 
 if __name__ == "__main__":
