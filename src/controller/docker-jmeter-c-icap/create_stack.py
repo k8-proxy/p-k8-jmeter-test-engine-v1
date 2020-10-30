@@ -101,6 +101,17 @@ class Main():
                 for line in file:
                     print(line.replace('jmeterjob-$NO', 'jmeterjob-0'), end='')
 
+            parallelism = int(Main.total_users) / int(Main.users_per_instance)
+
+            if int(Main.total_users) % int(Main.users_per_instance) > 0:
+                parallelism += 1
+
+            logger.info("Number of pods to be created: {}".format(parallelism))
+
+            with fileinput.FileInput('job-0.yaml', inplace=True, backup='.bak') as file:
+                for line in file:
+                    print(line.replace('$parallelism-number', str(parallelism)), end='')
+
             os.system("kubectl create -f job-0.yaml")
 
             os.remove('jmeter-conf.jmx')
