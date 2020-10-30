@@ -81,7 +81,7 @@ class Main():
     def run_it():
         try:
             jmeter_script_name = Main.get_jmx_file()
-            os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 " + jmeter_script_name + " files.txt 1")
+            os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 " + jmeter_script_name + " " + Main.filelist + " 1")
             os.remove(jmeter_script_name)
         except Exception as e:
             logger.info(e)
