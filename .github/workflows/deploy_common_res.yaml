@@ -95,9 +95,9 @@ jobs:
 
       - name: Deploy Prometheus
         run: |
-          helm repo add stable https://charts.helm.stable
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
-          helm upgrade --install -n prometheus prometheus stable/prometheus
+          helm upgrade --install  prometheus --namespace=prometheus stable/prometheus
 
       - name: Create secret with init-influxdb.iql script in influxdb namespace
         uses: azure/k8s-create-secret@v1
