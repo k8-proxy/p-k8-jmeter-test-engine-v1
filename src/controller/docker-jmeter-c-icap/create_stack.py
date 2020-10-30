@@ -59,7 +59,7 @@ class Main():
             exit(1)
 
     @staticmethod
-    def run_it():
+    def get_jmx_file():
         try:
             a = uuid.uuid4()
             jmeter_script_name = str(a)
@@ -70,10 +70,19 @@ class Main():
             with fileinput.FileInput(jmeter_script_name, inplace=True, backup='.bak1') as file:
                 for line in file:
                     print(line.replace("${__P(p_duration,$NO)}", "${__P(p_duration,"+ Main.duration +")}"), end='')
-            os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 " + jmeter_script_name + " files.txt 1")
-            os.remove(jmeter_script_name)
             os.remove(jmeter_script_name + '.bak0')
             os.remove(jmeter_script_name + '.bak1')
+            return jmeter_script_name
+        except Exception as e:
+            logger.info(e)
+            exit(1)
+
+    @staticmethod
+    def run_it():
+        try:
+            jmeter_script_name = Main.get_jmx_file()
+            os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 " + jmeter_script_name + " files.txt 1")
+            os.remove(jmeter_script_name)
         except Exception as e:
             logger.info(e)
 
