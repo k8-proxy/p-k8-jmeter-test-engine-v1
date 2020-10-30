@@ -7,6 +7,7 @@ import platform
 import subprocess
 import shutil
 import fileinput
+import math
 
 logger = logging.getLogger('s3-to-minio')
 
@@ -101,10 +102,7 @@ class Main():
                 for line in file:
                     print(line.replace('jmeterjob-$NO', 'jmeterjob-0'), end='')
 
-            parallelism = int(Main.total_users) / int(Main.users_per_instance)
-
-            if int(Main.total_users) % int(Main.users_per_instance) > 0:
-                parallelism += 1
+            parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
 
             logger.info("Number of pods to be created: {}".format(parallelism))
 
@@ -119,16 +117,6 @@ class Main():
             os.remove('job-0.yaml')
             os.remove('job-0.yaml.bak')
 
-        except Exception as e:
-            logger.info(e)
-            exit(1)
-
-    @staticmethod
-    def run_it():
-        try:
-            jmeter_script_name = Main.get_jmx_file()
-            os.system("PowerShell -ExecutionPolicy ByPass -File run.ps1 " + jmeter_script_name + " " + Main.filelist + " 1")
-            os.remove(jmeter_script_name)
         except Exception as e:
             logger.info(e)
             exit(1)
@@ -162,7 +150,6 @@ class Main():
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
-        #Main.run_it()
         Main.start_jmeter_job()
 
 if __name__ == "__main__":
