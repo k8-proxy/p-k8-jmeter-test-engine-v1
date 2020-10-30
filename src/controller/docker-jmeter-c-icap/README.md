@@ -36,3 +36,39 @@ The following example will start 10 parallel JMeter jobs:
 ```
     powershell -ExecutionPolicy ByPass -File stop.ps1
 ```
+### The python script
+The python script will allow you to start the JMeter traffic on Linux, Windos and Mac OS,
+The CLI command to start it is:
+```
+    python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list>
+```
+Here:
+<table>
+<tr>
+<td width="180"> Option </td> <td> Description </td>
+</tr>
+<tr>
+<td> --total_users, -t </td>
+<td>
+Total number of users for the test.
+</td>
+</tr>
+<tr>
+<td> --users_per_instance, -u </td>
+<td>
+Users per POD. Corresponding number of PODs will be created to support --total_users valuse
+</td>
+</tr>
+<tr>
+<td> --duration, -d </td>
+<td>
+Duration of the test
+</td>
+</tr>
+<tr>
+<td> --list, -l </td>
+<td>
+The list of the files in the Minio `input` bucket to be included in the test
+</td>
+</tr>
+</table>
