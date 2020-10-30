@@ -15,9 +15,10 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 class Main():
 
-    total_users = 0
-    users_per_instance = 0
-    duration  = 0
+    total_users = -1
+    users_per_instance = -1
+    duration = -1
+    filelist = ''
 
     @staticmethod
     def log_level(level):
@@ -34,6 +35,18 @@ class Main():
             else:
                 logger.error("failed to run kubectl")
                 exit(1)
+        if int(Main.total_users) <= 0:
+            logger.error("Total users must be positive number")
+            exit(1)
+        if int(Main.users_per_instance) <= 0:
+            logger.error("Users per instance must be positive number")
+            exit(1)
+        if int(Main.duration) <= 0:
+            logger.error("Test duration must be positive number")
+            exit(1)
+        if not os.path.exists(Main.filelist):
+            logger.error("File {} does not exist".format(Main.filelist))
+            exit(1)
 
     @staticmethod
     def stop_jmeter_jobs():
@@ -66,9 +79,9 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list>'
         try:
-            opts, args = getopt.getopt(argv,"ht:u:d:",["total_users=","users_per_instance=","duration="])
+            opts, args = getopt.getopt(argv,"ht:u:d:l:",["total_users=","users_per_instance=","duration=","list="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -82,11 +95,14 @@ class Main():
                 Main.users_per_instance = arg
             elif opt in ("-d", "--duration"):
                 Main.duration = arg
+            elif opt in ("-l", "--list"):
+                Main.filelist = arg
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.total_users)
         logger.info(Main.users_per_instance)
         logger.info(Main.duration)
+        logger.info(Main.filelist)
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
