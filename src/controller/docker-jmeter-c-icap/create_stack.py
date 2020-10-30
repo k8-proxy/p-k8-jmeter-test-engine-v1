@@ -78,6 +78,41 @@ class Main():
             exit(1)
 
     @staticmethod
+    def start_jmeter_job():
+        try:
+            if os.path.exists('jmeter-conf.jmx'):
+                os.remove('jmeter-conf.jmx')
+
+            jmeter_script_name = Main.get_jmx_file()
+            shutil.copyfile(jmeter_script_name,'jmeter-conf.jmx')
+            os.remove(jmeter_script_name)
+
+            shutil.copyfile(Main.filelist,'files')
+
+            os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
+            os.system("kubectl create secret generic filesconf --from-file=files")
+
+            if os.path.exists('job-0.yaml'):
+                os.remove('job-0.yaml')
+
+            shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
+
+            with fileinput.FileInput('job-0.yaml', inplace=True, backup='.bak') as file:
+                for line in file:
+                    print(line.replace('jmeterjob-$NO', 'jmeterjob-0'), end='')
+
+            os.system("kubectl create -f job-0.yaml")
+
+            os.remove('jmeter-conf.jmx')
+            os.remove('files')
+            os.remove('job-0.yaml')
+            os.remove('job-0.yaml.bak')
+
+        except Exception as e:
+            logger.info(e)
+            exit(1)
+
+    @staticmethod
     def run_it():
         try:
             jmeter_script_name = Main.get_jmx_file()
@@ -85,6 +120,7 @@ class Main():
             os.remove(jmeter_script_name)
         except Exception as e:
             logger.info(e)
+            exit(1)
 
     @staticmethod
     def main(argv):
@@ -115,7 +151,8 @@ class Main():
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
-        Main.run_it()
+        #Main.run_it()
+        Main.start_jmeter_job()
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
