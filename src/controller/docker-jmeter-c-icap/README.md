@@ -7,7 +7,7 @@ kubectl port-forward -n minio svc/minio 9000
 ```
 you can access minio using http://localhost:9000/
 ## Access Grafana Dashboard
-Run below command to do port forwarding in order to access Grafana locally 
+To do port forwarding in order to access Grafana locally, run the command below
 ```
 kubectl port-forward -n grafana service/grafana-service 3000
 ```
@@ -50,19 +50,19 @@ Here:
 <tr>
 <td> --total_users, -t </td>
 <td>
-Total number of users for the test.
+Total number of users for the test. If not specified, the default value of 100 will be used
 </td>
 </tr>
 <tr>
 <td> --users_per_instance, -u </td>
 <td>
-Users per POD. Corresponding number of PODs will be created to support --total_users valuse
+Users per POD. If not specified, the default value of 25 will be used
 </td>
 </tr>
 <tr>
 <td> --duration, -d </td>
 <td>
-Duration of the test
+Duration of the test. If not specified, the default value of 60 seconds will be used
 </td>
 </tr>
 <tr>

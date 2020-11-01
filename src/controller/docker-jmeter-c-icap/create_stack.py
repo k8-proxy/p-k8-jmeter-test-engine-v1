@@ -16,9 +16,9 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 class Main():
 
-    total_users = -1
-    users_per_instance = -1
-    duration = -1
+    total_users = '100'
+    users_per_instance = '25'
+    duration = '60'
     filelist = ''
 
     @staticmethod
@@ -125,7 +125,7 @@ class Main():
     def main(argv):
         help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list>'
         try:
-            opts, args = getopt.getopt(argv,"ht:u:d:l:",["total_users=","users_per_instance=","duration=","list="])
+            opts, args = getopt.getopt(argv,"htudl:",["total_users=","users_per_instance=","duration=","list="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
