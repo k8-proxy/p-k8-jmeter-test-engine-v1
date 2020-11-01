@@ -11,10 +11,14 @@ from botocore.client import Config
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger('s3-to-minio')
-s3_client = boto3.client('s3')
-
+logging.basicConfig(filename='s3-to-minio.log',
+                            filemode='a',
+                            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                            datefmt='%H:%M:%S',
+                            level=logging.INFO)
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
+s3_client = boto3.client('s3')
 
 class Main():
 
@@ -101,13 +105,10 @@ class Main():
                     logging.info ('Lines processed so far {}'.format(line_count))
                     for index, thread in enumerate(threads):
                         thread.join()
-                        if index >= line_count:
-                            logging.info("Main    : thread %d done", index)
-
 
             for index, thread in enumerate(threads):
                 thread.join()
-                logging.info("Main    : thread %d done", index)
+                logging.info("thread %d done", index)
 
     @staticmethod
     def main(argv):

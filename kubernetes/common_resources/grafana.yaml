@@ -41,7 +41,7 @@ spec:
                 secretKeyRef:
                   key : "password"
                   name: "grafana-creds"
-          image: grafana/grafana:7.0.1
+          image: grafana/grafana:7.3.0
           imagePullPolicy: IfNotPresent
           name: grafana
           resources:
