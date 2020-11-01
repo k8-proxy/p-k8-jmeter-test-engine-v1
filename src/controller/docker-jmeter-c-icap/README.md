@@ -72,3 +72,8 @@ The list of the files in the Minio `input` bucket to be included in the test
 </td>
 </tr>
 </table>
+### Test termination
+To stop the test and release the resources run the following command
+```
+    python3 delete_stack.py
+```
