@@ -10,6 +10,7 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
+
   worker_groups = [
     {
       name          = "jmeter-node-group"
@@ -21,6 +22,18 @@ module "eks" {
       asg_desired_capacity          = 2
       asg_max_size                  = 1000
       kubelet_extra_args            = "--node-labels=purpose=jmeter,node.kubernetes.io/lifecycle=spot --register-with-taints=sku=jmeter:NoSchedule"
+      tags = [
+        {
+          key                 = "k8s.io/cluster-autoscaler/enabled"
+          value               = ""
+          propagate_at_launch = "true"
+        },
+        {
+          key                 = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+          value               = ""
+          propagate_at_launch = "true"
+        }
+      ]
     },
     {
       name                          = "monitoring-node-group"
@@ -40,9 +53,22 @@ module "eks" {
       asg_desired_capacity          = 1
       asg_max_size                  = 50
       kubelet_extra_args            = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      tags = [
+        {
+          key                 = "k8s.io/cluster-autoscaler/enabled"
+          value               = ""
+          propagate_at_launch = "true"
+        },
+        {
+          key                 = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+          value               = ""
+          propagate_at_launch = "true"
+        }
+      ]
     }
   ]
 }
+
 
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
