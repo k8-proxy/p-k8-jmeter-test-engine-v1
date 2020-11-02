@@ -19,7 +19,7 @@ influxdb:
 minio:
   image:
     repository: minio/minio
-    tag: "7.3.0"
+    tag: RELEASE.2020-10-09T22-55-05Z
     pullPolicy: IfNotPresent
   port: 9000
   resources:
