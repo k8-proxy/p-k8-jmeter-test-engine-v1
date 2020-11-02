@@ -1,6 +1,6 @@
 provider "aws" {
   version = ">= 2.28.1"
-  region  = "${var.region}"
+  region  = var.region
 }
 
 data "aws_availability_zones" "available" {}
