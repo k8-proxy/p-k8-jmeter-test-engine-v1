@@ -22,7 +22,7 @@ $MAXPODS="70"
 az login
 az account set --subscription subscrybtionid
 az group create -l $LOCATION -n $RESOURCEGROUPNAME
-az aks create --name $AKS_NAME --resource-group $RESOURCEGROUPNAME --node-count $MONITORINGNODES --generate-ssh-keys --network-plugin kubenet --max-pods 1 --enable-rbac --enable-managed-identity --vm-set-type VirtualMachineScaleSets --no-ssh-key
+az aks create --name $AKS_NAME --resource-group $RESOURCEGROUPNAME --node-count $MONITORINGNODES --network-plugin kubenet --max-pods 100 --enable-managed-identity --vm-set-type VirtualMachineScaleSets --no-ssh-key
 ```
 
 **Create a secondary node pool dedicated to the JMeter workloads.**
