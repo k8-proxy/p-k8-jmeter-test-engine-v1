@@ -23,7 +23,7 @@ variable m4_2x_spot_price {
 
 variable cluster_config {
   type    = string
-  default = "aws eks --region us-west-1 update-kubeconfig --name glasswall-test-cluster"
+  default = "aws eks --region eu-west-1 update-kubeconfig --name glasswall-test-cluster"
 }
 
 variable persistent_storage {
