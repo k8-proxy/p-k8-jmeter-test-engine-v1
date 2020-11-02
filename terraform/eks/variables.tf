@@ -26,6 +26,10 @@ variable cluster_config {
   default = "aws eks --region us-west-1 update-kubeconfig --name glasswall-test-cluster"
 }
 
+variable persistent_storage {
+  type    = string
+  default = "kubectl apply -k github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=master"
+}
 
 variable common_resources {
   type    = string
