@@ -24,14 +24,14 @@ module "eks" {
       kubelet_extra_args            = "--node-labels=purpose=jmeter,node.kubernetes.io/lifecycle=spot --register-with-taints=sku=jmeter:NoSchedule"
       tags = [
         {
-          key = "k8s.io/cluster-autoscaler/enabled"
-          value = ""
+          key                 = "k8s.io/cluster-autoscaler/enabled"
+          value               = ""
           propagate_at_launch = "true"
         },
         {
-          key = "k8s.io/cluster-autoscaler/${local.cluster_name}"
-          value = ""
-          propagate_at_launch = "true"          
+          key                 = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+          value               = ""
+          propagate_at_launch = "true"
         }
       ]
     },
@@ -55,19 +55,20 @@ module "eks" {
       kubelet_extra_args            = "--node-labels=node.kubernetes.io/lifecycle=spot"
       tags = [
         {
-          key = "k8s.io/cluster-autoscaler/enabled"
-          value = ""
+          key                 = "k8s.io/cluster-autoscaler/enabled"
+          value               = ""
           propagate_at_launch = "true"
         },
         {
-          key = "k8s.io/cluster-autoscaler/${local.cluster_name}"
-          value = ""
-          propagate_at_launch = "true"          
+          key                 = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+          value               = ""
+          propagate_at_launch = "true"
         }
-      ]      
+      ]
     }
   ]
 }
+
 
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
