@@ -12,16 +12,18 @@ module "eks" {
 
   worker_groups = [
     {
-      name                          = "worker-group-1"
-      instance_type                 = "m4.2xlarge"
+      name          = "jmeter-node-group"
+      instance_type = "m4.2xlarge"
+      #spot_price                    = "0.140"
+      spot_price                    = "${var.m4_2x_spot_price["${var.region}"]}"
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
       asg_desired_capacity          = 2
       asg_max_size                  = 1000
-      kubelet_extra_args            = "--node-labels=purpose=jmeter --register-with-taints=sku=jmeter:NoSchedule"
+      kubelet_extra_args            = "--node-labels=purpose=jmeter,node.kubernetes.io/lifecycle=spot --register-with-taints=sku=jmeter:NoSchedule"
     },
     {
-      name                          = "worker-group-2"
+      name                          = "monitoring-node-group"
       instance_type                 = "m4.xlarge"
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
@@ -30,12 +32,14 @@ module "eks" {
       kubelet_extra_args            = "--node-labels=key=monitoring --register-with-taints=key=monitoring:NoSchedule"
     },
     {
-      name                          = "worker-group-3"
+      name                          = "k8s-node-group"
       instance_type                 = "m4.xlarge"
+      spot_price                    = "${var.m4_x_spot_price["${var.region}"]}"
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
       asg_desired_capacity          = 1
       asg_max_size                  = 50
+      kubelet_extra_args            = "--node-labels=node.kubernetes.io/lifecycle=spot"
     }
   ]
 }

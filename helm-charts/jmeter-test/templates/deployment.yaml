@@ -6,7 +6,9 @@ metadata:
     env: test
     jobgroup: jmeter
 spec:
-  parallelism: 1
+
+  parallelism: {{ .Values.replicaCount }}
+
   ttlSecondsAfterFinished: 60
   template:
     metadata:
@@ -21,16 +23,18 @@ spec:
         effect: "NoSchedule"       
       containers:
       - name: jmeter
-        #image: ggrig/jmeter-c-icap:2.5
+
         image:  shashanksinha/docker-jmeter-c-icap:2
+        command: [ "bash", "-c", "JVM_ARGS='-Xms1024m -Xmx3072m' /usr/local/apache-jmeter-5.3/bin/jmeter.sh -n -t /usr/share/jmx/jmeter-conf.jmx -l /usr/share/Test/report/icap.jtl -j /usr/share/Test/report/jmeter.log"]
+
         resources:
           requests:
-            memory: "1500Mi"
-            cpu: "500m"
+            memory: "4096Mi"
+            cpu: "1000m"
           limits:
-            memory: "1500Mi"
-            cpu: "500m"
-        imagePullPolicy: IfNotPresent
+            memory: "4096Mi"
+            cpu: "1000m"
+        imagePullPolicy: Always
         env:
           # Source Minio Infromation
           - name: TARGET_MINIO_URL
@@ -73,7 +77,7 @@ spec:
                 fieldPath: spec.serviceAccountName
           # JVM
           - name: JVM_ARGS
-            value: "-Xms512m -Xmx2048m"
+            value: "-Xms1024m -Xmx2048m"
         volumeMounts:
         - name: jmetervol
           mountPath: "/usr/share/jmx"

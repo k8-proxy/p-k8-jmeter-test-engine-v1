@@ -19,7 +19,7 @@ kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"templat
 helm init --service-account tiller --upgrade
 ```
 
-## Chart Installation
+## Common Chart Installation
 
 Run below command to install all resources defined in `common-resource` helm chart
 
@@ -27,8 +27,22 @@ Run below command to install all resources defined in `common-resource` helm cha
 helm install --name common ./common-resources/ -f ./common-resources/aws.yaml  --namespace common
 ```
 
-## Chart Deletion
+## Common Chart Deletion
 
 ```shell
 helm delete --purge common
+```
+
+## Jmeter Chart installation
+
+Run below command to install all resources defined in `jmeter-test` helm chart. Specify the `replicaCount` value to start multiple pods in parallel.
+
+```shell
+helm install --name jmeter ./jmeter-test/ --set replicaCount=5
+```
+
+## Jmeter Chart Deletion
+
+```shell
+helm delete --purge jmeter
 ```

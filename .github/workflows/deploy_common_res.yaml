@@ -95,7 +95,7 @@ jobs:
 
       - name: Deploy Prometheus
         run: |
-          helm repo add stable https://kubernetes-charts.storage.googleapis.com
+          helm repo add stable https://charts.helm.stable
           helm repo update
           helm upgrade --install -n prometheus prometheus stable/prometheus
 
