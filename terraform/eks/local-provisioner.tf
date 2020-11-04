@@ -10,6 +10,18 @@ resource "null_resource" "cluster_config" {
   }
 }
 
+resource "null_resource" "helm" {
+
+  depends_on = [
+    null_resource.cluster_config
+  ]
+
+  provisioner "local-exec" {
+    command     = var.helm_permissions
+    interpreter = var.cluster_interpreter
+  }
+}
+
 resource "null_resource" "autoscaler_config" {
   depends_on = [
     null_resource.cluster_config
@@ -48,19 +60,16 @@ resource "null_resource" "storage" {
 }
 
 
-resource "null_resource" "helm" {
+resource "null_resource" "update_fs_id" {
 
   depends_on = [
-    null_resource.storage
+    aws_efs_file_system.example
   ]
-
   provisioner "local-exec" {
-    command     = var.helm_permissions
+    command     = "sed -i -e 's/EFS-ID/${aws_efs_file_system.example.id}/g' ../../helm-charts/common-resources/aws.yaml"
     interpreter = var.cluster_interpreter
   }
 }
-
-
 
 resource "null_resource" "common" {
 
