@@ -58,7 +58,7 @@ spec:
       volumes:
         - name: minio-storage
           persistentVolumeClaim:
-            claimName: minio-pvc
+            claimName: efs-claim
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

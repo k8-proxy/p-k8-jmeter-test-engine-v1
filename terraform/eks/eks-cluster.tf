@@ -43,6 +43,18 @@ module "eks" {
       asg_desired_capacity          = 1
       asg_max_size                  = 50
       kubelet_extra_args            = "--node-labels=key=monitoring --register-with-taints=key=monitoring:NoSchedule"
+      tags = [
+        {
+          key                 = "k8s.io/cluster-autoscaler/enabled"
+          value               = ""
+          propagate_at_launch = "true"
+        },
+        {
+          key                 = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+          value               = ""
+          propagate_at_launch = "true"
+        }
+      ]
     },
     {
       name                          = "k8s-node-group"
