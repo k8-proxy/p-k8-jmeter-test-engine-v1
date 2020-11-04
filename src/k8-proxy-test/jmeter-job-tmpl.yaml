@@ -26,7 +26,7 @@ spec:
         - "assets.publishing.service.gov.uk"
       containers:
       - name: jmeter
-        image: glasswallsolutions/cloud-qa:proxy1.12
+        image: glasswallsolutions/cloud-qa:proxy1.16
         imagePullPolicy: IfNotPresent
         # resources:
         #   requests:
