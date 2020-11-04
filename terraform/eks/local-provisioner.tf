@@ -63,7 +63,8 @@ resource "null_resource" "storage" {
 resource "null_resource" "update_fs_id" {
 
   depends_on = [
-    aws_efs_file_system.example
+    aws_efs_file_system.example,
+    aws_efs_mount_target.example
   ]
   provisioner "local-exec" {
     command     = "sed -i -e 's/EFS-ID/${aws_efs_file_system.example.id}/g' ../../helm-charts/common-resources/aws.yaml"
@@ -79,6 +80,42 @@ resource "null_resource" "common" {
 
   provisioner "local-exec" {
     command     = var.common_chart
+    interpreter = var.cluster_interpreter
+  }
+}
+
+resource "null_resource" "chart_repo_update" {
+
+  depends_on = [
+    null_resource.common
+  ]
+
+  provisioner "local-exec" {
+    command     = var.chart_update
+    interpreter = var.cluster_interpreter
+  }
+}
+
+resource "null_resource" "loki" {
+
+  depends_on = [
+    null_resource.chart_repo_update
+  ]
+
+  provisioner "local-exec" {
+    command     = var.loki_chart
+    interpreter = var.cluster_interpreter
+  }
+}
+
+resource "null_resource" "prometheus" {
+
+  depends_on = [
+    null_resource.loki
+  ]
+
+  provisioner "local-exec" {
+    command     = var.prometheus_chart
     interpreter = var.cluster_interpreter
   }
 }
