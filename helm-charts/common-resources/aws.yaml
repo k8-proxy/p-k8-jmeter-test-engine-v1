@@ -30,8 +30,10 @@ minio:
       cpu: 1000m
       memory: 4096Mi
   hpa:
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 100
+  pv:
+    ebs_volume_id: EFS-ID
 
 grafana:
   image:
