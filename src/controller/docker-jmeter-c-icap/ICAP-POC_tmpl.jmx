@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -22,7 +22,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">icap-client.uksouth.cloudapp.azure.com</stringProp>
+            <stringProp name="Argument.value">icap-perf-tm-server.trafficmanager.net</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -52,7 +52,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">${__P(p_url,icap-client.uksouth.cloudapp.azure.com)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_url,icap-perf-tm-server.trafficmanager.net)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -81,7 +81,7 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap-client.uksouth.cloudapp.azure.com)} ${__P(p_influxHost,localhost)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap-perf-tm-server.trafficmanager.net)} ${__P(p_influxHost,influxdb.influxdb.svc.cluster.local)}</stringProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
