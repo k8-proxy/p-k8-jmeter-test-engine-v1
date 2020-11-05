@@ -14,11 +14,11 @@ spec:
       labels:
         jobgroup: jmeter  
     spec:
-      hostAliases:
-        - ip: "192.168.1.4"
-          hostnames:
-          - "influxdb.influxdb.svc.cluster.local"
-          - "minio.minio.svc.cluster.local"
+      #hostAliases:
+      #  - ip: "192.168.1.4"
+      #    hostnames:
+      #    - "influxdb.influxdb.svc.cluster.local"
+      #    - "minio.minio.svc.cluster.local"
       tolerations:
       - key: "sku"
         operator: "Equal"
