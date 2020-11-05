@@ -344,7 +344,7 @@ s3p.waitFor();
 log.info(&quot;File copied to in. &quot;+s3cp);*/
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
-String command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
+String command1 = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
 String command2=&quot; -f ${inPath}/${fileName} -o ${outputPath}/&quot;+uuid+&quot;_${fileName} -v&quot;;
 String command=command1+command2;
 // Print the generated status check command
@@ -757,7 +757,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-server-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;);    // for unix
+String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;);    // for unix
 
 // Print the generated status check command
 log.info(command);
@@ -812,7 +812,7 @@ log.info(&quot;Server Status check Output: &quot; + logCommandOutput.toString())
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-Resource-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
+String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
 
 // Print the generated status check command
 log.info(command);
@@ -927,7 +927,7 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
 		import java.time.ZonedDateTime;
 */
 	   //String my_var = vars.get(&quot;ICAPServerAddr&quot;);
-        String command =&quot;/usr/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;)+&quot; -req any&quot;;
+        String command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;)+&quot; -req any&quot;;
 	   // Print the generated status check command
 		log.info(command);
 
