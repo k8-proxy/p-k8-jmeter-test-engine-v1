@@ -9,7 +9,7 @@ import shutil
 import fileinput
 import math
 
-logger = logging.getLogger('s3-to-minio')
+logger = logging.getLogger('delete_stack')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 

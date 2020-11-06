@@ -9,7 +9,7 @@ import shutil
 import fileinput
 import math
 
-logger = logging.getLogger('s3-to-minio')
+logger = logging.getLogger('create_stack')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
@@ -20,6 +20,10 @@ class Main():
     users_per_instance = '25'
     duration = '60'
     filelist = ''
+    minio_url = ''
+    minio_access_key = ''
+    minio_secret_key = ''
+    minio_bucket = ''
 
     @staticmethod
     def log_level(level):
@@ -120,9 +124,9 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_bucket <bucket name>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:",["total_users=","users_per_instance=","duration=","list="])
+            opts, args = getopt.getopt(argv,"htudl:masb",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_bucket="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -138,12 +142,24 @@ class Main():
                 Main.duration = arg
             elif opt in ("-l", "--list"):
                 Main.filelist = arg
+            elif opt in ("-m", "--minio_url"):
+                Main.minio_url = arg
+            elif opt in ("-a", "--minio_access_key"):
+                Main.minio_access_key = arg
+            elif opt in ("-a", "--minio_secret_key"):
+                Main.minio_secret_key = arg
+            elif opt in ("-a", "--minio_bucket"):
+                Main.minio_bucket = arg
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.total_users)
         logger.info(Main.users_per_instance)
         logger.info(Main.duration)
         logger.info(Main.filelist)
+        logger.info(Main.minio_url)
+        logger.info(Main.minio_access_key)
+        logger.info(Main.minio_secret_key)
+        logger.info(Main.minio_bucket)
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
