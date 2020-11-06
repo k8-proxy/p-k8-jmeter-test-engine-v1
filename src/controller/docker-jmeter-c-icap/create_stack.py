@@ -9,6 +9,11 @@ import shutil
 import fileinput
 import math
 
+import boto3
+import requests
+from botocore.client import Config
+from botocore.exceptions import ClientError
+
 logger = logging.getLogger('create_stack')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
@@ -28,6 +33,19 @@ class Main():
     @staticmethod
     def log_level(level):
         logging.basicConfig(level=getattr(logging, level))
+
+    @staticmethod
+    def verify_minio_access():
+        try:
+            s3 = boto3.resource('s3', endpoint_url=Main.minio_url, aws_access_key_id=Main.minio_access_key,
+                                aws_secret_access_key=Main.minio_secret_key, config=Config(signature_version='s3v4'))
+            if (s3.Bucket(Main.minio_bucket) in s3.buckets.all()) == False:
+                logger.info('Bucket {} not Found'.format(Main.minio_bucket))
+                exit(1)
+        except Exception as e:
+            logger.info(e)
+            exit(1)
+
 
     @staticmethod
     def sanity_checks():
@@ -52,6 +70,7 @@ class Main():
         if not os.path.exists(Main.filelist):
             logger.error("File {} does not exist".format(Main.filelist))
             exit(1)
+        Main.verify_minio_access()
 
     @staticmethod
     def stop_jmeter_jobs():
