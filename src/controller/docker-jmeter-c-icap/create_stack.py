@@ -9,10 +9,10 @@ import shutil
 import fileinput
 import math
 
-import boto3
-import requests
-from botocore.client import Config
-from botocore.exceptions import ClientError
+#import boto3
+#import requests
+#from botocore.client import Config
+#from botocore.exceptions import ClientError
 
 logger = logging.getLogger('create_stack')
 
@@ -38,11 +38,12 @@ class Main():
     @staticmethod
     def verify_minio_access():
         try:
-            s3 = boto3.resource('s3', endpoint_url=Main.minio_url, aws_access_key_id=Main.minio_access_key,
-                                aws_secret_access_key=Main.minio_secret_key, config=Config(signature_version='s3v4'))
-            if (s3.Bucket(Main.minio_input_bucket) in s3.buckets.all()) == False:
-                logger.info('Bucket {} not Found'.format(Main.minio_input_bucket))
-                exit(1)
+            logger.info("verify_minio_access not implemented")
+            #s3 = boto3.resource('s3', endpoint_url=Main.minio_url, aws_access_key_id=Main.minio_access_key,
+            #                    aws_secret_access_key=Main.minio_secret_key, config=Config(signature_version='s3v4'))
+            #if (s3.Bucket(Main.minio_input_bucket) in s3.buckets.all()) == False:
+            #    logger.info('Bucket {} not Found'.format(Main.minio_input_bucket))
+            #    exit(1)
         except Exception as e:
             logger.info(e)
             exit(1)
