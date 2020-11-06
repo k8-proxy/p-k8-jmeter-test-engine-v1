@@ -217,7 +217,8 @@
 
 // String bumid1  = ${__UUID};
 
- vars.put(&quot;uid&quot;,&quot;${__UUID}&quot;);
+ vars.put(&quot;uid&quot;,&quot;${__UUID()}&quot;);
+ log.info(&quot;UUID is&quot;+uuid)
 </stringProp>
           <stringProp name="BeanShellSampler.filename"></stringProp>
           <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -278,6 +279,8 @@ import io.minio.MakeBucketArgs;
 import io.minio.DownloadObjectArgs
 import java.io.IOException;
 
+String uuid=vars.get(&quot;uid&quot;);
+
 try {
       MinioClient minioClient =
           MinioClient.builder()
@@ -287,13 +290,13 @@ try {
 // Check if the bucket already exists.
 boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
 if(isExist) {
-        System.out.println(&quot;Bucket already exists.&quot;);
+        //System.out.println(&quot;Bucket already exists.&quot;);
       } else {
         minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
       }
 // Download file from the bucket
 //It will download object with specified name into location specified as filename
-inFileName=vars.get(&quot;inPath&quot;)+&quot;/&quot;+&quot;${fileName}&quot;;
+inFileName=&quot;${inPath}&quot;+&quot;/&quot;+ uuid +&quot;_${fileName}&quot;;
 minioClient.downloadObject(
        DownloadObjectArgs.builder()
                 .bucket(&quot;${MINIO_BUCKET}&quot;)
@@ -345,12 +348,12 @@ log.info(&quot;File copied to in. &quot;+s3cp);*/
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
 String command1 = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
-String command2=&quot; -f ${inPath}/${fileName} -o ${outputPath}/&quot;+uuid+&quot;_${fileName} -v&quot;;
+String command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} -v&quot;;
 String command=command1+command2;
 // Print the generated status check command
-log.info(&quot;Command 1 is &quot;+command1);
-log.info(&quot;Command 2 is &quot;+command2);
-log.info(&quot;Full command is &quot;+command);
+//log.info(&quot;Command 1 is &quot;+command1);
+//log.info(&quot;Command 2 is &quot;+command2);
+log.info(&quot;The command is &quot;+command);
 
 // Create a process object and let this object execute the icap client command
 Process p = Runtime.getRuntime().exec(command);
@@ -623,7 +626,7 @@ try {
 	// Check if the bucket already exists.
 	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
 	if(isExist) {
-	        System.out.println(&quot;Bucket already exists.&quot;);
+	        //System.out.println(&quot;Bucket already exists.&quot;);
 	      } else {
 	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
 	}
@@ -668,11 +671,11 @@ log.info(&quot;UUID is &quot;+uuid);
 log.info(&quot;Cleaning file from out folder &quot;);
 
 //clean in folder
-String removeInFile=&quot;rm -Rf &quot;+&quot;${path}&quot;+&quot;/&quot;+&quot;${fileName}&quot;;
+String removeInFile=&quot;rm -Rf &quot;+&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
 s3p_out = Runtime.getRuntime().exec(removeInFile);
 s3p_out.waitFor();
 
-log.info(&quot;${path}&quot;+&quot;/&quot;+&quot;${fileName}&quot;+&quot; file deleted from the input folder &quot;);
+log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&quot; file deleted from the input folder &quot;);
 
 //clean out folder
 String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
