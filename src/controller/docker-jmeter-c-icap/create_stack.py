@@ -198,15 +198,21 @@ class Main():
         logger.info(Main.users_per_instance)
         logger.info(Main.duration)
         logger.info(Main.filelist)
-        logger.info(Main.minio_url)
+
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
-        logger.info(Main.minio_access_key)
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
+        logger.info(Main.minio_url)
+        logger.info(Main.minio_access_key)
         logger.info(Main.minio_secret_key)
         logger.info(Main.minio_input_bucket)
         logger.info(Main.minio_output_bucket)
+
+        Main.influxHost = Main.influxdb_url.replace('http://', '')
+        Main.influxHost = Main.influxHost.split(':', 1)[0]
         logger.info(Main.influxdb_url)
+        logger.info(Main.influxHost)
         logger.info(Main.prefix)
+
         logger.info(Main.icap_server)
 
         Main.sanity_checks()
