@@ -77,7 +77,7 @@
           </elementProp>
           <elementProp name="influxHost" elementType="Argument">
             <stringProp name="Argument.name">influxHost</stringProp>
-            <stringProp name="Argument.value">${__P(p_influxHost,http://influxdb.influxdb.svc.cluster.local:8086)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_influxHost,$influxdb_url$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -861,7 +861,7 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
             </elementProp>
             <elementProp name="influxdbUrl" elementType="Argument">
               <stringProp name="Argument.name">influxdbUrl</stringProp>
-              <stringProp name="Argument.value">http://influxdb.influxdb.svc.cluster.local:8086/write?db=jmeter</stringProp>
+              <stringProp name="Argument.value">$influxdb_url$/write?db=jmeter</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="application" elementType="Argument">

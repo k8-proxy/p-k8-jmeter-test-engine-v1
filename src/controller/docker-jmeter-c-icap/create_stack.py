@@ -30,6 +30,7 @@ class Main():
     minio_secret_key = ''
     minio_input_bucket = 'input'
     minio_output_bucket = 'output'
+    influxdb_url = 'http://influxdb.influxdb.svc.cluster.local:8086'
 
     @staticmethod
     def log_level(level):
@@ -108,6 +109,7 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$minio_secret_key$", Main.minio_secret_key)
             Main.replace_in_file(jmeter_script_name,"$minio_input_bucket$", Main.minio_input_bucket)
             Main.replace_in_file(jmeter_script_name,"$minio_output_bucket$", Main.minio_output_bucket)
+            Main.replace_in_file(jmeter_script_name,"$influxdb_url$", Main.influxdb_url)
             return jmeter_script_name
         except Exception as e:
             logger.info(e)
@@ -150,9 +152,9 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:b",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibx",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -172,12 +174,14 @@ class Main():
                 Main.minio_url = arg
             elif opt in ("-a", "--minio_access_key"):
                 Main.minio_access_key = arg
-            elif opt in ("-a", "--minio_secret_key"):
+            elif opt in ("-s", "--minio_secret_key"):
                 Main.minio_secret_key = arg
-            elif opt in ("-a", "--minio_input_bucket"):
+            elif opt in ("-i", "--minio_input_bucket"):
                 Main.minio_input_bucket = arg
-            elif opt in ("-a", "--minio_output_bucket"):
+            elif opt in ("-o", "--minio_output_bucket"):
                 Main.minio_output_bucket = arg
+            elif opt in ("-x", "--influxdb_url"):
+                Main.influxdb_url = arg
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.total_users)
@@ -191,6 +195,7 @@ class Main():
         logger.info(Main.minio_secret_key)
         logger.info(Main.minio_input_bucket)
         logger.info(Main.minio_output_bucket)
+        logger.info(Main.influxdb_url)
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
