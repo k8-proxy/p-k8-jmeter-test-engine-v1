@@ -60,19 +60,24 @@ class Main():
             exit(1)
 
     @staticmethod
+    def replace_in_file(filename, prev_str, new_str):
+        try:
+            with fileinput.FileInput(filename, inplace=True, backup='.bak') as file:
+                for line in file:
+                    print(line.replace(prev_str, new_str), end='')
+            os.remove(filename + '.bak')
+        except Exception as e:
+            logger.info(e)
+            exit(1)
+
+    @staticmethod
     def get_jmx_file():
         try:
             a = uuid.uuid4()
             jmeter_script_name = str(a)
             shutil.copyfile("ICAP-POC_tmpl.jmx",jmeter_script_name)
-            with fileinput.FileInput(jmeter_script_name, inplace=True, backup='.bak0') as file:
-                for line in file:
-                    print(line.replace("\"ThreadGroup.num_threads\">$NO</stringProp>", "\"ThreadGroup.num_threads\">"+ Main.users_per_instance +"</stringProp>"), end='')
-            with fileinput.FileInput(jmeter_script_name, inplace=True, backup='.bak1') as file:
-                for line in file:
-                    print(line.replace("${__P(p_duration,$NO)}", "${__P(p_duration,"+ Main.duration +")}"), end='')
-            os.remove(jmeter_script_name + '.bak0')
-            os.remove(jmeter_script_name + '.bak1')
+            Main.replace_in_file(jmeter_script_name,"\"ThreadGroup.num_threads\">$NO</stringProp>","\"ThreadGroup.num_threads\">"+ Main.users_per_instance +"</stringProp>")
+            Main.replace_in_file(jmeter_script_name,"${__P(p_duration,$NO)}", "${__P(p_duration,"+ Main.duration +")}")
             return jmeter_script_name
         except Exception as e:
             logger.info(e)
@@ -97,25 +102,17 @@ class Main():
                 os.remove('job-0.yaml')
 
             shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
-
-            with fileinput.FileInput('job-0.yaml', inplace=True, backup='.bak') as file:
-                for line in file:
-                    print(line.replace('jmeterjob-$NO', 'jmeterjob-0'), end='')
+            Main.replace_in_file('job-0.yaml','jmeterjob-$NO', 'jmeterjob-0')
 
             parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
-
             logger.info("Number of pods to be created: {}".format(parallelism))
-
-            with fileinput.FileInput('job-0.yaml', inplace=True, backup='.bak') as file:
-                for line in file:
-                    print(line.replace('$parallelism-number', str(parallelism)), end='')
+            Main.replace_in_file('job-0.yaml','$parallelism-number', str(parallelism))
 
             os.system("kubectl create -f job-0.yaml")
 
             os.remove('jmeter-conf.jmx')
             os.remove('files')
             os.remove('job-0.yaml')
-            os.remove('job-0.yaml.bak')
 
         except Exception as e:
             logger.info(e)
