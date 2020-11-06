@@ -174,7 +174,7 @@ class Main():
                 Main.minio_access_key = arg
             elif opt in ("-a", "--minio_secret_key"):
                 Main.minio_secret_key = arg
-            elif opt in ("-a", "--minio_bucket"):
+            elif opt in ("-a", "--minio_input_bucket"):
                 Main.minio_input_bucket = arg
             elif opt in ("-a", "--minio_output_bucket"):
                 Main.minio_output_bucket = arg
