@@ -21,7 +21,7 @@ Create an influx DB database called `JMeter` on the influx DB POD
 The python script will allow you to start the JMeter traffic on Linux, Windos and Mac OS,
 The CLI command to start it is:
 ```
-    python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name>
+    python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>
 ```
 Here:
 <table>
@@ -82,8 +82,27 @@ The Minio input bucket. The default value is 'input'
 The Minio output bucket. The default value is 'output'
 </td>
 </tr>
+<tr>
+<td> --influxdb_url </td>
+<td>
+The InfluxDB URL. The default value is 'http://influxdb.influxdb.svc.cluster.local:8086'
+</td>
+</tr>
+<tr>
+<td> --prefix </td>
+<td>
+Influxdb database name prefix. The default value is 'demo'
+</td>
+</tr>
+<tr>
+<td> --icap_server </td>
+<td>
+ICAP server URL. The default value is 'icap02.glasswall-icap.com'
+</td>
+</tr>
 </table>
-### Test termination
+
+## Test termination
 To stop the test and release the resources run the following command
 ```
     python3 delete_stack.py
