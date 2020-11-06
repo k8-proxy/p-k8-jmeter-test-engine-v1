@@ -143,7 +143,7 @@
           </elementProp>
           <elementProp name="prefix" elementType="Argument">
             <stringProp name="Argument.name">prefix</stringProp>
-            <stringProp name="Argument.value">${__P(p_prefix,demo)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_prefix,$prefix$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="filetype" elementType="Argument">
