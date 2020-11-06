@@ -31,7 +31,9 @@ class Main():
     minio_input_bucket = 'input'
     minio_output_bucket = 'output'
     influxdb_url = 'http://influxdb.influxdb.svc.cluster.local:8086'
+    influxHost = 'influxdb.influxdb.svc.cluster.local'
     prefix = 'demo'
+    icap_server = 'icap02.glasswall-icap.com'
 
     @staticmethod
     def log_level(level):
@@ -111,7 +113,9 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$minio_input_bucket$", Main.minio_input_bucket)
             Main.replace_in_file(jmeter_script_name,"$minio_output_bucket$", Main.minio_output_bucket)
             Main.replace_in_file(jmeter_script_name,"$influxdb_url$", Main.influxdb_url)
+            Main.replace_in_file(jmeter_script_name,"$influxHost$", Main.influxHost)
             Main.replace_in_file(jmeter_script_name,"$prefix$", Main.prefix)
+            Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
             return jmeter_script_name
         except Exception as e:
             logger.info(e)
@@ -154,9 +158,9 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxp",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -186,6 +190,8 @@ class Main():
                 Main.influxdb_url = arg
             elif opt in ("-p", "--prefix"):
                 Main.prefix = arg
+            elif opt in ("-v", "--icap_server"):
+                Main.icap_server = arg
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.total_users)
@@ -201,6 +207,7 @@ class Main():
         logger.info(Main.minio_output_bucket)
         logger.info(Main.influxdb_url)
         logger.info(Main.prefix)
+        logger.info(Main.icap_server)
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()

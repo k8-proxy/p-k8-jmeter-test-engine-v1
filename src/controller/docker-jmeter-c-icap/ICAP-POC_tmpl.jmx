@@ -22,7 +22,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">icap02.glasswall-icap.com</stringProp>
+            <stringProp name="Argument.value">$icap_server$</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -52,7 +52,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">${__P(p_url,icap02.glasswall-icap.com)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_url,$icap_server$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -81,14 +81,14 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap02.glasswall-icap.com)} ${__P(p_influxHost,influxdb.influxdb.svc.cluster.local)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,$influxHost$)}</stringProp>
       </Arguments>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
             <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">${__P(p_url,icap02.glasswall-icap.com)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_url,$icap_server$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="containerUrl" elementType="Argument">
@@ -113,7 +113,7 @@
           </elementProp>
           <elementProp name="influxHost" elementType="Argument">
             <stringProp name="Argument.name">influxHost</stringProp>
-            <stringProp name="Argument.value">${__P(p_influxHost,influxdb.influxdb.svc.cluster.local)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_influxHost,$influxHost$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="aws_access_key" elementType="Argument">
@@ -152,7 +152,7 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap02.glasswall-icap.com)} ${__P(p_influxHost,influxdb.influxdb.svc.cluster.local)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,$influxHost$)}</stringProp>
       </Arguments>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="MINIO Defined Variables" enabled="true">
@@ -183,7 +183,7 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,icap02.glasswall-icap.com)} ${__P(p_influxHost,influxdb.influxdb.svc.cluster.local)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,$influxHost$)}</stringProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
