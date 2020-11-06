@@ -25,10 +25,11 @@ class Main():
     users_per_instance = '25'
     duration = '60'
     filelist = ''
-    minio_url = ''
+    minio_url = 'http://minio.minio.svc.cluster.local:9000'
     minio_access_key = ''
     minio_secret_key = ''
-    minio_bucket = ''
+    minio_input_bucket = 'input'
+    minio_output_bucket = 'output'
 
     @staticmethod
     def log_level(level):
@@ -39,8 +40,8 @@ class Main():
         try:
             s3 = boto3.resource('s3', endpoint_url=Main.minio_url, aws_access_key_id=Main.minio_access_key,
                                 aws_secret_access_key=Main.minio_secret_key, config=Config(signature_version='s3v4'))
-            if (s3.Bucket(Main.minio_bucket) in s3.buckets.all()) == False:
-                logger.info('Bucket {} not Found'.format(Main.minio_bucket))
+            if (s3.Bucket(Main.minio_input_bucket) in s3.buckets.all()) == False:
+                logger.info('Bucket {} not Found'.format(Main.minio_input_bucket))
                 exit(1)
         except Exception as e:
             logger.info(e)
@@ -101,6 +102,11 @@ class Main():
             shutil.copyfile("ICAP-POC_tmpl.jmx",jmeter_script_name)
             Main.replace_in_file(jmeter_script_name,"\"ThreadGroup.num_threads\">$NO</stringProp>","\"ThreadGroup.num_threads\">"+ Main.users_per_instance +"</stringProp>")
             Main.replace_in_file(jmeter_script_name,"${__P(p_duration,$NO)}", "${__P(p_duration,"+ Main.duration +")}")
+            Main.replace_in_file(jmeter_script_name,"$minio_endpoint$", Main.minio_url)
+            Main.replace_in_file(jmeter_script_name,"$minio_access_key$", Main.minio_access_key)
+            Main.replace_in_file(jmeter_script_name,"$minio_secret_key$", Main.minio_secret_key)
+            Main.replace_in_file(jmeter_script_name,"$minio_input_bucket$", Main.minio_input_bucket)
+            Main.replace_in_file(jmeter_script_name,"$minio_output_bucket$", Main.minio_output_bucket)
             return jmeter_script_name
         except Exception as e:
             logger.info(e)
@@ -143,9 +149,9 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_bucket <bucket name>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:masb",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_bucket="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:b",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -168,7 +174,9 @@ class Main():
             elif opt in ("-a", "--minio_secret_key"):
                 Main.minio_secret_key = arg
             elif opt in ("-a", "--minio_bucket"):
-                Main.minio_bucket = arg
+                Main.minio_input_bucket = arg
+            elif opt in ("-a", "--minio_output_bucket"):
+                Main.minio_output_bucket = arg
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.total_users)
@@ -178,7 +186,8 @@ class Main():
         logger.info(Main.minio_url)
         logger.info(Main.minio_access_key)
         logger.info(Main.minio_secret_key)
-        logger.info(Main.minio_bucket)
+        logger.info(Main.minio_input_bucket)
+        logger.info(Main.minio_output_bucket)
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()

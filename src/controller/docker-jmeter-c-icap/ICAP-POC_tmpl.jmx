@@ -159,27 +159,27 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="MINIO_URL" elementType="Argument">
             <stringProp name="Argument.name">MINIO_URL</stringProp>
-            <stringProp name="Argument.value">http://minio.minio.svc.cluster.local:9000</stringProp>
+            <stringProp name="Argument.value">$minio_endpoint$</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="MINIO_ACCESS_KEY" elementType="Argument">
             <stringProp name="Argument.name">MINIO_ACCESS_KEY</stringProp>
-            <stringProp name="Argument.value">${__P(p_minio_access_key,test)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_access_key,$minio_access_key$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="MINIO_SECRET_KEY" elementType="Argument">
             <stringProp name="Argument.name">MINIO_SECRET_KEY</stringProp>
-            <stringProp name="Argument.value">${__P(p_minio_secret_key,test@123)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_secret_key,$minio_secret_key$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="MINIO_BUCKET" elementType="Argument">
             <stringProp name="Argument.name">MINIO_BUCKET</stringProp>
-            <stringProp name="Argument.value">${__P(p_minio_bucket,input)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_bucket,$minio_input_bucket$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="MINIO_BUCKET_OUTPUT" elementType="Argument">
             <stringProp name="Argument.name">MINIO_BUCKET_OUTPUT</stringProp>
-            <stringProp name="Argument.value">${__P(p_minio_bucket_output,output)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_bucket_output,$minio_output_bucket$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
