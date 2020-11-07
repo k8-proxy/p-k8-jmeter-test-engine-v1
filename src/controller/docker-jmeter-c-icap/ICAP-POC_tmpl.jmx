@@ -81,7 +81,7 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,$influxHost$)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -113,7 +113,7 @@
           </elementProp>
           <elementProp name="influxHost" elementType="Argument">
             <stringProp name="Argument.name">influxHost</stringProp>
-            <stringProp name="Argument.value">${__P(p_influxHost,$influxHost$)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_influxHost,localhost)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="aws_access_key" elementType="Argument">
@@ -152,7 +152,7 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,$influxHost$)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="MINIO Defined Variables" enabled="true">
@@ -183,7 +183,7 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,$influxHost$)}</stringProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
@@ -230,40 +230,6 @@
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">// ********
-// Upload a file to ICAP server 
-//
-// Preconditions:
-// https://github.com/filetrust/program-icap/wiki/Using-the-C-ICAP-Test-Client
-// should be installed in same linux machine as jmeter
-//
-// ********
-import org.apache.jmeter.services.FileServer;
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
- 
-//get path of current jmeter&apos;s script
-String path = FileServer.getFileServer().getBaseDir() + File.separator;
-log.info(&quot;Path: &quot; + path);
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
-log.info(&quot;Coping files from s3 to localdisk&quot;);
-String s3cp=&quot;python3 &quot; + &quot;/usr/share/Test/py/download.py -i ${fileName}&quot;;
-
-// Create a process object and let this object execute the command
-Process s3p = Runtime.getRuntime().exec(s3cp);
-s3p.waitFor();
-log.info(&quot;File copied to in. &quot;+s3cp);
-</stringProp>
-            <stringProp name="scriptLanguage">java</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="download - moving py dependency" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
@@ -281,32 +247,35 @@ import java.io.IOException;
 
 String uuid=vars.get(&quot;uid&quot;);
 
+log.info(&quot;Bucket is &quot; + &quot;${MINIO_BUCKET}&quot;);
+log.info(&quot;Object is &quot; + &quot;${path}/${fileName}&quot;);
+
 try {
       MinioClient minioClient =
           MinioClient.builder()
               .endpoint(&quot;${MINIO_URL}&quot;)
               .credentials(&quot;${MINIO_ACCESS_KEY}&quot;, &quot;${MINIO_SECRET_KEY}&quot;)
               .build();
-// Check if the bucket already exists.
-boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-if(isExist) {
-        //System.out.println(&quot;Bucket already exists.&quot;);
-      } else {
-        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-      }
-// Download file from the bucket
-//It will download object with specified name into location specified as filename
-inFileName=&quot;${inPath}&quot;+&quot;/&quot;+ uuid +&quot;_${fileName}&quot;;
-minioClient.downloadObject(
-       DownloadObjectArgs.builder()
-                .bucket(&quot;${MINIO_BUCKET}&quot;)
-                .object(&quot;${fileName}&quot;)
-                .filename(inFileName)
-                .build());
- log.info(&quot;File is downloaded to in folder &quot;+inFileName);
-          } catch (MinioException e) {
-      System.out.println(&quot;Error occurred: &quot; + e);
-    }
+	// Check if the bucket already exists.
+	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+	if(isExist) {
+	        //System.out.println(&quot;Bucket already exists.&quot;);
+	      } else {
+	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+	      }
+	// Download file from the bucket
+	//It will download object with specified name into location specified as filename
+	inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+	minioClient.downloadObject(
+	       DownloadObjectArgs.builder()
+	                .bucket(&quot;${MINIO_BUCKET}&quot;)
+	                .object(&quot;${path}/${fileName}&quot;)
+	                .filename(inFileName)
+	                .build());
+	log.info(&quot;File is downloaded to in folder &quot;+inFileName);
+     } catch (MinioException e) {
+		 System.out.println(&quot;Error occurred: &quot; + e);
+		}
 
 </stringProp>
           </JSR223Sampler>
@@ -565,41 +534,6 @@ log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());</stringProp
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">// ********
-// Upload a file to ICAP server 
-//
-// Preconditions:
-// https://github.com/filetrust/program-icap/wiki/Using-the-C-ICAP-Test-Client
-// should be installed in same linux machine as jmeter
-//
-// ********
-
-import org.apache.jmeter.services.FileServer;
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
- 
-//get path of current jmeter&apos;s script
-String path = FileServer.getFileServer().getBaseDir() + File.separator;
-log.info(&quot;Path: &quot; + path);
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
-log.info(&quot;Coping files from s3 to Minio&quot;);
-String s3cp=&quot;python3 &quot; + &quot;/usr/share/Test/py/upload.py -i &quot; + uuid + &quot;_${fileName}&quot;;
-
-// Create a process object and let this object execute the command
-Process s3p = Runtime.getRuntime().exec(s3cp);
-s3p.waitFor();
-log.info(&quot;File copied to in. &quot;+s3cp);
-</stringProp>
-            <stringProp name="scriptLanguage">java</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="upload - moving py dependecy" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
@@ -632,16 +566,15 @@ try {
 	}
 	
 	// Upload file to the bucket with putObject
-	String name = uuid+&quot;_${fileName}&quot;;
-	String filePath = &quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
+	String name = uuid + &quot;_${fileName}&quot;;
+	String filePath = &quot;${outputPath}/&quot; + name;
 	
-	log.info(&quot;Out Filename is &quot;+filePath);
 	vars.put(&quot;filePath&quot;, filePath);
 	log.info(&quot;Minio bucket is &quot;+&quot;${MINIO_BUCKET_OUTPUT}&quot;);
 	log.info(&quot;file name is &quot;+name);
 	log.info(&quot;file path is &quot;+filePath);
 
-	minioClient.putObject(&quot;${MINIO_BUCKET_OUTPUT}&quot;,name,filePath,null);
+	minioClient.putObject(&quot;${MINIO_BUCKET_OUTPUT}&quot;,&quot;icap-processed/&quot; + name,filePath,null);
     } catch(MinioException e) {
       System.out.println(&quot;Error occurred: &quot; + e);
     }</stringProp>
@@ -726,7 +659,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Server Status Check" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Server Status Check" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
