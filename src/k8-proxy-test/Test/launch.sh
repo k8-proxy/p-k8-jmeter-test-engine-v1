@@ -26,7 +26,7 @@ ${JMETER_HOME}/bin/jmeter.sh -n \
         -j ${R_DIR}/jmeter.log
 echo "END Running Jmeter on `date`"
 
-while true
-do
-	sleep 1
-done
+# while true
+# do
+# 	sleep 1
+# done

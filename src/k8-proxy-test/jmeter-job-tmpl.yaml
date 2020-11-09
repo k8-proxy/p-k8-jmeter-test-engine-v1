@@ -1,12 +1,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: jmeterjob-$NO
+  name: jmeterjob
   labels:
     env: test
     jobgroup: jmeter
 spec:
-  parallelism: 10
+  parallelism: 200
   ttlSecondsAfterFinished: 60
   template:
     metadata:
@@ -19,14 +19,14 @@ spec:
         operator: "Equal"
         value: "jmeter"
         effect: "NoSchedule"   
-      hostAliases:
-      - ip: "20.49.204.139"
-        hostnames:
-        - "www.gov.uk"
-        - "assets.publishing.service.gov.uk"
+      # hostAliases:
+      # - ip: "20.49.204.139"
+      #   hostnames:
+      #   - "www.gov.uk"
+      #   - "assets.publishing.service.gov.uk"
       containers:
       - name: jmeter
-        image: glasswallsolutions/cloud-qa:proxy1.12
+        image: glasswallsolutions/cloud-qa:proxy_EKS_1.8
         imagePullPolicy: IfNotPresent
         # resources:
         #   requests:
