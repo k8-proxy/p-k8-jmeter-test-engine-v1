@@ -58,11 +58,11 @@ class Main():
                 if "<stringProp name=\"Argument.name\">MINIO_ACCESS_KEY</stringProp>" in line:
                     MINIO_ACCESS_KEY_line = linenumber + 1
                 if linenumber == MINIO_ACCESS_KEY_line:
-                    Main.MINIO_ACCESS_KEY = line.strip().replace("<stringProp name=\"Argument.value\">${__P(p_minio_access_key,","").replace(")}</stringProp>","")
+                    Main.MINIO_ACCESS_KEY = line.strip().replace("<stringProp name=\"Argument.value\">${__P(p_minio_access_key,","").replace(")}</stringProp>","").replace('&amp;','&')
                 if "<stringProp name=\"Argument.name\">MINIO_SECRET_KEY</stringProp>" in line:
                     MINIO_SECRET_KEY_line = linenumber + 1
                 if linenumber == MINIO_SECRET_KEY_line:
-                    Main.MINIO_SECRET_KEY = line.strip().replace("<stringProp name=\"Argument.value\">${__P(p_minio_secret_key,","").replace(")}</stringProp>","")
+                    Main.MINIO_SECRET_KEY = line.strip().replace("<stringProp name=\"Argument.value\">${__P(p_minio_secret_key,","").replace(")}</stringProp>","").replace('&amp;','&') 
                 if "<stringProp name=\"Argument.name\">MINIO_BUCKET_OUTPUT</stringProp>" in line:
                     MINIO_BUCKET_line = linenumber + 1
                 if linenumber == MINIO_BUCKET_line:

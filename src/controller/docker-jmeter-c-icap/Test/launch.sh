@@ -26,7 +26,7 @@ echo "JVM_ARGS=${JVM_ARGS}"
         -j ${R_DIR}/jmeter.log
 echo "END Running Jmeter on `date`"
 
-#python3 /usr/share/Test/py/upload-jmeter-log.py -l /usr/share/Test/report/jmeter.log -j /usr/share/jmx/jmeter-conf.jmx
+python3 /usr/share/Test/py/upload-jmeter-log.py -l /usr/share/Test/report/jmeter.log -j /usr/share/jmx/jmeter-conf.jmx
 
 while true
 do
