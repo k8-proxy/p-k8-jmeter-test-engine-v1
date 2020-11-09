@@ -4,6 +4,7 @@ import sys, getopt
 import boto3
 import requests
 import time
+import uuid
 from botocore.client import Config
 from botocore.exceptions import ClientError
 
@@ -26,15 +27,16 @@ class Main():
 
     @staticmethod
     def upload_to_minio(file_path):
-        logger.info('Uploading file {}.'.format(file_path))
         try:
-            s3 = boto3.resource('s3', Main.MINIO_URL, Main.MINIO_ACCESS_KEY, Main.MINIO_SECRET_KEY, Config('s3v4'))
+            logger.info('Uploading file {}.'.format(file_path))
+            s3 = boto3.resource('s3', endpoint_url=Main.MINIO_URL, aws_access_key_id=Main.MINIO_ACCESS_KEY,
+                                aws_secret_access_key=Main.MINIO_SECRET_KEY, config=Config(signature_version='s3v4'))
             logger.debug('Checking if the Bucket to upload files exists or not.')
             if (s3.Bucket(Main.MINIO_BUCKET) in s3.buckets.all()) == False:
                 logger.info('Bucket not Found. Creating Bucket.')
                 s3.create_bucket(Bucket=Main.MINIO_BUCKET)
             logger.debug('Uploading file to bucket {} minio {}'.format(Main.MINIO_BUCKET, Main.MINIO_URL))
-            s3.Bucket(Main.MINIO_BUCKET).upload_file(file_path, "jmeter-logs/" + os.path.basename(file_path))
+            s3.Bucket(Main.MINIO_BUCKET).upload_file(file_path, 'jmeter-logs/' + os.getenv('POD_NAME',str(uuid.uuid4())) + '-' + os.path.basename(file_path))
         except Exception as e:
             logger.info("Error {}".format(e))
 
@@ -70,7 +72,7 @@ class Main():
 
     @staticmethod
     def main(argv):
-        helpstring = 'test.py -l <log file path>'
+        helpstring = 'pyton3 upload-jmeter-log.py -l <log file path> -j <jmeter conf file>'
         try:
             opts, args = getopt.getopt(argv,"hl:j:",["help=","log_file_path=","jmx_file_path="])
         except getopt.GetoptError:
