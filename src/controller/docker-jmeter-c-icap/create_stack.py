@@ -34,6 +34,12 @@ class Main():
     influxHost = 'influxdb.influxdb.svc.cluster.local'
     prefix = 'demo'
     icap_server = 'icap02.glasswall-icap.com'
+    requests_memory = '768'
+    requests_cpu = '300'
+    limits_memory = '768'
+    limits_cpu = '500'
+    Xms_value = '512'
+    Xmx_value = '512'
 
     @staticmethod
     def log_level(level):
@@ -70,6 +76,9 @@ class Main():
         if int(Main.users_per_instance) <= 0:
             logger.error("Users per instance must be positive number")
             exit(1)
+        if int(Main.users_per_instance) > 200:
+            logger.error("Users per instance cannot be greater than 200")
+            exit(1)
         if int(Main.duration) <= 0:
             logger.error("Test duration must be positive number")
             exit(1)
@@ -105,8 +114,8 @@ class Main():
             a = uuid.uuid4()
             jmeter_script_name = str(a)
             shutil.copyfile("ICAP-POC_tmpl.jmx",jmeter_script_name)
-            Main.replace_in_file(jmeter_script_name,"\"ThreadGroup.num_threads\">$NO</stringProp>","\"ThreadGroup.num_threads\">"+ Main.users_per_instance +"</stringProp>")
-            Main.replace_in_file(jmeter_script_name,"${__P(p_duration,$NO)}", "${__P(p_duration,"+ Main.duration +")}")
+            Main.replace_in_file(jmeter_script_name,"$number_of_threads$", Main.users_per_instance)
+            Main.replace_in_file(jmeter_script_name,"$duration_in_seconds$", Main.duration)
             Main.replace_in_file(jmeter_script_name,"$minio_endpoint$", Main.minio_url)
             Main.replace_in_file(jmeter_script_name,"$minio_access_key$", Main.minio_access_key)
             Main.replace_in_file(jmeter_script_name,"$minio_secret_key$", Main.minio_secret_key)
@@ -117,6 +126,37 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$prefix$", Main.prefix)
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
             return jmeter_script_name
+        except Exception as e:
+            logger.info(e)
+            exit(1)
+
+    @staticmethod
+    def apply_resource_table():
+        try:
+            if int(Main.users_per_instance) <= 50:
+                Main.requests_memory = '768'
+                Main.requests_cpu = '300'
+                Main.limits_memory = '768'
+                Main.limits_cpu = '500'
+                Main.Xms_value = '512'
+                Main.Xmx_value = '512'
+                return
+            if int(Main.users_per_instance) <= 100:
+                Main.requests_memory = '1280'
+                Main.requests_cpu = '600'
+                Main.limits_memory = '1280'
+                Main.limits_cpu = '1000'
+                Main.Xms_value = '1024'
+                Main.Xmx_value = '1024'
+                return
+            if int(Main.users_per_instance) <= 200:
+                Main.requests_memory = '2304'
+                Main.requests_cpu = '1200'
+                Main.limits_memory = '2304'
+                Main.limits_cpu = '2000'
+                Main.Xms_value = '2048'
+                Main.Xmx_value = '2048'
+                return
         except Exception as e:
             logger.info(e)
             exit(1)
@@ -145,6 +185,14 @@ class Main():
             parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
             logger.info("Number of pods to be created: {}".format(parallelism))
             Main.replace_in_file('job-0.yaml','$parallelism-number', str(parallelism))
+
+            Main.apply_resource_table()
+            Main.replace_in_file('job-0.yaml','$requests_memory$', Main.requests_memory)
+            Main.replace_in_file('job-0.yaml','$requests_cpu$', Main.requests_cpu)
+            Main.replace_in_file('job-0.yaml','$limits_memory$', Main.limits_memory)
+            Main.replace_in_file('job-0.yaml','$limits_cpu$', Main.limits_cpu)
+            Main.replace_in_file('job-0.yaml','$Xms_value$', Main.Xms_value)
+            Main.replace_in_file('job-0.yaml','$Xmx_value$', Main.Xmx_value)
 
             os.system("kubectl create -f job-0.yaml")
 
