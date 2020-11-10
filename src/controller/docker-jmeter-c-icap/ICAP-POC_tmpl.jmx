@@ -18,72 +18,6 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="local" enabled="false">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="icapServer" elementType="Argument">
-            <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">$icap_server$</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="containerUrl" elementType="Argument">
-            <stringProp name="Argument.name">containerUrl</stringProp>
-            <stringProp name="Argument.value">none</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="outputPath" elementType="Argument">
-            <stringProp name="Argument.name">outputPath</stringProp>
-            <stringProp name="Argument.value">none</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="s3bucketName" elementType="Argument">
-            <stringProp name="Argument.name">s3bucketName</stringProp>
-            <stringProp name="Argument.value">none</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="path" elementType="Argument">
-            <stringProp name="Argument.name">path</stringProp>
-            <stringProp name="Argument.value">none</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-        </collectionProp>
-      </Arguments>
-      <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="false">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="icapServer" elementType="Argument">
-            <stringProp name="Argument.name">icapServer</stringProp>
-            <stringProp name="Argument.value">${__P(p_url,$icap_server$)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="containerUrl" elementType="Argument">
-            <stringProp name="Argument.name">containerUrl</stringProp>
-            <stringProp name="Argument.value">http://mycloudstore/container/</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="outputPath" elementType="Argument">
-            <stringProp name="Argument.name">outputPath</stringProp>
-            <stringProp name="Argument.value">/usr/share/Test/output</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="s3bucketName" elementType="Argument">
-            <stringProp name="Argument.name">s3bucketName</stringProp>
-            <stringProp name="Argument.value">${__P(p_bucket,faridpcre)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="path" elementType="Argument">
-            <stringProp name="Argument.name">path</stringProp>
-            <stringProp name="Argument.value">/usr/share/Test/input</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="influxHost" elementType="Argument">
-            <stringProp name="Argument.name">influxHost</stringProp>
-            <stringProp name="Argument.value">${__P(p_influxHost,$influxdb_url$)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,localhost)}</stringProp>
-      </Arguments>
-      <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="icapServer" elementType="Argument">
@@ -113,7 +47,7 @@
           </elementProp>
           <elementProp name="influxHost" elementType="Argument">
             <stringProp name="Argument.name">influxHost</stringProp>
-            <stringProp name="Argument.value">${__P(p_influxHost,localhost)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_influxHost,$influxHost$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="aws_access_key" elementType="Argument">
@@ -152,7 +86,6 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="MINIO Defined Variables" enabled="true">
@@ -183,13 +116,12 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
-        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,$icap_server$)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">True</boolProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${__P(p_vuserCount,$number_of_threads$)}</stringProp>
@@ -529,7 +461,7 @@ log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());</stringProp
           <stringProp name="ActionProcessor.duration">${__Random(2000,10000,)}</stringProp>
         </TestAction>
         <hashTree/>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="${type}_ICAP-Copy to S3 Out" enabled="true">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="${type}_ICAP-Copy to minio Out" enabled="true">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
