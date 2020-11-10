@@ -17,7 +17,7 @@ MESSAGE_INTERVAL = 600
 class Config(object):
     # Load configuration
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
-    load_dotenv(os.path.join(BASEDIR, 'config.env'))
+    load_dotenv(os.path.join(BASEDIR, 'config.env'), override=True)
     try:
         aws_profile_name = os.getenv("AWS_PROFILE_NAME")
         region = os.getenv("REGION")
@@ -78,10 +78,10 @@ def __get_commandline_args():
                         help='Minio output bucket name (default: "output")')
 
     parser.add_argument('--influxdb_url', '-x', default=Config.influxdb_url,
-                        help='Influx DB host (default: "influxdb.influxdb.svc.cluster.local")')
+                        help='Influx DB URL (default: "influxdb.influxdb.svc.cluster.local")')
 
     parser.add_argument('--prefix', '-p', default=Config.prefix,
-                        help='Prefix for Cloudformation stack name (default: "")')
+                        help='Prefix for stack name (default: "")')
 
     parser.add_argument('--icap_server', '-v', default=Config.icap_server,
                         help='ICAP server endpoint URL (default: icap02.glasswall-icap.com)')
