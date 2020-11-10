@@ -212,190 +212,19 @@
 
 // String bumid1  = ${__UUID};
 
- vars.put(&quot;uid&quot;,&quot;${__UUID}&quot;);
+ vars.put(&quot;uid&quot;,&quot;${__UUID()}&quot;);
+ log.info(&quot;UUID is&quot;+uuid)
 </stringProp>
           <stringProp name="BeanShellSampler.filename"></stringProp>
           <stringProp name="BeanShellSampler.parameters"></stringProp>
           <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
         </BeanShellSampler>
         <hashTree/>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Download/upload File to Minio via HTTP request" enabled="false"/>
-        <hashTree>
-          <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${MINIO_URL}</stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path"></stringProp>
-            <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </ConfigTestElement>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get authorization token" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&quot;id&quot;:1,&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;params&quot;:{&quot;username&quot;:&quot;${MINIO_ACCESS_KEY}&quot;,&quot;password&quot;:&quot;${MINIO_SECRET_KEY}&quot;},&quot;method&quot;:&quot;Web.Login&quot;}</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain"></stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/minio/webrpc</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">application/json</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Accept</stringProp>
-                  <stringProp name="Header.value">*/*</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Accept-Encoding</stringProp>
-                  <stringProp name="Header.value">gzip, deflate, br</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
-              <stringProp name="JSONPostProcessor.referenceNames">token</stringProp>
-              <stringProp name="JSONPostProcessor.jsonPathExprs">$..token</stringProp>
-              <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
-              <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
-            </JSONPostProcessor>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Upload File" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain"></stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/minio/upload/${MINIO_BUCKET}/${fileName}</stringProp>
-            <stringProp name="HTTPSampler.method">PUT</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Content-Type</stringProp>
-                  <stringProp name="Header.value">application/pdf</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Accept</stringProp>
-                  <stringProp name="Header.value">*/*</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Accept-Encoding</stringProp>
-                  <stringProp name="Header.value">gzip, deflate, br</stringProp>
-                </elementProp>
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Authorization</stringProp>
-                  <stringProp name="Header.value">Bearer ${token}</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Download File" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain"></stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/minio/download/${MINIO_BUCKET}/${fileName}?token=${token}</stringProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-              <collectionProp name="HeaderManager.headers">
-                <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">Accept</stringProp>
-                  <stringProp name="Header.value">text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</stringProp>
-                </elementProp>
-              </collectionProp>
-            </HeaderManager>
-            <hashTree/>
-          </hashTree>
-        </hashTree>
         <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="${type}_ICAP-MoveFile2inFolder" enabled="true">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">// ********
-// Upload a file to ICAP server 
-//
-// Preconditions:
-// https://github.com/filetrust/program-icap/wiki/Using-the-C-ICAP-Test-Client
-// should be installed in same linux machine as jmeter
-//
-// ********
-import org.apache.jmeter.services.FileServer;
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
- 
-//get path of current jmeter&apos;s script
-String path = FileServer.getFileServer().getBaseDir() + File.separator;
-log.info(&quot;Path: &quot; + path);
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
-log.info(&quot;Coping files from s3 to localdisk&quot;);
-String s3cp=&quot;python3 &quot; + &quot;/usr/share/Test/py/download.py -i ${fileName}&quot;;
-
-// Create a process object and let this object execute the command
-Process s3p = Runtime.getRuntime().exec(s3cp);
-s3p.waitFor();
-log.info(&quot;File copied to in. &quot;+s3cp);
-</stringProp>
-            <stringProp name="scriptLanguage">java</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="download - moving py dependency" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
@@ -407,8 +236,14 @@ import io.minio.ServerSideEncryptionCustomerKey;
 import io.minio.UploadObjectArgs;
 import io.minio.errors.MinioException;
 import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
 import io.minio.DownloadObjectArgs
 import java.io.IOException;
+
+String uuid=vars.get(&quot;uid&quot;);
+
+log.info(&quot;Bucket is &quot; + &quot;${MINIO_BUCKET}&quot;);
+log.info(&quot;Object is &quot; + &quot;${path}/${fileName}&quot;);
 
 try {
       MinioClient minioClient =
@@ -416,28 +251,26 @@ try {
               .endpoint(&quot;${MINIO_URL}&quot;)
               .credentials(&quot;${MINIO_ACCESS_KEY}&quot;, &quot;${MINIO_SECRET_KEY}&quot;)
               .build();
-// Check if the bucket already exists.
-boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-if(isExist) {
-        System.out.println(&quot;Bucket already exists.&quot;);
-      } else {
-        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-      }
-// Download file from the bucket
-//It will download object with specified name into location specified as filename
-String filePath = vars.get(&quot;path&quot;)+&quot;/&quot;+&quot;${fileName}&quot;;
-vars.put(&quot;filePath&quot;, filePath);
-inFileName=vars.get(&quot;inPath&quot;)+&quot;/&quot;+&quot;${fileName}&quot;;
-minioClient.downloadObject(
-       DownloadObjectArgs.builder()
-                .bucket(&quot;${MINIO_BUCKET}&quot;)
-                .object(&quot;${fileName}&quot;)
-                .filename(inFileName)
-                .build());
- log.info(&quot;File is downloaded to in folder &quot;+inFileName);
-          } catch (MinioException e) {
-      System.out.println(&quot;Error occurred: &quot; + e);
-    }
+	// Check if the bucket already exists.
+	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+	if(isExist) {
+	        //System.out.println(&quot;Bucket already exists.&quot;);
+	      } else {
+	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+	      }
+	// Download file from the bucket
+	//It will download object with specified name into location specified as filename
+	inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+	minioClient.downloadObject(
+	       DownloadObjectArgs.builder()
+	                .bucket(&quot;${MINIO_BUCKET}&quot;)
+	                .object(&quot;${path}/${fileName}&quot;)
+	                .filename(inFileName)
+	                .build());
+	log.info(&quot;File is downloaded to in folder &quot;+inFileName);
+     } catch (MinioException e) {
+		 System.out.println(&quot;Error occurred: &quot; + e);
+		}
 
 </stringProp>
           </JSR223Sampler>
@@ -479,12 +312,12 @@ log.info(&quot;File copied to in. &quot;+s3cp);*/
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
 String command1 = &quot;/usr/local/c-icap/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
-String command2=&quot; -f ${inPath}/${fileName} -o ${outputPath}/&quot;+uuid+&quot;_${fileName} -v&quot;;
+String command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} -v&quot;;
 String command=command1+command2;
 // Print the generated status check command
-log.info(&quot;Command 1 is &quot;+command1);
-log.info(&quot;Command 2 is &quot;+command2);
-log.info(&quot;Full command is &quot;+command);
+//log.info(&quot;Command 1 is &quot;+command1);
+//log.info(&quot;Command 2 is &quot;+command2);
+log.info(&quot;The command is &quot;+command);
 
 // Create a process object and let this object execute the icap client command
 Process p = Runtime.getRuntime().exec(command);
@@ -696,41 +529,6 @@ log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());</stringProp
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="false">
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="script">// ********
-// Upload a file to ICAP server 
-//
-// Preconditions:
-// https://github.com/filetrust/program-icap/wiki/Using-the-C-ICAP-Test-Client
-// should be installed in same linux machine as jmeter
-//
-// ********
-
-import org.apache.jmeter.services.FileServer;
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
- 
-//get path of current jmeter&apos;s script
-String path = FileServer.getFileServer().getBaseDir() + File.separator;
-log.info(&quot;Path: &quot; + path);
-
-String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
-log.info(&quot;Coping files from s3 to Minio&quot;);
-String s3cp=&quot;python3 &quot; + &quot;/usr/share/Test/py/upload.py -i &quot; + uuid + &quot;_${fileName}&quot;;
-
-// Create a process object and let this object execute the command
-Process s3p = Runtime.getRuntime().exec(s3cp);
-s3p.waitFor();
-log.info(&quot;File copied to in. &quot;+s3cp);
-</stringProp>
-            <stringProp name="scriptLanguage">java</stringProp>
-          </JSR223Sampler>
-          <hashTree/>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="upload - moving py dependecy" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
@@ -742,8 +540,11 @@ import io.minio.ServerSideEncryptionCustomerKey;
 import io.minio.UploadObjectArgs;
 import io.minio.errors.MinioException;
 import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
 import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
+
+String uuid=vars.get(&quot;uid&quot;);
 
 try {
       MinioClient minioClient =
@@ -751,19 +552,24 @@ try {
               .endpoint(&quot;${MINIO_URL}&quot;)
               .credentials(&quot;${MINIO_ACCESS_KEY}&quot;, &quot;${MINIO_SECRET_KEY}&quot;)
               .build();
-// Check if the bucket already exists.
-boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-if(isExist) {
-        System.out.println(&quot;Bucket already exists.&quot;);
-      } else {
-        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-}
+	// Check if the bucket already exists.
+	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
+	if(isExist) {
+	        //System.out.println(&quot;Bucket already exists.&quot;);
+	      } else {
+	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
+	}
+	
+	// Upload file to the bucket with putObject
+	String name = uuid + &quot;_${fileName}&quot;;
+	String filePath = &quot;${outputPath}/&quot; + name;
+	
+	vars.put(&quot;filePath&quot;, filePath);
+	log.info(&quot;Minio bucket is &quot;+&quot;${MINIO_BUCKET_OUTPUT}&quot;);
+	log.info(&quot;file name is &quot;+name);
+	log.info(&quot;file path is &quot;+filePath);
 
-// Upload file to the bucket with putObject
-String filePath = &quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;
-log.info(&quot;Out Filename is &quot;+filePath);
-vars.put(&quot;filePath&quot;, filePath)
-minioClient.putObject(&quot;${MINIO_BUCKET}&quot;,&quot;${fileName}&quot;,&quot;${filePath}&quot;,null);
+	minioClient.putObject(&quot;${MINIO_BUCKET_OUTPUT}&quot;,&quot;icap-processed/&quot; + name,filePath,null);
     } catch(MinioException e) {
       System.out.println(&quot;Error occurred: &quot; + e);
     }</stringProp>
@@ -793,11 +599,11 @@ log.info(&quot;UUID is &quot;+uuid);
 log.info(&quot;Cleaning file from out folder &quot;);
 
 //clean in folder
-String removeInFile=&quot;rm -Rf &quot;+&quot;${path}&quot;+&quot;/&quot;+&quot;${fileName}&quot;;
+String removeInFile=&quot;rm -Rf &quot;+&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
 s3p_out = Runtime.getRuntime().exec(removeInFile);
 s3p_out.waitFor();
 
-log.info(&quot;${path}&quot;+&quot;/&quot;+&quot;${fileName}&quot;+&quot; file deleted from the input folder &quot;);
+log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&quot; file deleted from the input folder &quot;);
 
 //clean out folder
 String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
@@ -810,7 +616,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">true</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -848,7 +654,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Server Status Check" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Server Status Check" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -882,7 +688,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-server-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;);    // for unix
+String command = &quot;/usr/local/c-icap/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;);    // for unix
 
 // Print the generated status check command
 log.info(command);
@@ -937,7 +743,7 @@ log.info(&quot;Server Status check Output: &quot; + logCommandOutput.toString())
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-Resource-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
+String command = &quot;/usr/local/c-icap/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
 
 // Print the generated status check command
 log.info(command);

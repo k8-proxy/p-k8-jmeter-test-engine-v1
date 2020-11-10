@@ -1,0 +1,5 @@
+id,filename,path,size,type,isMalicious,original_hash,rebuild_hash,date_created,virus_total_status,gw_rebuild_xml_status,gw_rebuild_file_status
+1,test1.pdf,,3976877 bytes,pdf,False,0bbd5f35d11c3d4e51a65324db275136f268c984,dec8c9e5d88af8ae45df3cbe5fbe79539da81062,2020-10-23 16:53:03.958071,False,True,True
+2,test2.pdf,,10635049 bytes,pdf,False,911a9f9ce8b5f841bd8b34046b4d416fdf479a68,78825a611a7ec20e5993b61d2f2e971f15618f6f,2020-10-23 16:54:22.447015,False,True,True
+3,test3.pdf,,146367 bytes,pdf,False,00a7d42760521e1d50eecf531a1b9c186ba43d2a,6495cbbea392b5b7949a4b8a7cddd606728df36f,2020-10-23 16:54:51.634331,False,True,True
+4,test4.pdf,,380695 bytes,pdf,False,7002d8b5b87f98fd87d7b01192852519d0a21ff0,26f75bc7550f8dc11d6fa11615cc199134572208,2020-10-23 16:55:38.842841,False,True,True
