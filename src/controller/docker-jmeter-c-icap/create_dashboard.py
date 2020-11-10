@@ -76,8 +76,3 @@ def main(config):
     if created_dashboard_url:
         print("Dashboard created at: ")
         print(created_dashboard_url)
-
-
-# main: Gets command line arguments, creates dashboard in grafana, outputs URL in response (if any)
-if __name__ == '__main__':
-    main(Config)
