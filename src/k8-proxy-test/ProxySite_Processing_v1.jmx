@@ -12,10 +12,81 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-        <stringProp name="filename">test.csv</stringProp>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="icapServer" elementType="Argument">
+            <stringProp name="Argument.name">icapServer</stringProp>
+            <stringProp name="Argument.value">${__P(p_url,gw-icap01.westeurope.azurecontainer.io)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="containerUrl" elementType="Argument">
+            <stringProp name="Argument.name">containerUrl</stringProp>
+            <stringProp name="Argument.value">http://mycloudstore/container/</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="outputPath" elementType="Argument">
+            <stringProp name="Argument.name">outputPath</stringProp>
+            <stringProp name="Argument.value">out</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="s3bucketName" elementType="Argument">
+            <stringProp name="Argument.name">s3bucketName</stringProp>
+            <stringProp name="Argument.value">${__P(p_bucket,aws-testengine-s3)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="inPath" elementType="Argument">
+            <stringProp name="Argument.name">inPath</stringProp>
+            <stringProp name="Argument.value">in</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="influxHost" elementType="Argument">
+            <stringProp name="Argument.name">influxHost</stringProp>
+            <stringProp name="Argument.value">${__P(p_influxHost,localhost)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="aws_access_key" elementType="Argument">
+            <stringProp name="Argument.name">aws_access_key</stringProp>
+            <stringProp name="Argument.value">${__P(p_aws_access_key,access_key)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="aws_secret_key" elementType="Argument">
+            <stringProp name="Argument.name">aws_secret_key</stringProp>
+            <stringProp name="Argument.value">${__P(p_aws_secret_key,secret)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="aws_host" elementType="Argument">
+            <stringProp name="Argument.name">aws_host</stringProp>
+            <stringProp name="Argument.value">${__P(p_aws_host,s3)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="aws_service_name" elementType="Argument">
+            <stringProp name="Argument.name">aws_service_name</stringProp>
+            <stringProp name="Argument.value">${__P(p_aws_service_name,s3)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="aws_region" elementType="Argument">
+            <stringProp name="Argument.name">aws_region</stringProp>
+            <stringProp name="Argument.value">${__P(p_aws_region,eu-west-1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="prefix" elementType="Argument">
+            <stringProp name="Argument.name">prefix</stringProp>
+            <stringProp name="Argument.value">${__P(p_prefix,demo)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="filetype" elementType="Argument">
+            <stringProp name="Argument.name">filetype</stringProp>
+            <stringProp name="Argument.value">${__P(p_filetype,files)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,gw-icap01.westeurope.azurecontainer.io)} ${__P(p_influxHost,localhost)}</stringProp>
+      </Arguments>
+      <hashTree/>
+      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="FileList" enabled="true">
+        <stringProp name="filename">${filetype}</stringProp>
         <stringProp name="fileEncoding">UTF-8</stringProp>
-        <stringProp name="variableNames">url,filePath</stringProp>
+        <stringProp name="variableNames">url,filePath,type</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
         <stringProp name="delimiter">,</stringProp>
         <boolProp name="quotedData">false</boolProp>
@@ -38,7 +109,7 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="FileProcess" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="{type}_FileProcess" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -126,7 +197,7 @@
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
-        <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="false">
+        <BackendListener guiclass="BackendListenerGui" testclass="BackendListener" testname="Backend Listener" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="influxdbMetricsSender" elementType="Argument">
@@ -136,7 +207,7 @@
               </elementProp>
               <elementProp name="influxdbUrl" elementType="Argument">
                 <stringProp name="Argument.name">influxdbUrl</stringProp>
-                <stringProp name="Argument.value">http://influxdb.influxdb.svc.cluster.local:8086/write?db=proxysite</stringProp>
+                <stringProp name="Argument.value">http://${influxHost}:8086/write?db=jmeter</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="application" elementType="Argument">
@@ -146,17 +217,17 @@
               </elementProp>
               <elementProp name="measurement" elementType="Argument">
                 <stringProp name="Argument.name">measurement</stringProp>
-                <stringProp name="Argument.value">proxysite_m</stringProp>
+                <stringProp name="Argument.value">${prefix}_jmeterproxysite</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="summaryOnly" elementType="Argument">
                 <stringProp name="Argument.name">summaryOnly</stringProp>
-                <stringProp name="Argument.value">true</stringProp>
+                <stringProp name="Argument.value">false</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="samplersRegex" elementType="Argument">
                 <stringProp name="Argument.name">samplersRegex</stringProp>
-                <stringProp name="Argument.value">.*</stringProp>
+                <stringProp name="Argument.value">.*FileProcess</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="percentiles" elementType="Argument">
