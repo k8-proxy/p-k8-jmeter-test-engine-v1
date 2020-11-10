@@ -29,28 +29,13 @@ spec:
         image: ggrig/jmeter-c-icap:3.03
         resources:
           requests:
-            memory: "768Mi"
-            cpu: "300m"
+            memory: "$requests_memory$Mi"
+            cpu: "$requests_cpu$m"
           limits:
-            memory: "768Mi"
-            cpu: "500m"
+            memory: "$limits_memory$Mi"
+            cpu: "$limits_cpu$m"
         imagePullPolicy: IfNotPresent
         env:
-          # Source Minio Infromation
-          #- name: TARGET_MINIO_URL
-          #  value: "http://minio.minio.svc.cluster.local:9000"
-          #- name: TARGET_MINIO_ACCESS_KEY
-          #  valueFrom:
-          #    secretKeyRef:
-          #      name: minio-creds-secret
-          #      key: accesskey
-          #- name: TARGET_MINIO_SECRET_KEY
-          #  valueFrom:
-          #    secretKeyRef:
-          #      name: minio-creds-secret
-          #      key: secretkey
-          #- name: TARGET_MINIO_BUCKET
-          #  value: output
           # Log Level (Default to Info)
           - name: LOG_LEVEL
             value: info
@@ -77,7 +62,7 @@ spec:
                 fieldPath: spec.serviceAccountName
           # JVM
           - name: JVM_ARGS
-            value: "-Xms512m -Xmx512m"
+            value: "-Xms$Xms_value$m -Xmx$Xmx_value$m"
         #env:
         #workingDir: /mnt/workspace
         #command: [ "/bin/sh", "-c", "/mnt/workspace/jmeter.sh" ]
