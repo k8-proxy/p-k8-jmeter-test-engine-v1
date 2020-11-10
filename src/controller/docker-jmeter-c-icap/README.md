@@ -101,6 +101,30 @@ ICAP server URL. The default value is 'icap02.glasswall-icap.com'
 </td>
 </tr>
 </table>
+The `--users_per_instance` parameter also defines the PODs' CPU and RAM.
+The resources to be allocated are based on the following table:
+<table>
+<tr>
+<td> Users per instance </td>
+<td> RAM size </td>
+<td> CPU </td>
+</tr>
+<tr>
+<td> 0 < n <= 50 </td>
+<td> 768Mi </td>
+<td> 500m </td>
+</tr>
+<tr>
+<td> 50 < n <= 100 </td>
+<td> 1280Mi </td>
+<td> 1000m </td>
+</tr>
+<tr>
+<td> 100 < n <= 200 </td>
+<td> 2304Mi </td>
+<td> 2000m </td>
+</tr>
+</table>
 
 ## Test termination
 To stop the test and release the resources run the following command
