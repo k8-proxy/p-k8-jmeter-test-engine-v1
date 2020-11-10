@@ -2,7 +2,6 @@ import os
 from argparse import ArgumentParser
 import time
 from datetime import timedelta, datetime, timezone
-from math import ceil
 import delete_stack
 import create_stack
 import create_dashboard
@@ -154,7 +153,7 @@ def main(config):
         print("Dashboard will not be created")
     else:
         print("Creating dashboard...")
-        create_dashboard.create_dashboard(config)
+        create_dashboard.main(config)
 
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
