@@ -26,10 +26,10 @@ RUN wget http://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_V
 # ENV PATH $PATH:${JMETER_BIN}
 ENV HEAP="-Xms1g -Xmx1g -XX:MaxMetaspaceSize=256m"
 COPY ./Test /usr/share/Test/
-COPY Proxy_Test.jmx ${TEST_SCRIPT_FILE}
-COPY test.csv ${URL_SOURCE}
+COPY ProxySite_Processing_v1.jmx ${TEST_SCRIPT_FILE}
+COPY proxyfiles.csv ${URL_SOURCE}
 
-RUN chmod -R 0777 /Test/test.csv
+RUN chmod -R 0777 /Test/proxyfiles.csv
 RUN chmod +x ${TEST_SCRIPT_FILE}
 RUN chmod +x /usr/share/Test/launch.sh
 
