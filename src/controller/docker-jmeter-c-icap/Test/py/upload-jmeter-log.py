@@ -92,8 +92,8 @@ class Main():
         logger.info(Main.jmx_file_path)
         Main.get_mino_credentials()
         logger.info(Main.MINIO_URL)
-        logger.info(Main.MINIO_ACCESS_KEY)
-        logger.info(Main.MINIO_SECRET_KEY)
+        #logger.info(Main.MINIO_ACCESS_KEY)
+        #logger.info(Main.MINIO_SECRET_KEY)
         logger.info(Main.MINIO_BUCKET)
         Main.upload_to_minio(Main.log_file_path)
 
