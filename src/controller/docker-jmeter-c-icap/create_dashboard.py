@@ -58,7 +58,7 @@ def __post_grafana_dash(config):
 
     # perform the Kubernetes port forwarding to allow Grafana to be accessed via localhost
 
-    # __run_kubectl_port_forward()
+    __run_kubectl_port_forward()
 
     # post Grafana request to kubernetes pod
     resp = requests.post(grafana_api_url, json=grafana_json, headers=headers)
