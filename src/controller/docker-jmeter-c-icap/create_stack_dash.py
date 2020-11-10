@@ -108,36 +108,9 @@ def __get_commandline_args():
     return parser.parse_args()
 
 
-# Calculates number of instances required, used with create_stack and create_dashboard for displaying that info
-def __calculate_instances_required(total_users, users_per_instance):
-    # calculate number of instances required
-    instances_required = ceil(total_users / users_per_instance)
-    if total_users <= users_per_instance:
-        instances_required = 1
-        users_per_instance = total_users
-    else:
-        i = 0
-        while i < 5:
-            if total_users % users_per_instance == 0:
-                instances_required = int(total_users / users_per_instance)
-                break
-            else:
-                if total_users % instances_required == 0:
-                    users_per_instance = int(total_users / instances_required)
-                else:
-                    instances_required += 1
-            i += 1
-
-        if instances_required * users_per_instance != total_users:
-            print("Please provide total_users in multiples of users_per_instance.")
-            exit(0)
-
-    return instances_required, users_per_instance
-
-
 # Starts the process of calling delete_stack after duration. Starts timer and displays messages updating users on status
 def __start_delete_stack(additional_delay, config):
-    duration = Config.duration
+    duration = config.duration
     total_wait_time = additional_delay + int(duration)
     minutes = total_wait_time / 60
     finish_time = datetime.now(timezone.utc) + timedelta(seconds=total_wait_time)
@@ -153,18 +126,6 @@ def __start_delete_stack(additional_delay, config):
         time.sleep(MESSAGE_INTERVAL)
 
     delete_stack.Main.main(argv=None)
-
-
-def __get_stack_name(config):
-    now = datetime.now()
-    prefix = config.prefix
-    date_suffix = now.strftime("%Y-%m-%d-%H-%M")
-    if config.stack_name:
-        created_stack_name = prefix + '-' + str(config.stack_name)
-    else:
-        created_stack_name = prefix + '-aws-jmeter-test-engine-' + date_suffix
-
-    return created_stack_name
 
 
 # creates a list of args to be passed to create_stack from Config (i.e. config.env or command line args)
@@ -193,7 +154,7 @@ def main(config):
         print("Dashboard will not be created")
     else:
         print("Creating dashboard...")
-        create_dashboard.main(config)
+        create_dashboard.create_dashboard(config)
 
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
@@ -205,11 +166,9 @@ if __name__ == "__main__":
     args = __get_commandline_args()
 
     # Get all argument values from Config.env file. Any command line args input manually will override config.env args.
-
     Config.total_users = int(args.total_users)
     Config.users_per_instance = int(args.users_per_instance)
-    Config.instances_required, Config.users_per_instance = __calculate_instances_required(Config.total_users,
-                                                                                          Config.users_per_instance)
+    Config.users_per_instance = args.users_per_instance
     Config.duration = args.duration
     Config.file_list = args.file_list
     Config.minio_url = args.minio_url
