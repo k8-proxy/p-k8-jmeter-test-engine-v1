@@ -1,29 +1,35 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: efs-sc-influx
+provisioner: efs.csi.aws.com
+
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: influxdb-pv-volume
-  labels:
-    type: local
+  name: efs-pv-influx
 spec:
-  storageClassName: manual
   capacity:
     storage: 10Gi
+  volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/data"
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc-influx
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: {{  .Values.minio.pv.ebs_volume_id }}
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: influxdb-pvc
+  name: efs-claim-influx
 spec:
-  storageClassName: manual
   accessModes:
-    - "ReadWriteOnce"
+    - ReadWriteMany
+  storageClassName: efs-sc-influx
   resources:
     requests:
-      storage: "10Gi"
-
-
+      storage: 10Gi
