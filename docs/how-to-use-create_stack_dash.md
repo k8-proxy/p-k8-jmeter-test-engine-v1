@@ -27,7 +27,7 @@ pip install requests
 pip install python-dotenv
 ```
 
-3. Set AWS authentication for the Cloudformation stack that will be created. This can be done by configuring AWS on the machine running the script using this script. Make sure AWS CLI is installed on the machine and that a user exists with an AWS access key (can be created under IAM, Security Credentials in the AWS console), then run the following commands:
+3. Set AWS authentication if using AWS Secrets Manager to store keys. This can be done by configuring AWS on the machine running the script using this script. Make sure AWS CLI is installed on the machine and that a user exists with an AWS access key (can be created under IAM, Security Credentials in the AWS console), then run the following commands:
 
 ```
 aws configure
@@ -38,20 +38,17 @@ Prompts will appear asking for the following information:
 ```
 AWS Access Key ID:
 AWS Secret Access Key:
-Default region name [eu-west-1]:
+Default region name:
 Default output format [None]:
 ```
 
 Input the correct values; the last prompt can be left at default by pressing enter and skipping input.
 
-Once configured, the AWS credentials and config files can be found in the AWS folder located in "~/.aws/" on linux systems or "%USERPROFILE%\\.aws" in Windows systems. At the top of the config folder a profile name in brackets should be present (ex: [default], here "default" will be the profile name to use in the config.env file discussed in the next step).
+Once configured, the AWS credentials and config files can be found in the AWS folder located in "~/.aws/" on linux systems or "%USERPROFILE%\\.aws" on Windows systems. At the top of the config folder a profile name in brackets should be present (ex: [default], here "default" will be the profile name to use in the config.env file discussed in the next step).
 
 4. Update the config.env file with the AWS profile information.
 
-Create config.env file by copying the existing config.env.sample file. Update the file with the following details:
-
-- aws_profile_name - The AWS profile created in step 3.
-- bucket - Bucket name where a file with number of instances will be created.
+Create config.env file by copying the existing config.env.sample file. Update the file with the AWS profile name and region
 
 ## Using config.env to pass parameters to create_stack_dash.py
 
@@ -77,6 +74,7 @@ GRAFANA_KEY=
 GRAFANA_FILE=grafana_template.json
 EXCLUDE_DASHBOARD=0
 PRESERVE_STACK=0
+GRAFANA_SECRET=MyGrafanaSecretName
 ```
 
 These parameters have corresponding options that can be used during script execution, they do not have to be set in config.env. Many of the parameters above are also optional, they can be omitted. Any options input manually via the command line will override options within the config.env file. For example, if the config.env file is set to allow dashboard creation:
@@ -190,7 +188,7 @@ This takes the tag of the server containing the Grafana database; this server wi
 </td>
 </tr>
 <tr>
-<td>--grafana_secret_id, -gsid</td>
+<td>--grafana_secret, -gs</td>
 <td>
 The secret name of the Grafana API Key inside AWS Secrets Manager. This will be used to retrieve the key for use when generating Grafana dashboards. (Note: The --grafana_key option will prevent this option from taking effect; a user directly providing a key would negate the need for a key lookup).
 </td>
