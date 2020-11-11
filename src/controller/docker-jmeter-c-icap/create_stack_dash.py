@@ -24,7 +24,7 @@ class Config(object):
         total_users = int(os.getenv("TOTAL_USERS"))
         users_per_instance = int(os.getenv("USERS_PER_INSTANCE"))
         duration = os.getenv("DURATION")
-        file_list = os.getenv("FILE_LIST")
+        list = os.getenv("FILE_LIST")
         minio_url = os.getenv("MINIO_URL")
         minio_access_key = os.getenv("MINIO_ACCESS_KEY")
         minio_secret_key = os.getenv("MINIO_SECRET_KEY")
@@ -59,7 +59,7 @@ def __get_commandline_args():
     parser.add_argument('--duration', '-d', default=Config.duration,
                         help='duration of test (default: 60)')
 
-    parser.add_argument('--file_list', '-l', default=Config.file_list,
+    parser.add_argument('--list', '-l', default=Config.list,
                         help='Path to file list')
 
     parser.add_argument('--minio_url', '-m', default=Config.minio_url,
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     Config.users_per_instance = int(args.users_per_instance)
     Config.users_per_instance = args.users_per_instance
     Config.duration = args.duration
-    Config.file_list = args.file_list
+    Config.list = args.list
     Config.minio_url = args.minio_url
     Config.minio_access_key = args.minio_access_key
     Config.minio_input_bucket = args.minio_input_bucket
