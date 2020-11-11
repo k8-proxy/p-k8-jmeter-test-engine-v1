@@ -16,8 +16,7 @@ MESSAGE_INTERVAL = 600
 
 class Config(object):
     # Load configuration
-    BASEDIR = os.path.abspath(os.path.dirname(__file__))
-    load_dotenv(os.path.join(BASEDIR, 'config.env'), override=True)
+    load_dotenv(dotenv_path="./config.env")
     try:
         aws_profile_name = os.getenv("AWS_PROFILE_NAME")
         region = os.getenv("REGION")
