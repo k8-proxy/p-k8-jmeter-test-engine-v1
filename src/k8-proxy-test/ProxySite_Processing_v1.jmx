@@ -76,7 +76,7 @@
           </elementProp>
           <elementProp name="filetype" elementType="Argument">
             <stringProp name="Argument.name">filetype</stringProp>
-            <stringProp name="Argument.value">${__P(p_filetype,proxyfiles)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_filetype,/usr/share/Test/data/files)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
