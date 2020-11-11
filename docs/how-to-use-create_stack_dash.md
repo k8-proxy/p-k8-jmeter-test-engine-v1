@@ -72,6 +72,7 @@ MINIO_OUTPUT_BUCKET=output
 INFLUXDB_URL=http://influxdb.local:8086
 PREFIX=demo
 ICAP_SERVER=
+GRAFANA_URL=
 GRAFANA_KEY=
 GRAFANA_FILE=grafana_template.json
 EXCLUDE_DASHBOARD=0
@@ -174,6 +175,12 @@ Prefix for stack name (default: "")
 <td> --icap_server, -v </td>
 <td>
 ICAP server endpoint URL
+</td>
+</tr>
+<tr>
+<td> --grafana_url, -g </td>
+<td>
+The URL to the Grafana database's home page (typically this would be the "MachineIP:3000")
 </td>
 </tr>
 <tr>
