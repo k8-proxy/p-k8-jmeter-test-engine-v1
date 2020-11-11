@@ -213,7 +213,7 @@ try {
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="${type}_ICAP-Document-Upload" enabled="true">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="${type}_ICAP-Document-Process" enabled="true">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
@@ -591,7 +591,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Server Status Check" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Server Status Check" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
