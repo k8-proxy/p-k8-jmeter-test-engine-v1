@@ -33,6 +33,7 @@ class Config(object):
         influxdb_url = os.getenv("INFLUXDB_URL")
         prefix = os.getenv("PREFIX")
         icap_server = os.getenv("ICAP_SERVER")
+        grafana_url = os.getenv("GRAFANA_URL")
         grafana_key = os.getenv("GRAFANA_KEY")
         grafana_file = os.getenv("GRAFANA_FILE")
         grafana_secret_id = os.getenv("GRAFANA_SECRET_ID")
@@ -85,6 +86,11 @@ def __get_commandline_args():
 
     parser.add_argument('--icap_server', '-v', default=Config.icap_server,
                         help='ICAP server endpoint URL (default: icap02.glasswall-icap.com)')
+
+    parser.add_argument('--grafana_url', '-gu',
+                        type=str,
+                        help='URL to Grafana instance',
+                        default=Config.grafana_url)
 
     parser.add_argument('--grafana_key', '-k',
                         type=str,
@@ -178,6 +184,7 @@ if __name__ == "__main__":
     Config.influxdb_url = args.influxdb_url
     Config.prefix = args.prefix
     Config.icap_server = args.icap_server
+    Config.grafana_url = args.grafana_url
     Config.grafana_file = args.grafana_file
     Config.grafana_key = args.grafana_key
     Config.grafana_secret_id = args.grafana_secret_id
