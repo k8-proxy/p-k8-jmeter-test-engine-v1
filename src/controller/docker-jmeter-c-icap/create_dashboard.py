@@ -27,22 +27,18 @@ def __modify_dashboard_info_bar(grafana_json, total_users, duration, endpoint_ur
                              % (endpoint_url, total_users, duration)
 
 
-# Used for port forwarding to appropriate Kubernetes pod in cluster, listens on any local address (0.0.0.0)
-def __run_kubectl_port_forward():
-    args = ['kubectl', 'port-forward', '--address', "0.0.0.0", '-n', "common", '-r', "grafana-service", '3000:80']
-
-    run(args)
-
-
 # responsible for posting the dashboard to Grafana and returning the URL to it
 def __post_grafana_dash(config):
     grafana_api_key = config.grafana_key
     grafana_template = config.grafana_file
     prefix = config.prefix
-    grafana_url = "http://localhost:3000/"
+    grafana_url = config.grafana_url
     total_users = config.total_users
     duration = config.duration
     icap_server = config.icap_server
+
+    if grafana_url[len(grafana_url) - 1] != '/':
+        grafana_url += '/'
 
     grafana_api_url = grafana_url + 'api/dashboards/db'
 
@@ -55,10 +51,6 @@ def __post_grafana_dash(config):
         grafana_json = json.load(json_file)
         __add_prefix_to_grafana_json(grafana_json, prefix)
         __modify_dashboard_info_bar(grafana_json, total_users, duration, icap_server)
-
-    # perform the Kubernetes port forwarding to allow Grafana to be accessed via localhost
-
-    __run_kubectl_port_forward()
 
     # post Grafana request to kubernetes pod
     resp = requests.post(grafana_api_url, json=grafana_json, headers=headers)
