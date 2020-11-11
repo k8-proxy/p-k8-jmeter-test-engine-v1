@@ -140,7 +140,7 @@ def get_create_stack_args_list(config):
         if not key.startswith('__') and key in options:
             if config.__dict__[key]:
                 args_list.append('--{0}'.format(key))
-                args_list.append(config.__dict__[key])
+                args_list.append(str(config.__dict__[key]))
 
     return args_list
 
