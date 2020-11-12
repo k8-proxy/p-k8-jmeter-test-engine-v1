@@ -39,6 +39,8 @@ def __post_grafana_dash(config):
 
     if grafana_url[len(grafana_url) - 1] != '/':
         grafana_url += '/'
+    if not grafana_url.startswith("http"):
+        grafana_url = "http://" + grafana_url
 
     grafana_api_url = grafana_url + 'api/dashboards/db'
 
@@ -51,7 +53,6 @@ def __post_grafana_dash(config):
         grafana_json = json.load(json_file)
         __add_prefix_to_grafana_json(grafana_json, prefix)
         __modify_dashboard_info_bar(grafana_json, total_users, duration, icap_server)
-
     # post Grafana request to kubernetes pod
     resp = requests.post(grafana_api_url, json=grafana_json, headers=headers)
     d = eval(resp.text)
