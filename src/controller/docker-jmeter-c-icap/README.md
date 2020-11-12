@@ -129,5 +129,5 @@ The resources to be allocated are based on the following table:
 ## Test termination
 To stop the test and release the resources run the following command
 ```
-    python3 delete_stack.py
+    python3 delete_stack.py --prefix <job prefix>
 ```
