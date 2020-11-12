@@ -90,7 +90,7 @@ class Main():
     @staticmethod
     def stop_jmeter_jobs():
         try:
-            os.system("kubectl delete --ignore-not-found jobs -l jobgroup=jmeter")
+            os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
             os.system("kubectl delete --ignore-not-found secret jmeterconf")
             os.system("kubectl delete --ignore-not-found secret filesconf")
         except Exception as e:
@@ -180,7 +180,6 @@ class Main():
                 os.remove('job-0.yaml')
 
             shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
-            Main.replace_in_file('job-0.yaml','jmeterjob-$NO', 'jmeterjob-0')
 
             parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
             logger.info("Number of pods to be created: {}".format(parallelism))
@@ -193,6 +192,8 @@ class Main():
             Main.replace_in_file('job-0.yaml','$limits_cpu$', Main.limits_cpu)
             Main.replace_in_file('job-0.yaml','$Xms_value$', Main.Xms_value)
             Main.replace_in_file('job-0.yaml','$Xmx_value$', Main.Xmx_value)
+
+            Main.replace_in_file('job-0.yaml','$prefix$', Main.prefix)
 
             os.system("kubectl create -f job-0.yaml")
 
@@ -250,8 +251,8 @@ class Main():
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
         logger.info(Main.minio_url)
-        logger.info(Main.minio_access_key)
-        logger.info(Main.minio_secret_key)
+        #logger.info(Main.minio_access_key)
+        #logger.info(Main.minio_secret_key)
         logger.info(Main.minio_input_bucket)
         logger.info(Main.minio_output_bucket)
 

@@ -1,18 +1,18 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: jmeterjob-$NO
+  name: $prefix$-jmeterjob
   labels:
     env: test
-    jobgroup: jmeter
+    jobgroup: $prefix$-jmeter
 spec:
   parallelism: $parallelism-number
   ttlSecondsAfterFinished: 60
   template:
     metadata:
-      name: jmeter
+      name: $prefix$-jmeter
       labels:
-        jobgroup: jmeter  
+        jobgroup: $prefix$-jmeter
     spec:
       #hostAliases:
       #  - ip: "192.168.1.4"
