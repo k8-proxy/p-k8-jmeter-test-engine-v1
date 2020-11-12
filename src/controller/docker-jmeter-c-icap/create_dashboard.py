@@ -18,6 +18,14 @@ def __add_prefix_to_grafana_json(grafana_json, prefix):
                             k['measurement'] = prefix + '_' + k['measurement']
 
 
+def __add_prefix_to_grafana_loki_source_job(grafana_json, prefix):
+    if 'panels' in grafana_json["dashboard"]:
+        for i in grafana_json["dashboard"]['panels']:
+            if i['datasource'] == 'Loki':
+                for j in i['targets']:
+                    j['expr'] = '{job="' + prefix + '_' + 'jmeter"}'
+
+
 # Modifies green info bar at the top of dashboard to display info on current test run
 def __modify_dashboard_info_bar(grafana_json, total_users, duration, endpoint_url):
     if "options" in grafana_json["dashboard"]['panels'][0]:
@@ -52,6 +60,7 @@ def __post_grafana_dash(config):
     with open(grafana_template) as json_file:
         grafana_json = json.load(json_file)
         __add_prefix_to_grafana_json(grafana_json, prefix)
+        __add_prefix_to_grafana_loki_source_job(grafana_json, prefix)
         __modify_dashboard_info_bar(grafana_json, total_users, duration, icap_server)
     # post Grafana request to kubernetes pod
     resp = requests.post(grafana_api_url, json=grafana_json, headers=headers)
