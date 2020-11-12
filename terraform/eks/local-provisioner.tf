@@ -123,7 +123,7 @@ resource "null_resource" "prometheus" {
 resource "null_resource" "promtail" {
 
   depends_on = [
-    null_resource.loki
+    null_resource.prometheus
   ]
 
   provisioner "local-exec" {
@@ -131,4 +131,3 @@ resource "null_resource" "promtail" {
     interpreter = var.cluster_interpreter
   }
 }
-
