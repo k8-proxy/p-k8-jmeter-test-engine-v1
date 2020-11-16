@@ -120,3 +120,4 @@ jobs:
           helm repo add loki https://grafana.github.io/loki/charts
           helm repo update
           helm upgrade --install loki --namespace=loki-stack loki/loki-stack
+          helm upgrade --install promtail --namespace=loki-stack loki/promtail --set "loki.serviceName=loki"

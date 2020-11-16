@@ -45,6 +45,9 @@ Set below environment variables with the values you like, in the terminal before
     helm repo update
     helm upgrade --install loki --namespace=loki-stack loki/loki-stack
 
+### Deploy Promtail (can be done only after Loki deployment)
+
+    helm upgrade --install promtail --namespace=loki-stack loki/promtail --set "loki.serviceName=loki"
 
 ## Setup connection to k8s cluster in Github repo to deploy using Github Actions
 
