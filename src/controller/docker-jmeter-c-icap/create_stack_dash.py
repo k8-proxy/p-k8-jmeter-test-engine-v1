@@ -152,20 +152,20 @@ def get_create_stack_args_list(config):
 
 
 def main(config):
-    # args_list = get_create_stack_args_list(config)
-    # print("Creating Load Generators...")
-    # create_stack.Main.main(args_list)
+    args_list = get_create_stack_args_list(config)
+    print("Creating Load Generators...")
+    create_stack.Main.main(args_list)
 
     if config.exclude_dashboard:
         print("Dashboard will not be created")
     else:
         print("Creating dashboard...")
         create_dashboard.main(config)
-    #
-    # if config.preserve_stack:
-    #     print("Stack will not be automatically deleted.")
-    # else:
-    #     __start_delete_stack(DELETE_TIME_OFFSET, config)
+
+    if config.preserve_stack:
+        print("Stack will not be automatically deleted.")
+    else:
+        __start_delete_stack(DELETE_TIME_OFFSET, config)
 
 
 if __name__ == "__main__":
