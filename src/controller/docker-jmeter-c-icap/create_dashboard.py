@@ -1,5 +1,3 @@
-import os
-from subprocess import run
 import requests
 import json
 
