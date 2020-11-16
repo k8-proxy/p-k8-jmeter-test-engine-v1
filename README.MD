@@ -15,15 +15,16 @@ Also, JMeter logs generated on the PODs are uploaded to the Minio server for fur
 - Python 3.8 or higher installed on your local machine
 
 ## 2. Provision a cluster
-For Azure AKS - the procedure is in development
+
+For Azure AKS - the procedure is in development.\
 For AWS EKS see ["Provision an EKS Cluster"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/terraform/eks/README.md)
 
 ## 3. Setting up the common resources
-Create Minio, Influxdb, and Grafana services in the cluster.
+Create Minio, Influxdb, and Grafana services in the cluster.\
 Follow the instructions at ["Deploy applications to K8s cluster"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/kubernetes/common_resources)
 
 ### 3.1 Influx JMeter Database
-The cluster InfluxDB deployment must have a database called JMeter
+The cluster InfluxDB deployment must have a database called JMeter.\
 To create it enter the bash shell of the Influx DB pod
 ```
     kubectl exec -it <influxdb pod> -- bash
@@ -40,5 +41,5 @@ Then create the DB with the following commands
 To reflect data changes in influx JMeter DB import the [Grafana dashboard](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/grafana_dashboards/ICAP-Dashboard-4-grafana.json) to the Grafana deployed within the cluster
 
 ## 4. Configuring and running the JMeter PODs
-Configuring and running the JMeter PODs is performed by [Create Stack](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/create_stack.py) Python3 script.
+Configuring and running the JMeter PODs is performed by [Create Stack](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/create_stack.py) Python3 script.\
 For detailed instructions on running the script see the following [README](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/src/controller/docker-jmeter-c-icap)
