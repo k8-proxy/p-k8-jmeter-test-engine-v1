@@ -14,8 +14,9 @@ Also, JMeter logs generated on the PODs are uploaded to the Minio server for fur
 - An MS Azure cluster that can autoscale to have a sufficient number of nodes to run the test.
 - Python 3.8 or higher installed on your local machine
 
-## 2. Setting up the node pools
-For a detailed instruction to perform the step see ["Manual AKS Creation"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/ManualAKSCreation.MD)
+## 2. Provision a cluster
+For Azure AKS - the procedure is in development
+For AWS EKS see ["Provision an EKS Cluster"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/terraform/eks/README.md)
 
 ## 3. Setting up the common resources
 Create Minio, Influxdb, and Grafana services in the cluster.
