@@ -43,12 +43,15 @@ def __post_grafana_dash(config):
     duration = config.duration
     icap_server = config.icap_server
 
-    if grafana_url[len(grafana_url) - 1] != '/':
-        grafana_url += '/'
     if not grafana_url.startswith("http"):
         grafana_url = "http://" + grafana_url
 
-    grafana_api_url = grafana_url + 'api/dashboards/db'
+    grafana_api_url = grafana_url
+
+    if grafana_url[len(grafana_url) - 1] != '/':
+        grafana_api_url += '/'
+
+    grafana_api_url = grafana_api_url + 'api/dashboards/db'
 
     headers = {
         "Authorization": "Bearer " + grafana_api_key,
