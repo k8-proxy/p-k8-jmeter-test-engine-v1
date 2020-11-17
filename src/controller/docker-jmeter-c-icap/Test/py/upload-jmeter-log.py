@@ -21,6 +21,8 @@ class Main():
     MINIO_SECRET_KEY = ""
     MINIO_BUCKET = ""
 
+    prefix = os.getenv('POD_NAME',str(uuid.uuid4()))
+
     @staticmethod
     def log_level(level):
         logging.basicConfig(level=getattr(logging, level))
@@ -36,7 +38,7 @@ class Main():
                 logger.info('Bucket not Found. Creating Bucket.')
                 s3.create_bucket(Bucket=Main.MINIO_BUCKET)
             logger.debug('Uploading file to bucket {} minio {}'.format(Main.MINIO_BUCKET, Main.MINIO_URL))
-            s3.Bucket(Main.MINIO_BUCKET).upload_file(file_path, 'jmeter-logs/' + os.getenv('POD_NAME',str(uuid.uuid4())) + '-' + os.path.basename(file_path))
+            s3.Bucket(Main.MINIO_BUCKET).upload_file(file_path, 'jmeter-logs/' + Main.prefix + '-' + os.path.basename(file_path))
         except Exception as e:
             logger.info("Error {}".format(e))
 
@@ -71,6 +73,18 @@ class Main():
             logger.info(e)
 
     @staticmethod
+    def output_text_file(filepath):
+        try:
+            file1 = open(filepath, 'r')
+            Lines = file1.readlines()
+
+            for line in Lines:
+                print("{} {}".format(Main.prefix, line.strip()))
+
+        except Exception as e:
+            logger.info("Error {}".format(e))
+
+    @staticmethod
     def main(argv):
         helpstring = 'pyton3 upload-jmeter-log.py -l <log file path> -j <jmeter conf file>'
         try:
@@ -96,6 +110,7 @@ class Main():
         #logger.info(Main.MINIO_SECRET_KEY)
         logger.info(Main.MINIO_BUCKET)
         Main.upload_to_minio(Main.log_file_path)
+        Main.output_text_file(Main.log_file_path)
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
