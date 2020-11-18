@@ -11,13 +11,7 @@ Also, JMeter logs generated on the PODs are uploaded to the Minio server for fur
 
 ## 1. Prerequisites
 
-- An MS Azure cluster that can autoscale to have a sufficient number of nodes to run the test.
-- Python 3.8 or higher installed on your local machine
-- Install necessary python packets by running
-```
-    pip3 install -r requirements.txt
-```
-Where requirements.txt is located at the following ["link"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/requirements.txt)
+- An Azure AKS or Amazon EKS cluster  that can autoscale to have a sufficient number of nodes to run the test.
 
 ## 2. Provision a cluster
 
@@ -41,10 +35,5 @@ Then create the DB with the following commands
     > exit
     # exit
 ```
-
-### 3.2 The Grafana dashboard
-To reflect data changes in influx JMeter DB import the [Grafana dashboard](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/grafana_dashboards/ICAP-Dashboard-4-grafana.json) to the Grafana deployed within the cluster
-
-## 4. Configuring and running the JMeter PODs
-Configuring and running the JMeter PODs is performed by [Create Stack](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/create_stack.py) Python3 script.<br/>
-For detailed instructions on running the script see the following [README](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/src/controller/docker-jmeter-c-icap)
+## 4. Using create_stack_dash.py to Create Load Generators and Corresponding Dashboards
+For detailed instructions see the following [README](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/README.md)
