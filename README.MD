@@ -13,6 +13,11 @@ Also, JMeter logs generated on the PODs are uploaded to the Minio server for fur
 
 - An MS Azure cluster that can autoscale to have a sufficient number of nodes to run the test.
 - Python 3.8 or higher installed on your local machine
+- Install necessary python packets by running
+```
+    pip3 install -r requirements.txt
+```
+Where requirements.txt is located at the following ["link"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/requirements.txt)
 
 ## 2. Provision a cluster
 
