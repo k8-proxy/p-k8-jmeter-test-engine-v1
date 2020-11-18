@@ -49,6 +49,14 @@ Set below environment variables with the values you like, in the terminal before
 
     helm upgrade --install promtail --namespace=loki-stack loki/promtail --set "loki.serviceName=loki"
 
+To get Promtail logs in Grafana:
+- add Loki to Grafans data souces (go to http://<grafana_address>:3000/datasources) 
+- configure the Loki data source URL to point to Loki Web interface (that is http://<loki_address>:3100)
+- Open Grafana explore page (http://<grafana_address>:3000/explore)
+
+Promtail provides multiple labels that will allow you to properly filter out the logs you need. <br\>
+The labels include job, jobgroup, pod name, etc.
+
 ## Setup connection to k8s cluster in Github repo to deploy using Github Actions
 
 1. Create a service account with cluster-admin clusterrole which will be used in Github Actions
