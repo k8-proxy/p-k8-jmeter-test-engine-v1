@@ -79,7 +79,7 @@ class Main():
             Lines = file1.readlines()
 
             for line in Lines:
-                print("{} {}".format(Main.prefix, line.strip()))
+                print("{}".format(line.strip()))
 
         except Exception as e:
             logger.info("Error {}".format(e))
