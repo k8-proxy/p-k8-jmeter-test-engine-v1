@@ -24,7 +24,7 @@ class Config(object):
         total_users = int(os.getenv("TOTAL_USERS"))
         users_per_instance = int(os.getenv("USERS_PER_INSTANCE"))
         duration = os.getenv("DURATION")
-        list = os.getenv("FILE_LIST")
+        list = os.getenv("TEST_DATA_FILE")
         minio_url = os.getenv("MINIO_URL")
         minio_access_key = os.getenv("MINIO_ACCESS_KEY")
         minio_secret_key = os.getenv("MINIO_SECRET_KEY")
@@ -32,11 +32,11 @@ class Config(object):
         minio_output_bucket = os.getenv("MINIO_OUTPUT_BUCKET")
         influxdb_url = os.getenv("INFLUXDB_URL")
         prefix = os.getenv("PREFIX")
-        icap_server = os.getenv("ICAP_SERVER")
+        icap_server_url = os.getenv("ICAP_SERVER_URL")
         grafana_url = os.getenv("GRAFANA_URL")
-        grafana_key = os.getenv("GRAFANA_KEY")
+        grafana_api_key = os.getenv("GRAFANA_API_KEY")
         grafana_file = os.getenv("GRAFANA_FILE")
-        grafana_secret_id = os.getenv("GRAFANA_SECRET_ID")
+        grafana_secret = os.getenv("GRAFANA_SECRET")
         exclude_dashboard = os.getenv("EXCLUDE_DASHBOARD")
         preserve_stack = os.getenv("PRESERVE_STACK")
     except Exception as e:
@@ -84,7 +84,7 @@ def __get_commandline_args():
     parser.add_argument('--prefix', '-p', default=Config.prefix,
                         help='Prefix for stack name (default: "")')
 
-    parser.add_argument('--icap_server', '-v', default=Config.icap_server,
+    parser.add_argument('--icap_server', '-v', default=Config.icap_server_url,
                         help='ICAP server endpoint URL (default: icap02.glasswall-icap.com)')
 
     parser.add_argument('--grafana_url', '-gu',
@@ -95,14 +95,14 @@ def __get_commandline_args():
     parser.add_argument('--grafana_key', '-k',
                         type=str,
                         help='API key to be used for dashboard creation in grafana database',
-                        default=Config.grafana_key)
+                        default=Config.grafana_api_key)
 
     parser.add_argument('--grafana_file', '-f',
                         type=str,
                         help='path to grafana template used for dashboard creation',
                         default=Config.grafana_file)
 
-    parser.add_argument('--grafana_secret_id', '-gsid', default=Config.grafana_secret_id,
+    parser.add_argument('--grafana_secret_id', '-gsid', default=Config.grafana_secret,
                         help='The secret ID for the Grafana API Key stored in AWS Secrets')
 
     parser.add_argument('--exclude_dashboard', '-ed', action='store_true',
@@ -182,11 +182,11 @@ if __name__ == "__main__":
     Config.minio_output_bucket = args.minio_output_bucket
     Config.influxdb_url = args.influxdb_url
     Config.prefix = args.prefix
-    Config.icap_server = args.icap_server
+    Config.icap_server_url = args.icap_server
     Config.grafana_url = args.grafana_url
     Config.grafana_file = args.grafana_file
-    Config.grafana_key = args.grafana_key
-    Config.grafana_secret_id = args.grafana_secret_id
+    Config.grafana_api_key = args.grafana_key
+    Config.grafana_secret = args.grafana_secret_id
 
     # these are flag/boolean arguments
     if args.exclude_dashboard:
@@ -200,13 +200,13 @@ if __name__ == "__main__":
         Config.preserve_stack = int(Config.preserve_stack) == 1
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
-    if not Config.grafana_key and not Config.grafana_secret_id:
+    if not Config.grafana_api_key and not Config.grafana_secret:
         print("Must input either grafana_key or grafana_secret_id in config.env or using args")
         exit(0)
-    elif not Config.grafana_key and not Config.exclude_dashboard:
-        secret_response = get_secret_value(config=Config, secret_id=Config.grafana_secret_id)
+    elif not Config.grafana_api_key and not Config.exclude_dashboard:
+        secret_response = get_secret_value(config=Config, secret_id=Config.grafana_secret)
         secret_val = next(iter(secret_response.values()))
-        Config.grafana_key = secret_val
+        Config.grafana_api_key = secret_val
         if secret_val:
             print("Grafana secret key retrieved.")
 
