@@ -1,7 +1,22 @@
 import requests
 import json
 
-from create_stack_dash import Config
+
+# If the grafana file passed does not contain the appropriate elements with appropriate values, modify it
+def __convert_grafana_json_to_template(grafana_json):
+
+    # file must be enclosed in a dashboard tag
+    if not 'dashboard' in grafana_json:
+        grafana_json = {'dashboard': grafana_json}
+
+    # ids must be set to null to prevent duplicate id errors. Grafana generates these automatically.
+    grafana_json['dashboard']['id'] = None
+    grafana_json['dashboard']['uid'] = None
+
+    grafana_json['folderId'] = 0
+    grafana_json['overwrite'] = True
+
+    return grafana_json
 
 
 #  Appends prefix to title and all occurrences of "measurement" value in the Grafana JSON file
@@ -35,13 +50,13 @@ def __modify_dashboard_info_bar(grafana_json, total_users, duration, endpoint_ur
 
 # responsible for posting the dashboard to Grafana and returning the URL to it
 def __post_grafana_dash(config):
-    grafana_api_key = config.grafana_key
+    grafana_api_key = config.grafana_api_key
     grafana_template = config.grafana_file
     prefix = config.prefix
     grafana_url = config.grafana_url
     total_users = config.total_users
     duration = config.duration
-    icap_server = config.icap_server
+    icap_server = config.icap_server_url
 
     if not grafana_url.startswith("http"):
         grafana_url = "http://" + grafana_url
@@ -60,6 +75,7 @@ def __post_grafana_dash(config):
     # Modify grafana JSON to display current run's info
     with open(grafana_template) as json_file:
         grafana_json = json.load(json_file)
+        grafana_json = __convert_grafana_json_to_template(grafana_json)
         __add_prefix_to_grafana_json(grafana_json, prefix)
         __add_prefix_to_grafana_loki_source_job(grafana_json, prefix)
         __modify_dashboard_info_bar(grafana_json, total_users, duration, icap_server)
@@ -74,6 +90,7 @@ def __post_grafana_dash(config):
 
 
 def main(config):
+
     created_dashboard_url = __post_grafana_dash(config)
 
     if created_dashboard_url:
