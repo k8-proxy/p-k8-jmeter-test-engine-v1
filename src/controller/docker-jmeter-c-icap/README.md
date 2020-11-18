@@ -6,7 +6,7 @@
   * [Prerequisites](#prerequisites)
   * [Using config.env to pass parameters to create_stack_dash.py](#using-configenv-to-pass-parameters-to-create_stack_dashpy)
   * [Options available for the create_stack_dash.py script](#optionsparameters-available-for-the-create_stack_dashpy-script)
-  * [Running the create_stack_dash.py script](#running-the-create-stack-dashpy-script)
+  * [Running the create_stack_dash.py script](#running-the-create_stack_dashpy-script)
   * [Troubleshooting](#troubleshooting)
 
 
