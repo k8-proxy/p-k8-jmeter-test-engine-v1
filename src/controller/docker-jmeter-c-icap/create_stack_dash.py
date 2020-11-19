@@ -60,7 +60,7 @@ def __get_commandline_args():
     parser.add_argument('--duration', '-d', default=Config.duration,
                         help='duration of test (default: 60)')
 
-    parser.add_argument('--list', '-l', default=Config.list,
+    parser.add_argument('--test_data_file', '-l', default=Config.list,
                         help='Path to file list')
 
     parser.add_argument('--minio_url', '-m', default=Config.minio_url,
@@ -175,7 +175,7 @@ if __name__ == "__main__":
     Config.total_users = int(args.total_users)
     Config.users_per_instance = args.users_per_instance
     Config.duration = args.duration
-    Config.list = args.list
+    Config.list = args.test_data_file
     Config.minio_url = args.minio_url
     Config.minio_access_key = args.minio_access_key
     Config.minio_input_bucket = args.minio_input_bucket

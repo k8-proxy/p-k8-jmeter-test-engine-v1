@@ -122,7 +122,7 @@ Duration of the test, default value: 900 seconds
 </td>
 </tr>
 <tr>
-<td> --list, -l </td> <td>TEST_DATA_FILE</td>
+<td> --test_data_file, -l </td> <td>TEST_DATA_FILE</td>
 <td>
 Path to the test data file that contains the list of files used for testing
 </td>
