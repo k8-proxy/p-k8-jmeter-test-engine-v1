@@ -131,3 +131,4 @@ resource "null_resource" "expose_common_services" {
     interpreter = var.cluster_interpreter
   }
 }
+
