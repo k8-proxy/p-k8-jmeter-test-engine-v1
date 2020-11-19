@@ -56,7 +56,7 @@ def __post_grafana_dash(config):
     grafana_url = config.grafana_url
     total_users = config.total_users
     duration = config.duration
-    icap_server = config.icap_server_url
+    icap_server = config.icap_server
 
     if not grafana_url.startswith("http"):
         grafana_url = "http://" + grafana_url
