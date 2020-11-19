@@ -119,3 +119,17 @@ resource "null_resource" "prometheus" {
     interpreter = var.cluster_interpreter
   }
 }
+
+resource "null_resource" "expose_common_services" {
+
+  depends_on = [
+    null_resource.prometheus
+  ]
+
+  provisioner "local-exec" {
+    command     = var.expose
+    interpreter = var.cluster_interpreter
+  }
+}
+
+
