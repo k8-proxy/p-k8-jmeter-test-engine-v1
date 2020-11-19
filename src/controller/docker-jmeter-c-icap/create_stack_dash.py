@@ -32,7 +32,7 @@ class Config(object):
         minio_output_bucket = os.getenv("MINIO_OUTPUT_BUCKET")
         influxdb_url = os.getenv("INFLUXDB_URL")
         prefix = os.getenv("PREFIX")
-        icap_server_url = os.getenv("ICAP_SERVER_URL")
+        icap_server = os.getenv("ICAP_SERVER_URL")
         grafana_url = os.getenv("GRAFANA_URL")
         grafana_api_key = os.getenv("GRAFANA_API_KEY")
         grafana_file = os.getenv("GRAFANA_FILE")
@@ -84,7 +84,7 @@ def __get_commandline_args():
     parser.add_argument('--prefix', '-p', default=Config.prefix,
                         help='Prefix for stack name (default: "")')
 
-    parser.add_argument('--icap_server', '-v', default=Config.icap_server_url,
+    parser.add_argument('--icap_server_url', '-v', default=Config.icap_server,
                         help='ICAP server endpoint URL (default: icap02.glasswall-icap.com)')
 
     parser.add_argument('--grafana_url', '-gu',
@@ -92,7 +92,7 @@ def __get_commandline_args():
                         help='URL to Grafana instance',
                         default=Config.grafana_url)
 
-    parser.add_argument('--grafana_key', '-k',
+    parser.add_argument('--grafana_api_key', '-k',
                         type=str,
                         help='API key to be used for dashboard creation in grafana database',
                         default=Config.grafana_api_key)
@@ -102,7 +102,7 @@ def __get_commandline_args():
                         help='path to grafana template used for dashboard creation',
                         default=Config.grafana_file)
 
-    parser.add_argument('--grafana_secret_id', '-gsid', default=Config.grafana_secret,
+    parser.add_argument('--grafana_secret', '-gs', default=Config.grafana_secret,
                         help='The secret ID for the Grafana API Key stored in AWS Secrets')
 
     parser.add_argument('--exclude_dashboard', '-ed', action='store_true',
@@ -182,11 +182,11 @@ if __name__ == "__main__":
     Config.minio_output_bucket = args.minio_output_bucket
     Config.influxdb_url = args.influxdb_url
     Config.prefix = args.prefix
-    Config.icap_server_url = args.icap_server
+    Config.icap_server = args.icap_server_url
     Config.grafana_url = args.grafana_url
     Config.grafana_file = args.grafana_file
-    Config.grafana_api_key = args.grafana_key
-    Config.grafana_secret = args.grafana_secret_id
+    Config.grafana_api_key = args.grafana_api_key
+    Config.grafana_secret = args.grafana_secret
 
     # these are flag/boolean arguments
     if args.exclude_dashboard:

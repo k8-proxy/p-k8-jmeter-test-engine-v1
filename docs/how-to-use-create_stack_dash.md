@@ -60,7 +60,7 @@ REGION=eu-west-1
 TOTAL_USERS=100
 USERS_PER_INSTANCE=25
 DURATION=1
-FILE_LIST=
+TEST_DATA_FILE=
 MINIO_URL=http://miniocluster.local:9000
 MINIO_ACCESS_KEY=
 MINIO_SECRET_KEY=
@@ -68,9 +68,9 @@ MINIO_INPUT_BUCKET=input
 MINIO_OUTPUT_BUCKET=output
 INFLUXDB_URL=http://influxdb.local:8086
 PREFIX=demo
-ICAP_SERVER=
+ICAP_SERVER_URL=
 GRAFANA_URL=
-GRAFANA_KEY=
+GRAFANA_API_KEY=
 GRAFANA_FILE=grafana_template.json
 EXCLUDE_DASHBOARD=0
 PRESERVE_STACK=0
@@ -101,108 +101,108 @@ Below is a table highlighting all the available options
 
 <table>
 <tr>
-<td width="200"> Option </td> <td> Description </td>
+<td width="200"> Option </td> <td> Config.env Parameter </td>  <td> Description </td>
 </tr>
 <tr>
-<td> --total_users, -t </td>
+<td> --total_users, -t </td>  <td> TOTAL_USERS </td>
 <td>
 Total number of users for the test, Default value is 4000.
 </td>
 </tr>
 <tr>
-<td> --users_per_instance, -u </td>
+<td> --users_per_instance, -u </td> <td> USERS_PER_INSTANCE </td>
 <td>
 Number of users per instance (default: 25)
 </td>
 </tr>
 <tr>
-<td> --duration, -d </td>
+<td> --duration, -d </td> <td>DURATION</td>
 <td>
 Duration of the test, default value: 900 seconds
 </td>
 </tr>
 <tr>
-<td> --file_list, -l </td>
+<td> --list, -l </td> <td>TEST_DATA_FILE</td>
 <td>
-Path to list of file used for testing
+Path to the test data file that contains the list of files used for testing
 </td>
 </tr>
 <tr>
-<td> --minio_url, -m </td>
+<td> --minio_url, -m </td> <td>MINIO_URL</td>
 <td>
 Minio URL
 </td>
 </tr>
 <tr>
-<td> --minio_access_key, -a </td>
+<td> --minio_access_key, -a </td> <td>MINIO_ACCESS_KEY</td>
 <td>
 Minio access key
 </td>
 </tr>
 <tr>
-<td> --minio_secret_key, -s </td>
+<td> --minio_secret_key, -s </td> <td>MINIO_SECRET_KEY</td>
 <td>
 Minio secret key
 </td>
 </tr>
 <tr>
-<td> --minio_input_bucket, -i </td>
+<td> --minio_input_bucket, -i </td> <td>MINIO_INPUT_BUCKET</td>
 <td>
 Minio input bucket name
 </td>
 </tr>
 <tr>
-<td>--minio_output_bucket, -o </td>
+<td>--minio_output_bucket, -o </td> <td>MINIO_OUTPUT_BUCKET</td>
 <td>
 Minio output bucket name
 </td>
 </tr>
 <tr>
-<td> --influxdb_url, -x </td>
+<td> --influxdb_url, -x </td> <td>INFLUXDB_URL</td>
 <td>
-URL to Influx Dataase
+URL to Influx Database
 </td>
 </tr>
 <tr>
-<td> --prefix, -p </td>
+<td> --prefix, -p </td> <td>PREFIX</td>
 <td>
 Prefix for stack name (default: "")
 </td>
 </tr>
 <tr>
-<td> --icap_server, -v </td>
+<td> --icap_server_url, -v </td> <td>ICAP_SERVER_URL</td>
 <td>
 ICAP server endpoint URL
 </td>
 </tr>
 <tr>
-<td> --grafana_url, -g </td>
+<td> --grafana_url, -g </td> <td>GRAFANA_URL</td>
 <td>
 The URL to the Grafana database's home page (typically this would be the "MachineIP:3000")
 </td>
 </tr>
 <tr>
-<td> --grafana_file, -f </td>
+<td> --grafana_file, -f </td> <td>GRAFANA_FILE</td>
 <td>
 This takes the tag of the server containing the Grafana database; this server will automatically be started if it is stopped. Tags in AWS have both a key and a value. The key field should contain "Name", only the value of the tag is what should be provided to this option. The tag must have a value field; it should not be empty. (Note: The --grafana_url option will prevent this option from taking effect, as the Grafana server IP would be obtained directly from that).
 </td>
 </tr>
 <tr>
-<td>--grafana_secret, -gs</td>
+<td>--grafana_secret, -gs</td> <td>GRAFANA_SECRET</td>
 <td>
 The secret name of the Grafana API Key inside AWS Secrets Manager. This will be used to retrieve the key for use when generating Grafana dashboards. (Note: The --grafana_key option will prevent this option from taking effect; a user directly providing a key would negate the need for a key lookup).
 </td>
 </tr>
 <tr>
-<td> --exclude_dashboard, -x </td>
+<td> --preserve_stack, -s </td> <td>PRESERVE_STACK</td>
 <td>
-This takes no arguments. If set (ex: create_stack_dash -x), a Grafana dashboard will not be created when the script is run.
+This takes no arguments. If set (ex: create_stack_dash -s), it will prevent the stack created from being automatically deleted after the duration period specified above is complete.
 </td>
 </tr>
 <tr>
-<td> --preserve_stack, -s </td>
+<td> --exclude_dashboard, -x </td> <td>EXCLUDE_DASHBOARD</td>
 <td>
-This takes no arguments. If set (ex: create_stack_dash -s), it will prevent the stack created from being automatically deleted after the duration period specified above is complete.
+This takes no arguments. If set (ex: create_stack_dash -x), a Grafana dashboard will not be created when the script is run.
 </td>
 </tr>
 </table>
@@ -227,7 +227,6 @@ Or the Config.env file would contain all the parameters required.
 A successful run should output information on number of users, duration, and links to the end point and Grafana dashboard. See example below:
 ```
 Creating Load Generators...
-Deploying 1 instances in the ASG by creating test-prefix-aws-jmeter-test-engine-2020-11-03-01-39 cloudformation stack
 Stack created with the following properties:
 Total Users: 4000
 Duration: 900
