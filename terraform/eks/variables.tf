@@ -70,12 +70,17 @@ variable loki_chart {
 
 variable promtail_logs {
   type    = string
-  default = "helm upgrade --install promtail --namespace=common loki/promtail --set "loki.serviceName=loki""
+  default = "helm upgrade --install promtail --namespace=common loki/promtail --set 'loki.serviceName=loki'"
 }
 
 variable prometheus_chart {
   type    = string
   default = "helm upgrade --install  prometheus --namespace=common stable/prometheus"
+}
+
+variable expose {
+  type = string
+  default = "kubectl apply -f ext-services/"
 }
 
 variable cluster_interpreter {

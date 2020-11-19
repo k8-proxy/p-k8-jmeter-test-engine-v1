@@ -131,3 +131,15 @@ resource "null_resource" "promtail" {
     interpreter = var.cluster_interpreter
   }
 }
+
+resource "null_resource" "expose_common_services" {
+
+  depends_on = [
+    null_resource.promtail
+  ]
+
+  provisioner "local-exec" {
+    command     = var.expose
+    interpreter = var.cluster_interpreter
+  }
+}
