@@ -79,7 +79,7 @@ PREFIX=dash-creation
 ICAP_SERVER=gw-icap01.westeurope.azurecontainer.io
 GRAFANA_URL=a6f57c69583674ff982787e2cbe95cea-713263438.eu-west-1.elb.amazonaws.com
 GRAFANA_KEY=
-GRAFANA_FILE=../../grafana_dashboards/k8-test-engine-dashboard.json
+GRAFANA_FILE=../grafana_dashboards/k8-test-engine-dashboard.json
 EXCLUDE_DASHBOARD=0
 PRESERVE_STACK=0
 ```
@@ -222,7 +222,7 @@ This takes no arguments. If set (ex: create_stack_dash -s), it will prevent the 
 
 ## How create_stack_dash.py works
 
-![how_create_stack_dash_works](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/docs/pngs/create_stack_dash.png)
+![how_create_stack_dash_works](pngs/create_stack_dash.png)
 
 ## Running the create_stack_dash.py script
 
