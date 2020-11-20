@@ -255,10 +255,6 @@ Below is a list of potential issues end users might face along with some suggest
 - The machine running this script must have access to the server holding the Grafana instance (i.e. the EC2 instance containing the Grafana installation has its security group set to allow the machine running this script to enter).
 - The Grafana JSON template should be formatted correctly, for more information refer to the [Grafana Dashboard API](https://grafana.com/docs/grafana/latest/http_api/dashboard/).
 
-### EC2 instance containing Grafana installation is not auto-starting
-- The machine attempting to start the EC2 instance must have the correct permissions set in the EC2 instance's security group.
-- The option grafana_server_tag must be used to start the EC2 instance. It should contain only the value of the tag with a key field containing "Name". See below:
-
 ### Stacks are not being automatically deleted
 - Ensure the option "preserve_stack" is not enabled
 - create_stack_dash.py deletes only the stack that was created in an individual run. If the script is stopped before the delete process takes place (i.e. before the duration period + 15 minutes) for any reason, the stack it created will not be deleted and must be deleted manually.
