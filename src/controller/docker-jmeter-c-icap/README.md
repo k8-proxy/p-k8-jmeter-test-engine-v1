@@ -222,7 +222,7 @@ This takes no arguments. If set (ex: create_stack_dash -s), it will prevent the 
 
 ## How create_stack_dash.py works
 
-![how_create_stack_dash_works](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/docs/pngs/create_stack_dash.png)
+![how_create_stack_dash_works](pngs/create_stack_dash.png)
 
 ## Running the create_stack_dash.py script
 
