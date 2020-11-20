@@ -16,11 +16,11 @@ Also, JMeter logs generated on the PODs are uploaded to the Minio server for fur
 ## 2. Provision a cluster
 
 For Azure AKS - the procedure is in development.<br/>
-For AWS EKS see ["Provision an EKS Cluster"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/terraform/eks/README.md)
+For AWS EKS see ["Provision an EKS Cluster"](deployment/terraform/eks/README.md)
 
 ## 3. Setting up the common resources
 Create Minio, Influxdb, and Grafana services in the cluster.<br/>
-Follow the instructions at ["Deploy applications to K8s cluster"](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/kubernetes/common_resources)
+Follow the instructions at ["Deploy applications to K8s cluster"](deployment/kubernetes/common_resources/README.md)
 
 ### 3.1 Influx JMeter Database
 The cluster InfluxDB deployment must have a database called JMeter.<br/>
@@ -36,4 +36,4 @@ Then create the DB with the following commands
     # exit
 ```
 ## 4. Using create_stack_dash.py to Create Load Generators and Corresponding Dashboards
-For detailed instructions see the following [README](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/README.md)
+For detailed instructions see the following [README](src/controller/docker-jmeter-c-icap/README.md)
