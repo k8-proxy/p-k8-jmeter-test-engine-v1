@@ -40,6 +40,7 @@ class Main():
     limits_cpu = '500'
     Xms_value = '512'
     Xmx_value = '512'
+    parallelism = 1
 
     @staticmethod
     def log_level(level):
@@ -181,9 +182,9 @@ class Main():
 
             shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
 
-            parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
-            logger.info("Number of pods to be created: {}".format(parallelism))
-            Main.replace_in_file('job-0.yaml','$parallelism-number', str(parallelism))
+            Main.parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
+            logger.info("Number of pods to be created: {}".format(Main.parallelism))
+            Main.replace_in_file('job-0.yaml','$parallelism-number', str(Main.parallelism))
 
             Main.apply_resource_table()
             Main.replace_in_file('job-0.yaml','$requests_memory$', Main.requests_memory)
