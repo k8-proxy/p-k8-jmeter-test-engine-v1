@@ -244,26 +244,26 @@ class Main():
                 Main.icap_server = arg
 
         Main.log_level(LOG_LEVEL)
-        logger.info(Main.total_users)
-        logger.info(Main.users_per_instance)
-        logger.info(Main.duration)
-        logger.info(Main.filelist)
+        logger.info("TOTAL USERS         {}".format(Main.total_users))
+        logger.info("USERS PER INSTANCE  {}".format(Main.users_per_instance))
+        logger.info("TEST DURATION       {}".format(Main.duration))
+        logger.info("FILE LIST           {}".format(Main.filelist))
 
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
-        logger.info(Main.minio_url)
-        #logger.info(Main.minio_access_key)
-        #logger.info(Main.minio_secret_key)
-        logger.info(Main.minio_input_bucket)
-        logger.info(Main.minio_output_bucket)
+        logger.info("MINIO URL           {}".format(Main.minio_url))
+        #logger.info("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
+        #logger.info("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
+        logger.info("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
+        logger.info("MINIO outPUT BUCKET {}".format(Main.minio_output_bucket))
 
         Main.influxHost = Main.influxdb_url.replace('http://', '')
         Main.influxHost = Main.influxHost.split(':', 1)[0]
-        logger.info(Main.influxdb_url)
-        logger.info(Main.influxHost)
-        logger.info(Main.prefix)
+        logger.info("INFLUXDB URL        {}".format(Main.influxdb_url))
+        logger.info("INFLUX HOST         {}".format(Main.influxHost))
+        logger.info("PREFIX              {}".format(Main.prefix))
 
-        logger.info(Main.icap_server)
+        logger.info(" {}".format(Main.icap_server))
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
