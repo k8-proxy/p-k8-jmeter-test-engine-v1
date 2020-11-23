@@ -120,14 +120,14 @@ resource "null_resource" "prometheus" {
   }
 }
 
-resource "null_resource" "promtail" {
+resource "null_resource" "expose_common_services" {
 
   depends_on = [
-    null_resource.prometheus
+    null_resource.promtail
   ]
 
   provisioner "local-exec" {
-    command     = var.promtail_logs
+    command     = var.expose
     interpreter = var.cluster_interpreter
   }
 }
