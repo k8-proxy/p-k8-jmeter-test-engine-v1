@@ -15,7 +15,7 @@ Also, JMeter logs generated on the PODs are uploaded to the Minio server for fur
 
 ## 2. Provision a cluster
 
-For Azure AKS - the procedure is in development.<br/>
+For Azure AKS - ["Provision an AKS Cluster"](deployment/terraform/aks/README.MD)<br/>
 For AWS EKS see ["Provision an EKS Cluster"](deployment/terraform/eks/README.md)
 
 ## 3. Setting up the common resources
