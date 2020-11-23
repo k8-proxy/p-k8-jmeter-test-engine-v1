@@ -40,24 +40,25 @@ class Main():
     limits_cpu = '500'
     Xms_value = '512'
     Xmx_value = '512'
+    parallelism = 1
 
     @staticmethod
     def log_level(level):
         logging.basicConfig(level=getattr(logging, level))
 
     @staticmethod
-    def verify_minio_access():
+    def verify_url(service_name, url):
         try:
-            logger.info("verify_minio_access not implemented")
-            #s3 = boto3.resource('s3', endpoint_url=Main.minio_url, aws_access_key_id=Main.minio_access_key,
-            #                    aws_secret_access_key=Main.minio_secret_key, config=Config(signature_version='s3v4'))
-            #if (s3.Bucket(Main.minio_input_bucket) in s3.buckets.all()) == False:
-            #    logger.info('Bucket {} not Found'.format(Main.minio_input_bucket))
-            #    exit(1)
+            if not (url.startswith('http://') or url.startswith('https://')):
+                logger.error("{} url must srart with \'http://\' or \'https://\'".format(service_name))
+                exit(1)
+            port = int(url.split(':', 2)[2])
+            if not (port > 0 and port < 0xffff):
+                logger.error("{} url must contain a valid port number".format(service_name))
+                exit(1)
         except Exception as e:
-            logger.info(e)
+            logger.error("{} URL vertification failed {}".format(service_name, e))
             exit(1)
-
 
     @staticmethod
     def sanity_checks():
@@ -85,7 +86,8 @@ class Main():
         if not os.path.exists(Main.filelist):
             logger.error("File {} does not exist".format(Main.filelist))
             exit(1)
-        Main.verify_minio_access()
+        Main.verify_url('minio', Main.minio_url)
+        Main.verify_url('influxdb', Main.influxdb_url)
 
     @staticmethod
     def stop_jmeter_jobs():
@@ -94,7 +96,7 @@ class Main():
             os.system("kubectl delete --ignore-not-found secret jmeterconf")
             os.system("kubectl delete --ignore-not-found secret filesconf")
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             exit(1)
 
     @staticmethod
@@ -105,7 +107,7 @@ class Main():
                     print(line.replace(prev_str, new_str), end='')
             os.remove(filename + '.bak')
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             exit(1)
 
     @staticmethod
@@ -127,7 +129,7 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
             return jmeter_script_name
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             exit(1)
 
     @staticmethod
@@ -158,7 +160,7 @@ class Main():
                 Main.Xmx_value = '2048'
                 return
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             exit(1)
 
     @staticmethod
@@ -181,9 +183,9 @@ class Main():
 
             shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
 
-            parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
-            logger.info("Number of pods to be created: {}".format(parallelism))
-            Main.replace_in_file('job-0.yaml','$parallelism-number', str(parallelism))
+            Main.parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
+            logger.info("Number of pods to be created: {}".format(Main.parallelism))
+            Main.replace_in_file('job-0.yaml','$parallelism-number', str(Main.parallelism))
 
             Main.apply_resource_table()
             Main.replace_in_file('job-0.yaml','$requests_memory$', Main.requests_memory)
@@ -202,7 +204,7 @@ class Main():
             os.remove('job-0.yaml')
 
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             exit(1)
 
     @staticmethod
@@ -243,26 +245,26 @@ class Main():
                 Main.icap_server = arg
 
         Main.log_level(LOG_LEVEL)
-        logger.info(Main.total_users)
-        logger.info(Main.users_per_instance)
-        logger.info(Main.duration)
-        logger.info(Main.filelist)
+        logger.info("TOTAL USERS         {}".format(Main.total_users))
+        logger.info("USERS PER INSTANCE  {}".format(Main.users_per_instance))
+        logger.info("TEST DURATION       {}".format(Main.duration))
+        logger.info("FILE LIST           {}".format(Main.filelist))
 
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
-        logger.info(Main.minio_url)
-        #logger.info(Main.minio_access_key)
-        #logger.info(Main.minio_secret_key)
-        logger.info(Main.minio_input_bucket)
-        logger.info(Main.minio_output_bucket)
+        logger.info("MINIO URL           {}".format(Main.minio_url))
+        #logger.info("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
+        #logger.info("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
+        logger.info("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
+        logger.info("MINIO outPUT BUCKET {}".format(Main.minio_output_bucket))
 
         Main.influxHost = Main.influxdb_url.replace('http://', '')
         Main.influxHost = Main.influxHost.split(':', 1)[0]
-        logger.info(Main.influxdb_url)
-        logger.info(Main.influxHost)
-        logger.info(Main.prefix)
+        logger.info("INFLUXDB URL        {}".format(Main.influxdb_url))
+        logger.info("INFLUX HOST         {}".format(Main.influxHost))
+        logger.info("PREFIX              {}".format(Main.prefix))
 
-        logger.info(Main.icap_server)
+        logger.info(" {}".format(Main.icap_server))
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
