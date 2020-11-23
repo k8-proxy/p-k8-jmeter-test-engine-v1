@@ -39,6 +39,11 @@ variable prometheus_chart {
   default = "helm upgrade --install  prometheus --namespace=common stable/prometheus"
 }
 
+variable expose {
+  type = string
+  default = "kubectl apply -f ext-services/"
+}
+
 variable cluster_interpreter {
   type    = list(string)
   default = ["/bin/sh", "-c"]
