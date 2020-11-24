@@ -22,27 +22,5 @@ For AWS EKS see ["Provision an EKS Cluster"](deployment/terraform/eks/README.md)
 
 Note: The cluster deployment is done using Terraform Script which is tested on Linux Platform. Try and use Linux Platform for Cluster Deployment.
 
-## 3. Setting up the common resources
-Create Minio, Influxdb, and Grafana services in the cluster.<br/>
-Follow the instructions at [deployment/kubernetes/common_resources/README.md](deployment/kubernetes/common_resources/README.md)
-
-### 3.1 Influx JMeter Database
-The cluster InfluxDB deployment have three databases used in current setup .<br/>
-
-To create it enter the bash shell of the Influx DB pod ( It should be created as part of InfluxDB deployment ).
-```
-    kubectl exec -it <influxdb pod> -- bash
-```
-Then create the DB with the following commands
-```
-    # influx
-    > create database jmeter
-    > exit
-    # exit
-```
-Current Database list:
-- jmeter ( For all Jmeter Test Logs)
-- icapserver ( For ICAP Server Metrics)
-
-## 4. Using create_stack_dash.py to Create Load Generators and Corresponding Dashboards
+## 3. Using create_stack_dash.py to Create Load Generators and Corresponding Dashboards
 For detailed instructions on how to execute Test Using create_stack_dash.py  See the following instruction [jmeter-icap/scripts/README.md](jmeter-icap/scripts/README.md)
