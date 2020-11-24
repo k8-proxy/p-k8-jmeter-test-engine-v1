@@ -16,6 +16,15 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 class Main():
 
     prefix = 'demo'
+    microk8s = False
+
+    @staticmethod
+    def get_microk8s():
+        try:
+            subprocess.call(["microk8s", "kubectl", "version"])
+            Main.microk8s = True
+        except:
+            Main.microk8s = False    
 
     @staticmethod
     def log_level(level):
@@ -24,11 +33,16 @@ class Main():
     @staticmethod
     def stop_jmeter_jobs():
         try:
-            os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-            os.system("kubectl delete --ignore-not-found secret jmeterconf")
-            os.system("kubectl delete --ignore-not-found secret filesconf")
+            if Main.microk8s:
+                os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
+                os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
+            else:
+                os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system("kubectl delete --ignore-not-found secret jmeterconf")
+                os.system("kubectl delete --ignore-not-found secret filesconf")
         except Exception as e:
-            logger.info(e)
+            logger.error(e)
             exit(1)
 
     @staticmethod
@@ -48,6 +62,7 @@ class Main():
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.prefix)
+        Main.get_microk8s()
         Main.stop_jmeter_jobs()
 
 if __name__ == "__main__":
