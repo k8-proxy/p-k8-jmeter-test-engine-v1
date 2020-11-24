@@ -64,13 +64,9 @@ class Main():
     def sanity_checks():
         try:
             subprocess.call(["kubectl", "version"])
-        except OSError as e:
-            if e.errno == errno.ENOENT:
-                logger.error("kubectl is not installed on the system")
-                exit(1)
-            else:
-                logger.error("failed to run kubectl")
-                exit(1)
+        except Exception as e:
+            logger.error("failed to run kubectl: {}".format(e))
+            exit(1)
         if int(Main.total_users) <= 0:
             logger.error("Total users must be positive number")
             exit(1)
