@@ -41,7 +41,7 @@ class Main():
     @staticmethod
     def get_microk8s():
         try:
-            os.system("microk8s kubectl version")
+            subprocess.call(["microk8s", "kubectl", "version"])
             Main.microk8s = True
         except:
             Main.microk8s = False    
