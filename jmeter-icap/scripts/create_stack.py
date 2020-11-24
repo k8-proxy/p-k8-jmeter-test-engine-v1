@@ -9,11 +9,6 @@ import shutil
 import fileinput
 import math
 
-#import boto3
-#import requests
-#from botocore.client import Config
-#from botocore.exceptions import ClientError
-
 logger = logging.getLogger('create_stack')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
@@ -41,6 +36,15 @@ class Main():
     Xms_value = '512'
     Xmx_value = '512'
     parallelism = 1
+    microk8s = False
+
+    @staticmethod
+    def get_microk8s():
+        try:
+            os.system("microk8s kubectl version")
+            Main.microk8s = True
+        except:
+            Main.microk8s = False    
 
     @staticmethod
     def log_level(level):
@@ -63,7 +67,8 @@ class Main():
     @staticmethod
     def sanity_checks():
         try:
-            subprocess.call(["kubectl", "version"])
+            if not Main.microk8s:
+                subprocess.call(["kubectl", "version"])
         except Exception as e:
             logger.error("failed to run kubectl: {}".format(e))
             exit(1)
@@ -88,9 +93,14 @@ class Main():
     @staticmethod
     def stop_jmeter_jobs():
         try:
-            os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-            os.system("kubectl delete --ignore-not-found secret jmeterconf")
-            os.system("kubectl delete --ignore-not-found secret filesconf")
+            if Main.microk8s:
+                os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
+                os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
+            else:
+                os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system("kubectl delete --ignore-not-found secret jmeterconf")
+                os.system("kubectl delete --ignore-not-found secret filesconf")
         except Exception as e:
             logger.error(e)
             exit(1)
@@ -171,8 +181,12 @@ class Main():
 
             shutil.copyfile(Main.filelist,'files')
 
-            os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-            os.system("kubectl create secret generic filesconf --from-file=files")
+            if Main.microk8s:
+                os.system("microk8s kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
+                os.system("microk8s kubectl create secret generic filesconf --from-file=files")
+            else:
+                os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
+                os.system("kubectl create secret generic filesconf --from-file=files")
 
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')
@@ -193,7 +207,10 @@ class Main():
 
             Main.replace_in_file('job-0.yaml','$prefix$', Main.prefix)
 
-            os.system("kubectl create -f job-0.yaml")
+            if Main.microk8s:
+                os.system("microk8s kubectl create -f job-0.yaml")
+            else:
+                os.system("kubectl create -f job-0.yaml")
 
             os.remove('jmeter-conf.jmx')
             os.remove('files')
@@ -260,7 +277,10 @@ class Main():
         logger.info("INFLUX HOST         {}".format(Main.influxHost))
         logger.info("PREFIX              {}".format(Main.prefix))
 
-        logger.info(" {}".format(Main.icap_server))
+        logger.info("ICAP SERVER         {}".format(Main.icap_server))
+
+        Main.get_microk8s()
+        logger.info("Micro k8s           {}".format(Main.microk8s))
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
