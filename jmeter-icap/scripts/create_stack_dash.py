@@ -39,6 +39,9 @@ class Config(object):
         grafana_secret = os.getenv("GRAFANA_SECRET")
         exclude_dashboard = os.getenv("EXCLUDE_DASHBOARD")
         preserve_stack = os.getenv("PRESERVE_STACK")
+        icap_server_port = os.getenv("ICAP_SERVER_PORT")
+        enable_tls = os.getenv("ENABLE_TLS")
+        tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
     except Exception as e:
         print(
             "Please create config.env file similar to config.env.sample or set environment variables for all variables in config.env.sample file")
@@ -111,11 +114,22 @@ def __get_commandline_args():
     parser.add_argument('--preserve_stack', '-ps', action='store_true',
                         help='Setting this option will prevent the created stack from being automatically deleted.')
 
+    parser.add_argument('--icap_server_port', '-port', default=Config.icap_server_port,
+                        help='Port of ICAP server used for testing')
+
+    parser.add_argument('--tls_verification_method', '-tls', default=Config.tls_verification_method,
+                        help='Verification method used with TLS')
+
+    parser.add_argument('--enable_tls', '-et', default=Config.enable_tls,
+                        help='Whether or not to enable TLS')
+
     return parser.parse_args()
 
 
 # Starts the process of calling delete_stack after duration. Starts timer and displays messages updating users on status
 def __start_delete_stack(additional_delay, config):
+    delete_stack_options = ["prefix"]
+    delete_stack_args = get_args_list(config, delete_stack_options)
     duration = config.duration
     total_wait_time = additional_delay + int(duration)
     minutes = total_wait_time / 60
@@ -131,14 +145,11 @@ def __start_delete_stack(additional_delay, config):
                     total_wait_time - diff.seconds) / 60))
         time.sleep(MESSAGE_INTERVAL)
 
-    delete_stack.Main.main(argv=None)
+    delete_stack.Main.main(argv=delete_stack_args)
 
 
 # creates a list of args to be passed to create_stack from Config (i.e. config.env or command line args)
-def get_create_stack_args_list(config):
-    # options to look out for when using create_stack, used to exclude all other unrelated options in config
-    options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_access_key",
-               "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server"]
+def get_args_list(config, options):
 
     # go through Config object, compile list of relevant arguments
     args_list = []
@@ -152,9 +163,15 @@ def get_create_stack_args_list(config):
 
 
 def main(config):
-    args_list = get_create_stack_args_list(config)
+
+    # options to look out for when using create_stack, used to exclude all other unrelated options in config
+    create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_access_key",
+               "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server"]
+
+    create_stack_args = get_args_list(config, create_stack_options)
+
     print("Creating Load Generators...")
-    create_stack.Main.main(args_list)
+    create_stack.Main.main(create_stack_args)
 
     if config.exclude_dashboard:
         print("Dashboard will not be created")
