@@ -912,8 +912,8 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${influxHost}</stringProp>
-          <stringProp name="HTTPSampler.port">80</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/write?db=icapserver</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
