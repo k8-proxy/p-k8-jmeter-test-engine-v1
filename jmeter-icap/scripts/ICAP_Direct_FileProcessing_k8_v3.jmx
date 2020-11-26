@@ -348,7 +348,7 @@ private static String getFileChecksum(MessageDigest digest, File file) throws IO
 File outFile = new File(&quot;${outputPath}/&quot;+uuid+&quot;_${fileName}&quot;);
  
 //Use MD5 algorithm
-MessageDigest out_Digest = MessageDigest.getInstance(&quot;SHA-1&quot;);
+MessageDigest out_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
 String out_checksum=&quot;out&quot;;
  try {
 //Get the checksum
