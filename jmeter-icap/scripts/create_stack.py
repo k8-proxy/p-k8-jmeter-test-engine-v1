@@ -121,7 +121,7 @@ class Main():
         try:
             a = uuid.uuid4()
             jmeter_script_name = str(a)
-            shutil.copyfile("ICAP_Direct_FileProcessing_k8_v1.jmx",jmeter_script_name)
+            shutil.copyfile("ICAP_Direct_FileProcessing_k8_v3.jmx",jmeter_script_name)
             Main.replace_in_file(jmeter_script_name,"$number_of_threads$", Main.users_per_instance)
             Main.replace_in_file(jmeter_script_name,"$duration_in_seconds$", Main.duration)
             Main.replace_in_file(jmeter_script_name,"$minio_endpoint$", Main.minio_url)
