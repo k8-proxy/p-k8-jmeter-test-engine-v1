@@ -92,7 +92,7 @@
           </elementProp>
           <elementProp name="tls" elementType="Argument">
             <stringProp name="Argument.name">tls</stringProp>
-            <stringProp name="Argument.value">${__P(p_tls,no-verify)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_tls,$tls_verification_method$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="use_tls" elementType="Argument">

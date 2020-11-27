@@ -39,7 +39,7 @@ class Main():
     microk8s = False
     icap_server_port = '1344'
     enable_tls = False
-    tls_verification_method = 'none'
+    tls_verification_method = 'no-verify'
 
     @staticmethod
     def get_microk8s():
@@ -145,6 +145,7 @@ class Main():
                 Main.replace_in_file(jmeter_script_name,"$use_tls$", "true")
             else:
                 Main.replace_in_file(jmeter_script_name,"$use_tls$", "false")
+            Main.replace_in_file(jmeter_script_name,"$tls_verification_method$", Main.tls_verification_method)
             return jmeter_script_name
         except Exception as e:
             logger.error(e)
