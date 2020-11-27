@@ -1,12 +1,17 @@
-FROM ubuntu:focal-20201008
+FROM glasswallsolutions/k8-centos7
 
-
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install openjdk-8-jre python3.8 python3-pip 
-RUN apt-get -y install gcc wget make
+RUN yum install java-1.8.0-openjdk python3 wget gcc make -y \
+	&& yum clean all
 
 #Install c-icap
-RUN apt-get -y install c-icap 
+RUN curl -L -O http://downloads.sourceforge.net/project/c-icap/c-icap/0.4.x/c_icap-0.4.2.tar.gz \
+	&& tar zxvf c_icap-0.4.2.tar.gz \
+	&& cd c_icap-0.4.2 && ./configure \
+	&& make \
+	&& make install \
+	&& cp /usr/local/etc/c-icap.conf /etc \
+	&& rm -rf c_icap-0.4.2.tar.gz
+
 # Set variables
 ARG JMETER_VERSION="5.3"
 ENV JMETER_HOME /usr/local/apache-jmeter-${JMETER_VERSION}
