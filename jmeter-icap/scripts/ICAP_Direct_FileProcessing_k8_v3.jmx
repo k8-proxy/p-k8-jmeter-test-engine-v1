@@ -97,7 +97,7 @@
           </elementProp>
           <elementProp name="use_tls" elementType="Argument">
             <stringProp name="Argument.name">use_tls</stringProp>
-            <stringProp name="Argument.value">${__P(p_use_tls,false)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_use_tls,$use_tls$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -265,17 +265,16 @@ log.info(&quot;File copied to in. &quot;+s3cp);*/
 String command1 = &quot;&quot;;
 String command2 = &quot;&quot;;
 
+log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
+log.info(&quot;Use TLS set to: &quot;+vars.get(&quot;use_tls&quot;));
+
 if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
-	log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
  	command1 = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -tls -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;  // for unix
 	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} &quot;+vars.get(&quot;tls&quot;)+ &quot; -v&quot;;
-	log.info(&quot;Use TLS set to: &quot;+vars.get(&quot;use_tls&quot;));
 }
 else {
-	log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
  	command1 = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;    // for unix
 	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} -v&quot;;
-	log.info(&quot;Use TLS set to: &quot;+vars.get(&quot;use_tls&quot;));
 }
 
 String command=command1+command2;
@@ -654,7 +653,14 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-server-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;);    // for unix
+String command = &quot;&quot;;
+
+if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
+  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;);    // for unix
+}
+else {
+  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;);    // for unix
+}
 
 // Print the generated status check command
 log.info(command);
@@ -709,7 +715,14 @@ log.info(&quot;Server Status check Output: &quot; + logCommandOutput.toString())
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-Resource-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
+String command = &quot;&quot;;
+
+if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
+  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
+}
+else {
+  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
+}
 
 // Print the generated status check command
 log.info(command);
@@ -823,8 +836,15 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
 		import java.time.ZoneId;
 		import java.time.ZonedDateTime;
 */
-	   //String my_var = vars.get(&quot;ICAPServerAddr&quot;);
-        String command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
+
+    String command = &quot;&quot;;
+    if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
+      command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
+    }
+    else {
+      command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
+    }
+
 	   // Print the generated status check command
 		log.info(command);
 

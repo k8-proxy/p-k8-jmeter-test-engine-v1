@@ -141,6 +141,10 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$prefix$", Main.prefix)
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
             Main.replace_in_file(jmeter_script_name,"$icap_server_port$", Main.icap_server_port)
+            if Main.enable_tls:
+                Main.replace_in_file(jmeter_script_name,"$use_tls$", "true")
+            else:
+                Main.replace_in_file(jmeter_script_name,"$use_tls$", "false")
             return jmeter_script_name
         except Exception as e:
             logger.error(e)
