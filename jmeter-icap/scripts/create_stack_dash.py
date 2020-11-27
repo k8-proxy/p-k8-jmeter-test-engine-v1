@@ -166,7 +166,8 @@ def main(config):
 
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_access_key",
-               "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server"]
+               "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
+               "icap_server_port", "enable_tls", "tls_verification_method"]
 
     create_stack_args = get_args_list(config, create_stack_options)
 
@@ -204,6 +205,8 @@ if __name__ == "__main__":
     Config.grafana_file = args.grafana_file
     Config.grafana_api_key = args.grafana_api_key
     Config.grafana_secret = args.grafana_secret
+    Config.icap_server_port = args.icap_server_port
+    Config.tls_verification_method = args.tls_verification_method
 
     # these are flag/boolean arguments
     if args.exclude_dashboard:
@@ -215,6 +218,8 @@ if __name__ == "__main__":
         Config.preserve_stack = True
     elif Config.preserve_stack:
         Config.preserve_stack = int(Config.preserve_stack) == 1
+
+    Config.enable_tls = (int(args.enable_tls) == 1)
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
     if not Config.grafana_api_key and not Config.grafana_secret:
