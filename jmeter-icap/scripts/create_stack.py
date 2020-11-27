@@ -92,6 +92,10 @@ class Main():
             exit(1)
         Main.verify_url('minio', Main.minio_url)
         Main.verify_url('influxdb', Main.influxdb_url)
+        if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
+            logger.error("Wrong icap server port value {}".format(Main.icap_server_port))
+            exit(1)
+
 
     @staticmethod
     def stop_jmeter_jobs():
@@ -136,6 +140,7 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$influxHost$", Main.influxHost)
             Main.replace_in_file(jmeter_script_name,"$prefix$", Main.prefix)
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
+            Main.replace_in_file(jmeter_script_name,"$icap_server_port$", Main.icap_server_port)
             return jmeter_script_name
         except Exception as e:
             logger.error(e)

@@ -87,7 +87,7 @@
           </elementProp>
           <elementProp name="port" elementType="Argument">
             <stringProp name="Argument.name">port</stringProp>
-            <stringProp name="Argument.value">${__P(p_port,1344)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_port,$icap_server_port$)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="tls" elementType="Argument">
@@ -654,7 +654,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-server-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;);    // for unix
+String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;);    // for unix
 
 // Print the generated status check command
 log.info(command);
@@ -709,7 +709,7 @@ log.info(&quot;Server Status check Output: &quot; + logCommandOutput.toString())
 
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Check-Resource-status: &quot; + vars.get(&quot;icapServer&quot;));
 
-String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p 1344 -s gw_rebuild&quot;;    // for unix
+String command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
 
 // Print the generated status check command
 log.info(command);
@@ -824,7 +824,7 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
 		import java.time.ZonedDateTime;
 */
 	   //String my_var = vars.get(&quot;ICAPServerAddr&quot;);
-        String command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;)+&quot; -req any&quot;;
+        String command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
 	   // Print the generated status check command
 		log.info(command);
 
