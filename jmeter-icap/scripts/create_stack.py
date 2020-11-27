@@ -37,6 +37,9 @@ class Main():
     Xmx_value = '512'
     parallelism = 1
     microk8s = False
+    icap_server_port = '1344'
+    enable_tls = False
+    tls_verification_method = 'no-verify'
 
     @staticmethod
     def get_microk8s():
@@ -89,6 +92,10 @@ class Main():
             exit(1)
         Main.verify_url('minio', Main.minio_url)
         Main.verify_url('influxdb', Main.influxdb_url)
+        if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
+            logger.error("Wrong icap server port value {}".format(Main.icap_server_port))
+            exit(1)
+
 
     @staticmethod
     def stop_jmeter_jobs():
@@ -121,7 +128,7 @@ class Main():
         try:
             a = uuid.uuid4()
             jmeter_script_name = str(a)
-            shutil.copyfile("ICAP_Direct_FileProcessing_k8_v1.jmx",jmeter_script_name)
+            shutil.copyfile("ICAP_Direct_FileProcessing_k8_v3.jmx",jmeter_script_name)
             Main.replace_in_file(jmeter_script_name,"$number_of_threads$", Main.users_per_instance)
             Main.replace_in_file(jmeter_script_name,"$duration_in_seconds$", Main.duration)
             Main.replace_in_file(jmeter_script_name,"$minio_endpoint$", Main.minio_url)
@@ -133,6 +140,12 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$influxHost$", Main.influxHost)
             Main.replace_in_file(jmeter_script_name,"$prefix$", Main.prefix)
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
+            Main.replace_in_file(jmeter_script_name,"$icap_server_port$", Main.icap_server_port)
+            if Main.enable_tls:
+                Main.replace_in_file(jmeter_script_name,"$use_tls$", "true")
+            else:
+                Main.replace_in_file(jmeter_script_name,"$use_tls$", "false")
+            Main.replace_in_file(jmeter_script_name,"$tls_verification_method$", Main.tls_verification_method)
             return jmeter_script_name
         except Exception as e:
             logger.error(e)
@@ -224,7 +237,7 @@ class Main():
     def main(argv):
         help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -256,6 +269,12 @@ class Main():
                 Main.prefix = arg
             elif opt in ("-v", "--icap_server"):
                 Main.icap_server = arg
+            elif opt in ("-port", "--icap_server_port"):
+                Main.icap_server_port = arg
+            elif opt in ("-et", "--enable_tls"):
+                Main.enable_tls = arg
+            elif opt in ("-tls", "--tls_verification_method"):
+                Main.tls_verification_method = arg
 
         Main.log_level(LOG_LEVEL)
         logger.info("TOTAL USERS         {}".format(Main.total_users))
@@ -278,6 +297,10 @@ class Main():
         logger.info("PREFIX              {}".format(Main.prefix))
 
         logger.info("ICAP SERVER         {}".format(Main.icap_server))
+        logger.info("ICAP SERVER PORT    {}".format(Main.icap_server_port))
+
+        logger.info("ENABLE TLS          {}".format(Main.enable_tls))
+        logger.info("TLS VERIFICATION    {}".format(Main.tls_verification_method))
 
         Main.get_microk8s()
         logger.info("Micro k8s           {}".format(Main.microk8s))
