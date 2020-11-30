@@ -1,4 +1,4 @@
-FROM glasswallsolutions/jmeter:5.3
+FROM glasswallsolutions/cloud-qa:jmeter-ubuntu
 
 ENV PATH $PATH:${JMETER_BIN}
 ARG DATA_PATH="."

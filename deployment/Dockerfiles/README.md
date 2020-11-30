@@ -2,21 +2,21 @@
 
 ## Overview
 
-* [jmeter-base](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/docker-images/Dockerfiles/jmeter-base)
-* [jmeter-testdata](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/docker-images/Dockerfiles/jmeter-testdata)
+* [jmeter-base](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/deployment/Dockerfiles/jmeter-base)
+* [jmeter-testdata](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/deployment/Dockerfiles/jmeter-testdata)
 
 ## Build and publish base image 
 
 
 ```shell
-$ docker build . -t glasswallsolutions/jmeter:5.3 -f Dockerfiles/jmeter-base
-$ docker push glasswallsolutions/jmeter:5.3
+$ docker build . -t glasswallsolutions/cloud-qa:jmeter-ubuntu -f deployment/Dockerfiles/jmeter-base
+$ docker push glasswallsolutions/cloud-qa:jmeter-ubuntu
 ```
 
 ## Build and publish testdata image
 
 
 ```shell
-$ docker build . -t glasswallsolutions/jmeter:testdata -f Dockerfiles/jmeter-testdata 
-$ docker push glasswallsolutions/jmeter:testdata
+$ docker build . -t glasswallsolutions/cloud-qa:jmeter-engine -f deployment/Dockerfiles/jmeter-testdata 
+$ docker push glasswallsolutions/cloud-qa:jmeter-engine
 ```
