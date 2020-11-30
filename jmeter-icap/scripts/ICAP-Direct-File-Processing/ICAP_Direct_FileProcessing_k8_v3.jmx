@@ -269,11 +269,11 @@ log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Doc
 log.info(&quot;Use TLS set to: &quot;+vars.get(&quot;use_tls&quot;));
 
 if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
- 	command1 = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -tls -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;  // for unix
+ 	command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -tls -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;  // for unix
 	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} &quot;+vars.get(&quot;tls&quot;)+ &quot; -v&quot;;
 }
 else {
- 	command1 = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;    // for unix
+ 	command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;    // for unix
 	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} -v&quot;;
 }
 
@@ -656,10 +656,10 @@ log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Che
 String command = &quot;&quot;;
 
 if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
-  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;);    // for unix
+  command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;);    // for unix
 }
 else {
-  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;);    // for unix
+  command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;);    // for unix
 }
 
 // Print the generated status check command
@@ -718,10 +718,10 @@ log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Che
 String command = &quot;&quot;;
 
 if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
-  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
+  command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
 }
 else {
-  command = &quot;/usr/local/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
+  command = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) + &quot; -s gw_rebuild&quot;;    // for unix
 }
 
 // Print the generated status check command
@@ -839,10 +839,10 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
 
     String command = &quot;&quot;;
     if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
-      command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
+      command =&quot;/usr/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; tls -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
     }
     else {
-      command =&quot;/usr/local/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
+      command =&quot;/usr/bin/c-icap-client -s info?view=text -i &quot; +vars.get(&quot;icapServer&quot;) + &quot; -p &quot; + vars.get(&quot;port&quot;) +&quot; -req any&quot;;
     }
 
 	   // Print the generated status check command
