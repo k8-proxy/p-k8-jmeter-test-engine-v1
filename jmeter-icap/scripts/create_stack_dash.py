@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
     if not Config.grafana_api_key and not Config.grafana_secret:
-        print("Must input either grafana_key or grafana_secret_id in config.env or using args")
+        print("Must input either grafana_api_key or grafana_secret in config.env or using args")
         exit(0)
     elif not Config.grafana_api_key and not Config.exclude_dashboard:
         secret_response = get_secret_value(config=Config, secret_id=Config.grafana_secret)
