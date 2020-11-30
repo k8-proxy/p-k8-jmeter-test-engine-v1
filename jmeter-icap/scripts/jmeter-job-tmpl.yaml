@@ -26,7 +26,7 @@ spec:
         effect: "NoSchedule"       
       containers:
       - name: jmeter
-        image: ggrig/jmeter-c-icap:3.06
+        image: glasswallsolutions/cloud-qa:jmeter-engine
         resources:
           requests:
             memory: "$requests_memory$Mi"
