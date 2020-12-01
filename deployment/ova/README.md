@@ -3,7 +3,7 @@
 2. 
     - When deploying on a VMware ESXi host, create a new VM (In Virtual Machines click on 'Create / Register VM') and choose 'Deploy a virtual machine from an OVF or OVA file'. Follow the deployment wizard instructions.
     - When deploying on a VMware Workstation in select 'File/Open' menu and navigate to the OVA file location on the computer
-3. Once the VM starts login with user `glasswall` and password `Gl@sswall`
+3. Once the VM starts login with username and password
 4. Make sure the VM can access the network. If necessary, set static IP by following the [instructions](https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu)
 5. Try listing the current pods with the following command:
 ```
