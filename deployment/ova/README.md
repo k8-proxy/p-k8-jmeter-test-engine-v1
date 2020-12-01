@@ -43,7 +43,7 @@ In another terminal tab
 8. Open the Mozilla browser and navigate to the following pages 
 Minio http://localhost:9000
 Grafana http://localhost:3000
-The credentials for both are admin/admin@123
+Login with valid credentials for both 
 9. Open a new terminal tab and run the following:
 ```
 cd ~/p-k8-jmeter-test-engine/jmeter-icap/scripts/
