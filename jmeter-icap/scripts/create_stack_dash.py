@@ -161,8 +161,59 @@ def get_args_list(config, options):
 
     return args_list
 
+def run_using_ui(ui_json_params):
+
+    # Set Config values gotten from front end
+    if ui_json_params['total_users']:
+        Config.total_users = ui_json_params['total_users']
+    if ui_json_params['ramp_up_time']:
+        Config.ramp_up_time = ui_json_params['ramp_up_time']
+    if ui_json_params['duration']:
+        Config.duration = ui_json_params['duration']
+    if ui_json_params['icap_endpoint_url']:
+        Config.icap_endpoint_url = ui_json_params['icap_endpoint_url']
+    if ui_json_params['prefix']:
+        Config.prefix = ui_json_params['prefix']
+    if ui_json_params['load_type']:
+        __determineLoadType(ui_json_params['load_type'])
+
+    # ensure that preserve stack and create_dashboard are at default values
+    Config.preserve_stack = False
+    Config.exclude_dashboard = False
+
+    # Setting values for local setup
+    Config.grafana_url = "http://localhost:3000/"
+
+
+    dashboard_url = main(Config)
+
+    return dashboard_url
+
+def __determineLoadType(load: str):
+    if load == "Direct":
+        print("Using direct")
+        Config.test_directory = 'ICAP-Direct-File-Processing'
+        Config.jmx_script_name = 'ICAP_Direct_FileProcessing_Local_v4.jmx'
+        Config.grafana_file = 'aws-test-engine-dashboard.json'
+        Config.test_data_file = 'gov_uk_files.csv'
+
+    elif load == "Proxy":
+        print("Using proxy")
+        Config.test_directory = 'ICAP-Proxy-Site'
+        Config.jmx_script_name = 'ProxySite_Processing_v1.jmx'
+        Config.grafana_file = 'ProxySite_Dashboard_Template.json'
+        Config.test_data_file = 'proxysitefiles.csv'
+
 
 def main(config):
+
+    dashboard_url = ''
+
+    if config.exclude_dashboard:
+        print("Dashboard will not be created")
+    else:
+        print("Creating dashboard...")
+        dashboard_url = create_dashboard.main(config)
 
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_access_key",
@@ -174,16 +225,12 @@ def main(config):
     print("Creating Load Generators...")
     create_stack.Main.main(create_stack_args)
 
-    if config.exclude_dashboard:
-        print("Dashboard will not be created")
-    else:
-        print("Creating dashboard...")
-        create_dashboard.main(config)
-
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
     else:
         __start_delete_stack(DELETE_TIME_OFFSET, config)
+
+    return dashboard_url
 
 
 if __name__ == "__main__":

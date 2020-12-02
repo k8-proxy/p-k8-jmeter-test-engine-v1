@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import json
-import run_local_test
+from create_stack_dash import run_using_ui
 from waitress import serve
 
 UPLOAD_FOLDER = './'
@@ -14,7 +14,7 @@ def parse_request():
     data = json.loads(request.form.get('form'))
     print(data)
 
-    returned_url = run_local_test.main(data)
+    returned_url = run_using_ui(data)
     if returned_url:
         return make_response(jsonify(returned_url), 201)
 
