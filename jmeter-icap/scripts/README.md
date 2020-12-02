@@ -19,11 +19,10 @@ This script launches a Kubernetes cluster that spins up load generators then cre
 
 1. Install Python version 3.8 or later (see [Python](https://www.python.org/downloads/))
 
-2. Ensure necessary python packages are installed. This can be done using the following console command:
+2. Ensure necessary python packages are installed. Navigate to the scripts folder where the file "requirements.txt" exists, then use the following console command in the terminal:
 ```
     pip3 install -r requirements.txt
 ```
-Requirements.txt [is located here](/requirements.txt)
 
 3. Create config.env file by copying the existing [config.env](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/src/controller/docker-jmeter-c-icap/config.env) sample file. Update the values there to correspond to your test setup - [refer to the table of parameters available below](#options-available-for-the-create-stack-dashpy-script)
 
