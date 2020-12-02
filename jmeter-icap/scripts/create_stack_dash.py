@@ -41,6 +41,7 @@ class Config(object):
         preserve_stack = os.getenv("PRESERVE_STACK")
         icap_server_port = os.getenv("ICAP_SERVER_PORT")
         enable_tls = os.getenv("ENABLE_TLS")
+        jmx_file_path = os.getenv("JMX_FILE_PATH")
         tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
     except Exception as e:
         print(
@@ -123,6 +124,9 @@ def __get_commandline_args():
     parser.add_argument('--enable_tls', '-et', default=Config.enable_tls,
                         help='Whether or not to enable TLS')
 
+    parser.add_argument('--jmx_file_path', '-jmx', default=Config.jmx_file_path,
+                        help='The file path of the JMX file under the test')
+
     return parser.parse_args()
 
 
@@ -167,7 +171,7 @@ def main(config):
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_access_key",
                "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
-               "icap_server_port", "enable_tls", "tls_verification_method"]
+               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path"]
 
     create_stack_args = get_args_list(config, create_stack_options)
 
@@ -220,6 +224,8 @@ if __name__ == "__main__":
         Config.preserve_stack = int(Config.preserve_stack) == 1
 
     Config.enable_tls = (int(args.enable_tls) == 1)
+
+    Config.jmx_file_path = args.jmx_file_path
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
     if not Config.grafana_api_key and not Config.grafana_secret:
