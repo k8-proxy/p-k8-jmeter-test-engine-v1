@@ -4,6 +4,8 @@
 
 cloud: local
 influxdb:
+  storage: 2Gi
+  storageclass: microk8s-hostpath
   image:
     repository: influxdb
     tag: 1.8.0-alpine
@@ -17,6 +19,8 @@ influxdb:
       memory: 2048Mi
 
 minio:
+  storage: 2Gi
+  storageclass: microk8s-hostpath
   image:
     repository: minio/minio
     tag: RELEASE.2020-10-09T22-55-05Z
@@ -36,6 +40,8 @@ minio:
     ebs_volume_id: EFS-ID
 
 grafana:
+  storage: 2Gi
+  storageclass: microk8s-hostpath
   image:
     repository: grafana/grafana
     tag: 7.3.0
@@ -50,6 +56,18 @@ grafana:
       memory: 2048Mi
 
 replicaCount: 1
+
+prometheus:
+  alertmanager:
+    enabled: false
+  pushgateway:
+    enabled: false
+  server:
+    persistentVolume:
+      enabled: true
+      size: 2Gi
+      storageClass: microk8s-hostpath
+      volumeBindingMode: WaitForFirstConsumer
 
 imagePullSecrets: []
 nameOverride: ""
@@ -103,7 +121,7 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-  
+
 
 nodeSelector: {}
 #
