@@ -36,7 +36,7 @@ def __add_prefix_to_grafana_loki_source_job(grafana_json, prefix):
         for i in grafana_json["dashboard"]['panels']:
             if i['datasource'] == 'Loki':
                 for j in i['targets']:
-                    j['expr'] = '{job="' + prefix + '_' + 'jmeter"}'
+                    j['expr'] = '{job_name="' + prefix + '_' + 'jmeterjob"}'
 
 
 # Modifies green info bar at the top of dashboard to display info on current test run

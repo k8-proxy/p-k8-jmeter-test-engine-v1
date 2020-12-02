@@ -34,7 +34,7 @@ Set below environment variables with the values you like, in the terminal before
 ### Deploy Prometheus
 
     kubectl create ns prometheus
-    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    helm repo add stable https://charts.helm.sh/stable
     helm repo update
     helm upgrade --install -n prometheus prometheus stable/prometheus
 
