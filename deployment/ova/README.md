@@ -8,7 +8,7 @@ The environment does not have to scale up capabilities (like in EKS or AKS). How
 2. 
     - When deploying on a VMware ESXi host, create a new VM (In Virtual Machines click on 'Create / Register VM') and choose 'Deploy a virtual machine from an OVF or OVA file'. Follow the deployment wizard instructions.
     - When deploying on a VMware Workstation in select 'File/Open' menu and navigate to the OVA file location on the computer<br/>
-3. Once the VM starts login with user `glasswall` and password `Gl@sswall`
+3. Once the VM starts login with user `glasswall`
 4. Make sure the VM can access the network. <br\>
 The VM has a preset static IP address to run on Glasswall VMware ESXi host.<br/>
 ![ip](pngs/ip-setting.png)<br/>
@@ -57,7 +57,6 @@ In another terminal tab
 8. Open the Mozilla browser and navigate to the following pages 
 Minio http://localhost:9000
 Grafana http://localhost:3000
-The credentials for both are admin/admin@123
 9. Open a new terminal tab and run the following:
 ```
     cd ~/scripts
