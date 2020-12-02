@@ -197,7 +197,7 @@ This takes no arguments. If set (ex: create_stack_dash -x), a Grafana dashboard 
 </tr>
 <td> --icap_server_port, -port </td> <td>ICAP_SERVER_PORT</td>
 <td>
-Port used with ICAP server for testing
+Port used for ICAP server
 </td>
 </tr>
 <td> --tls_verification_method, -tls </td> <td>ENABLE_TLS</td>
