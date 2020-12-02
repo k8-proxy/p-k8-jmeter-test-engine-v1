@@ -1,28 +1,42 @@
+# Introduction
+OVA image encapsulates the JMeter engine test environment within a single virtual machine
+![traffic](pngs/jmeter-test-ova.png)
+The environment does not have to scale up capabilities (like in EKS or AKS). However, it allows us to demonstrate the whole workflow along with results visualization in a Grafana dashboard.
 # Test engine deployment with the OVA file
-1. Get the latest OVA image from AWS S3 k8-jmeter-test-engine-data bucket
+1. Get the latest OVA image from Glasswall AWS S3 icap-performance-test-data-bucket bucket
+![bucket](pngs/aws-bucket.png)
 2. 
     - When deploying on a VMware ESXi host, create a new VM (In Virtual Machines click on 'Create / Register VM') and choose 'Deploy a virtual machine from an OVF or OVA file'. Follow the deployment wizard instructions.
     - When deploying on a VMware Workstation in select 'File/Open' menu and navigate to the OVA file location on the computer
 3. Once the VM starts login with user `glasswall` and password `Gl@sswall`
-4. Make sure the VM can access the network. If necessary, set static IP by following the [instructions](https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu)
-5. Try listing the current pods with the following command:
+4. Make sure the VM can access the network. <br\>
+The VM has a preset static IP address to run on Glasswall VMware ESXi host.
+![ip](pngs/ip-settings.png)
+Depending on your network configuration, change to automatic IP (must have DHCP server accessible)
+![auto](pngs/ip-auto.png)
+or set static IP by following the [instructions](https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu)
+5. In a terminal window try listing the current pods with the following command:
 ```
     kubectl get pods --all-namespaces
 ```
 The output should look like
 ```
-    NAMESPACE     NAME                                         READY   STATUS    RESTARTS   AGE
-    kube-system   dashboard-metrics-scraper-6c4568dc68-4fzw6   1/1     Running   19         41h
-    kube-system   metrics-server-8bbfb4bdb-f7mhl               1/1     Running   17         41h
-    kube-system   kubernetes-dashboard-7ffd448895-gzfrs        1/1     Running   21         41h
-    kube-system   coredns-86f78bb79c-2pbz9                     1/1     Running   19         41h
-    kube-system   tiller-deploy-69c484895f-sj4tv               1/1     Running   10         16h
-    kube-system   calico-kube-controllers-847c8c99d-t5gr5      1/1     Running   18         41h
-    kube-system   calico-node-wn6rf                            1/1     Running   26         41h
-    common        influxdb-0                                   1/1     Running   8          16h
-    common        minio-774cb77ff5-r47b7                       1/1     Running   9          16h
-    common        grafana-568dfdfc94-d2qrc                     1/1     Running   7          16h
+    NAMESPACE     NAME                                         READY   STATUS                  RESTARTS   AGE
+    common        loki-promtail-fm5j6                          1/1     Running                 14         37h
+    common        promtail-5wkxz                               1/1     Running                 12         37h
+    kube-system   metrics-server-8bbfb4bdb-f7mhl               1/1     Running                 38         8d
+    kube-system   calico-node-wn6rf                            1/1     Running                 50         8d
+    kube-system   calico-kube-controllers-847c8c99d-t5gr5      1/1     Running                 36         8d
+    common        influxdb-0                                   1/1     Running                 28         7d13h
+    common        grafana-568dfdfc94-lzfmf                     0/1     Init:ImagePullBackOff   0          21h
+    kube-system   kubernetes-dashboard-7ffd448895-gzfrs        1/1     Running                 41         8d
+    common        minio-774cb77ff5-r47b7                       1/1     Running                 30         7d13h
+    kube-system   dashboard-metrics-scraper-6c4568dc68-4fzw6   1/1     Running                 41         8d
+    kube-system   coredns-86f78bb79c-2pbz9                     0/1     Running                 40         8d
+    common        loki-0                                       0/1     Running                 9          21h
+    kube-system   tiller-deploy-69c484895f-sj4tv               0/1     Running                 29         7d14h
 ```
+wait until all the PODs are `READY` and `Running`
 6. In some case step 5 on the initially deployed VM might fail with the following error
 ```
     Unable to connect to the server: x509: certificate has expired or is not yet valid: current time 2020-05-03T23:53:06Z is after 2020-05-03T16:38:01Z
@@ -46,11 +60,36 @@ Grafana http://localhost:3000
 The credentials for both are admin/admin@123
 9. Open a new terminal tab and run the following:
 ```
-cd ~/p-k8-jmeter-test-engine/jmeter-icap/scripts/
+cd ~/scripts
 ```
 Here make sure the parameters passed to the master script are correct
 ```
     cat config.env
+```
+Here are the expected settings:
+```
+    AWS_PROFILE_NAME=default
+    REGION=eu-west-1
+    TOTAL_USERS=100
+    USERS_PER_INSTANCE=25
+    DURATION=300
+    TEST_DATA_FILE=gov_uk_files.csv
+    MINIO_URL=http://minio-service.common:80
+    MINIO_ACCESS_KEY=admin
+    MINIO_SECRET_KEY=admin@123
+    MINIO_INPUT_BUCKET=icap-performance-test-data-bucket
+    MINIO_OUTPUT_BUCKET=output
+    INFLUXDB_URL=http://influxdb-service.common:80
+    PREFIX=test
+    ICAP_SERVER_URL=eu.icap.glasswall-icap.com
+    GRAFANA_URL=localhost:3000
+    GRAFANA_API_KEY=eyJrIjoiZE9FWGt5MDl6Qld4VlhzcHd3TzVyWGh3MUJZZzkyNmEiLCJuIjoiSk1ldGVyIHRlc3QiLCJpZCI6MX0=
+    GRAFANA_FILE=../grafana_dashboards/k8-test-engine-dashboard.json
+    EXCLUDE_DASHBOARD=0
+    PRESERVE_STACK=0
+    ICAP_SERVER_PORT=1344
+    ENABLE_TLS=0
+    TLS_VERIFICATION_METHOD=no-verify
 ```
 Then run the master script
 ```
@@ -84,4 +123,7 @@ The output should look as follows:
     Stack will be deleted after 20.0 minutes
     0.0 minutes have elapsed, stack will be deleted in 20.0 minutes
 ```
-10. At the moment Grafana is supposed to have a newly created dashboard whose name starts with the prefix passed to the master script. Open the dashboard and watch a visualization of the running test 
+10. At the moment Grafana is supposed to have a newly created dashboard whose name starts with the `PREFIX` value in config.env passed to the master script. 
+![new-dashboard](pngs/new-dashboard.png)
+Open the dashboard and watch a visualization of the running test 
+![dashboard](pngs/dashboard.png)
