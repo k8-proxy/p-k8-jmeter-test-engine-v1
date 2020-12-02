@@ -28,7 +28,7 @@ The output should look like
     kube-system   calico-node-wn6rf                            1/1     Running
     kube-system   calico-kube-controllers-847c8c99d-t5gr5      1/1     Running
     common        influxdb-0                                   1/1     Running
-    common        grafana-568dfdfc94-lzfmf                     0/1     Init:ImagePullBackOff
+    common        grafana-568dfdfc94-lzfmf                     0/1     Pending
     kube-system   kubernetes-dashboard-7ffd448895-gzfrs        1/1     Running
     common        minio-774cb77ff5-r47b7                       1/1     Running
     kube-system   dashboard-metrics-scraper-6c4568dc68-4fzw6   1/1     Running
