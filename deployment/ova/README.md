@@ -21,20 +21,20 @@ or set static IP by following the [instructions](https://www.howtoforge.com/linu
 ```
 The output should look like
 ```
-    NAMESPACE     NAME                                         READY   STATUS                  RESTARTS   AGE
-    common        loki-promtail-fm5j6                          1/1     Running                 14         37h
-    common        promtail-5wkxz                               1/1     Running                 12         37h
-    kube-system   metrics-server-8bbfb4bdb-f7mhl               1/1     Running                 38         8d
-    kube-system   calico-node-wn6rf                            1/1     Running                 50         8d
-    kube-system   calico-kube-controllers-847c8c99d-t5gr5      1/1     Running                 36         8d
-    common        influxdb-0                                   1/1     Running                 28         7d13h
-    common        grafana-568dfdfc94-lzfmf                     0/1     Init:ImagePullBackOff   0          21h
-    kube-system   kubernetes-dashboard-7ffd448895-gzfrs        1/1     Running                 41         8d
-    common        minio-774cb77ff5-r47b7                       1/1     Running                 30         7d13h
-    kube-system   dashboard-metrics-scraper-6c4568dc68-4fzw6   1/1     Running                 41         8d
-    kube-system   coredns-86f78bb79c-2pbz9                     0/1     Running                 40         8d
-    common        loki-0                                       0/1     Running                 9          21h
-    kube-system   tiller-deploy-69c484895f-sj4tv               0/1     Running                 29         7d14h
+    NAMESPACE     NAME                                         READY   STATUS
+    common        loki-promtail-fm5j6                          1/1     Running
+    common        promtail-5wkxz                               1/1     Running
+    kube-system   metrics-server-8bbfb4bdb-f7mhl               1/1     Running
+    kube-system   calico-node-wn6rf                            1/1     Running
+    kube-system   calico-kube-controllers-847c8c99d-t5gr5      1/1     Running
+    common        influxdb-0                                   1/1     Running
+    common        grafana-568dfdfc94-lzfmf                     0/1     Init:ImagePullBackOff
+    kube-system   kubernetes-dashboard-7ffd448895-gzfrs        1/1     Running
+    common        minio-774cb77ff5-r47b7                       1/1     Running
+    kube-system   dashboard-metrics-scraper-6c4568dc68-4fzw6   1/1     Running
+    kube-system   coredns-86f78bb79c-2pbz9                     0/1     Running
+    common        loki-0                                       0/1     Running
+    kube-system   tiller-deploy-69c484895f-sj4tv               0/1     Running
 ```
 wait until all the PODs are `READY` and `Running`
 6. In some case step 5 on the initially deployed VM might fail with the following error
