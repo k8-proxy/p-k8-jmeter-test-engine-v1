@@ -165,7 +165,10 @@
 // String bumid1  = ${__UUID};
 
  vars.put(&quot;uid&quot;,&quot;${__UUID()}&quot;);
- log.info(&quot;UUID is&quot;+uuid)
+ log.info(&quot;UUID is&quot;+uuid);
+
+ vars.put(&quot;threadFileName&quot;,&quot;${fileName}&quot;);
+
 </stringProp>
           <stringProp name="BeanShellSampler.filename"></stringProp>
           <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -177,7 +180,7 @@
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="download - moving py dependency" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Download the file from Minio" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -195,9 +198,12 @@ import io.minio.DownloadObjectArgs
 import java.io.IOException;
 
 String uuid=vars.get(&quot;uid&quot;);
+String threadFileName = vars.get(&quot;threadFileName&quot;);
+
+log.info(&quot;Downloading thread file &quot; + uuid + &quot;_&quot; + threadFileName);
 
 log.info(&quot;Bucket is &quot; + &quot;${MINIO_BUCKET}&quot;);
-log.info(&quot;Object is &quot; + &quot;${path}/${fileName}&quot;);
+log.info(&quot;Object is &quot; + &quot;${path}/&quot;+threadFileName);
 
 try {
       MinioClient minioClient =
@@ -212,11 +218,11 @@ try {
       }
       // Download file from the bucket
       // It will download object with specified name into location specified as filename
-      inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+      inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_&quot;+threadFileName;
       minioClient.downloadObject(
             DownloadObjectArgs.builder()
               .bucket(&quot;${MINIO_BUCKET}&quot;)
-              .object(&quot;${path}/${fileName}&quot;)
+              .object(&quot;${path}/&quot;+threadFileName)
               .filename(inFileName)
               .build());
 
@@ -259,8 +265,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 String uuid=vars.get(&quot;uid&quot;);
+String threadFileName = vars.get(&quot;threadFileName&quot;);
 
-inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+log.info(&quot;Processing thread file &quot; + uuid + &quot;_&quot; + threadFileName);
+
+inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_&quot;+threadFileName;
 
 File f = new File(inFileName); 
 if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
@@ -330,7 +339,7 @@ private static String getFileChecksum(MessageDigest digest, File file) throws IO
 //checksum md5
 
 //Create checksum for this file
-//File inFile = new File(&quot;${inPath}/${fileName}&quot;);
+//File inFile = new File(&quot;${inPath}/&quot;+threadFileName);
 //String in_checksum=&quot;in&quot;;
 //Use MD5 algorithm
 //MessageDigest in_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
@@ -348,7 +357,7 @@ private static String getFileChecksum(MessageDigest digest, File file) throws IO
 
  
 //Create checksum for this file
-File outFile = new File(&quot;${outputPath}/&quot;+uuid+&quot;_${fileName}&quot;);
+File outFile = new File(&quot;${outputPath}/&quot;+uuid+&quot;_&quot;+threadFileName);
  
 //Use MD5 algorithm
 MessageDigest out_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
@@ -474,7 +483,7 @@ while( (line = in.readLine()) != null) {
      SampleResult.setResponseCode(&quot;403&quot;);
      SampleResult.setSuccessful(false);
      SampleResult.setResponseMessage(&quot;403 Fordbidden&quot;);
-     log.info(&quot;Response Code is 403. File is &quot;+ &quot;${fileName}&quot;);
+     log.info(&quot;Response Code is 403. File is &quot; + threadFileName);
      if (&quot;${rebuild_hash}&quot;.equals(&quot;NULL&quot;))
      SampleResult.setSuccessful(true);
      break;
@@ -504,7 +513,7 @@ else {
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="upload - moving py dependecy" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Upload to minio" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -520,8 +529,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 
 String uuid=vars.get(&quot;uid&quot;);
+String threadFileName = vars.get(&quot;threadFileName&quot;);
 
-outFileName=&quot;${outputPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+log.info(&quot;Uploading thread file &quot; + uuid + &quot;_&quot; + threadFileName);
+
+outFileName=&quot;${outputPath}/&quot;+ uuid +&quot;_&quot; + threadFileName;
 
 File f = new File(outFileName); 
 if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
@@ -541,7 +553,7 @@ try {
 	}
 	
 	// Upload file to the bucket with putObject
-	String name = uuid + &quot;_${fileName}&quot;;
+	String name = uuid + &quot;_&quot; + threadFileName;
 	String filePath = &quot;${outputPath}/&quot; + name;
 	
 	vars.put(&quot;filePath&quot;, filePath);
@@ -578,25 +590,25 @@ else
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="script">
+
 String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
+String threadFileName = vars.get(&quot;threadFileName&quot;);
 
-
-log.info(&quot;Cleaning file from out folder &quot;);
+log.info(&quot;Cleaning the thread file &quot; + uuid + &quot;_&quot; + threadFileName);
 
 //clean in folder
-String removeInFile=&quot;rm -Rf &quot;+&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
+String removeInFile=&quot;rm -Rf &quot;+&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot;+threadFileName;
 s3p_out = Runtime.getRuntime().exec(removeInFile);
 s3p_out.waitFor();
 
-log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&quot; file deleted from the input folder &quot;);
+log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the input folder &quot;);
 
 //clean out folder
-String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
+String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName;
 s3p_out = Runtime.getRuntime().exec(removeOutFile);
 s3p_out.waitFor();
 
-log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&quot; file deleted from the output folder &quot;);
+log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the output folder &quot;);
 </stringProp>
             <stringProp name="scriptLanguage">java</stringProp>
           </JSR223Sampler>
