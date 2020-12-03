@@ -39,3 +39,4 @@ network: {config: disabled}
 netplan apply
 reboot
 ```
+Refer this link for more information - https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu
