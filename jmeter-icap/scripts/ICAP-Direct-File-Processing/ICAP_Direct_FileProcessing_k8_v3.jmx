@@ -521,6 +521,13 @@ import java.io.IOException;
 
 String uuid=vars.get(&quot;uid&quot;);
 
+outFileName=&quot;${outputPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+
+File f = new File(outFileName); 
+if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
+{
+  log.error("Uploading " + outFileName)
+
 try {
       MinioClient minioClient =
           MinioClient.builder()
@@ -545,7 +552,13 @@ try {
 	minioClient.putObject(&quot;${MINIO_BUCKET_OUTPUT}&quot;,&quot;icap-processed/&quot; + name,filePath,null);
     } catch(MinioException e) {
       System.out.println(&quot;Error occurred: &quot; + e);
-    }</stringProp>
+    }
+}
+else
+{
+  log.error("CANNOT upload " + outFileName)
+}    
+    </stringProp>
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
