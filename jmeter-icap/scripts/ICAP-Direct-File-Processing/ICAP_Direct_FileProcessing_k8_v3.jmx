@@ -182,7 +182,9 @@
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">import io.minio.MinioClient;
+            <stringProp name="script">
+
+import io.minio.MinioClient;
 import io.minio.ServerSideEncryption;
 import io.minio.ServerSideEncryptionCustomerKey;
 import io.minio.UploadObjectArgs;
@@ -203,25 +205,29 @@ try {
               .endpoint(&quot;${MINIO_URL}&quot;)
               .credentials(&quot;${MINIO_ACCESS_KEY}&quot;, &quot;${MINIO_SECRET_KEY}&quot;)
               .build();
-	// Check if the bucket already exists.
-	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-	if(isExist) {
-	        //System.out.println(&quot;Bucket already exists.&quot;);
-	      } else {
-	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-	      }
-	// Download file from the bucket
-	//It will download object with specified name into location specified as filename
-	inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
-	minioClient.downloadObject(
-	       DownloadObjectArgs.builder()
-	                .bucket(&quot;${MINIO_BUCKET}&quot;)
-	                .object(&quot;${path}/${fileName}&quot;)
-	                .filename(inFileName)
-	                .build());
-	log.info(&quot;File is downloaded to in folder &quot;+inFileName);
-     } catch (MinioException e) {
-		 System.out.println(&quot;Error occurred: &quot; + e);
+      // Check if the bucket already exists.
+      boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+      if(!isExist) {
+        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+      }
+      // Download file from the bucket
+      // It will download object with specified name into location specified as filename
+      inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+      minioClient.downloadObject(
+            DownloadObjectArgs.builder()
+              .bucket(&quot;${MINIO_BUCKET}&quot;)
+              .object(&quot;${path}/${fileName}&quot;)
+              .filename(inFileName)
+              .build());
+
+      File f = new File(inFileName); 
+      if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) {
+        log.info(&quot;File has been downloaded &quot;+inFileName);
+      } else {
+        log.info(&quot;File has NOT been downloaded &quot;+inFileName);
+      }
+    } catch (MinioException e) {
+		  log.error(&quot;Error occurred: &quot; + e);
 		}
 
 </stringProp>
@@ -233,7 +239,7 @@ try {
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="ICAP file processing" enabled="true">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
@@ -253,14 +259,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 String uuid=vars.get(&quot;uid&quot;);
-/*log.info(&quot;UUID is &quot;+uuid);
-log.info(&quot;Coping files from s3 to localdisk&quot;);
-String s3cp=&quot;aws s3 cp s3://&quot;+vars.get(&quot;s3bucketName&quot;)+&quot;/${path}/&quot;+&quot;${fileName}&quot;+&quot; &quot;+vars.get(&quot;path&quot;)+&quot;/&quot;+&quot;${fileName}&quot;;
 
-// Create a process object and let this object execute the command
-Process s3p = Runtime.getRuntime().exec(s3cp);
-s3p.waitFor();
-log.info(&quot;File copied to in. &quot;+s3cp);*/
+inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
+
+File f = new File(inFileName); 
+if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
+{
+
+log.info("Processing " + inFileName);
 
 String command1 = &quot;&quot;;
 String command2 = &quot;&quot;;
@@ -280,9 +286,7 @@ else {
 String command=command1+command2;
 // Print the generated status check command
 
-log.info(&quot;Command 1 is &quot;+command1);
-log.info(&quot;Command 2 is &quot;+command2);
-log.info(&quot;Full command is &quot;+command);
+log.info(&quot;The command is &quot;+command);
 
 // Create a process object and let this object execute the icap client command
 Process p = Runtime.getRuntime().exec(command);
@@ -478,7 +482,13 @@ while( (line = in.readLine()) != null) {
 }
 
 in.close();
-log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());</stringProp>
+log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());
+
+}
+else {
+  log.info("CANNOT process " + inFileName);
+}
+</stringProp>
             <stringProp name="scriptLanguage">java</stringProp>
           </JSR223Sampler>
           <hashTree/>
@@ -519,10 +529,8 @@ try {
               .build();
 	// Check if the bucket already exists.
 	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
-	if(isExist) {
-	        //System.out.println(&quot;Bucket already exists.&quot;);
-	      } else {
-	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
+	if(!isExist) {
+    minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
 	}
 	
 	// Upload file to the bucket with putObject
@@ -879,7 +887,6 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
 	     while( (line = br.readLine()) != null ) {
 	     	
 	         if (!(line.contentEquals(list_measurements[i+1]))){
-	            	//	System.out.println(line);
 	         line = line.replaceAll(&quot;=&quot;,&quot;&quot;);
 	         line = line.replaceAll(&quot;: | : &quot;, &quot;=&quot;);
 	         line = line.replaceAll(&quot; &quot;,&quot;_&quot;);
