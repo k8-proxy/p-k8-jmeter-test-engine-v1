@@ -162,15 +162,17 @@
         <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Generate UUID" enabled="true">
           <stringProp name="BeanShellSampler.query">
 
-// String bumid1  = ${__UUID};
-
  vars.put(&quot;uid&quot;,&quot;${__UUID()}&quot;);
- log.info(&quot;UUID is&quot;+uuid);
-
  vars.put(&quot;threadFileName&quot;,&quot;${fileName}&quot;);
  vars.put(&quot;threadPath&quot;,&quot;${path}&quot;);
  vars.put(&quot;threadRebuildHash&quot;,&quot;${rebuild_hash}&quot;);
- 
+
+ String uuid=vars.get(&quot;uid&quot;);
+ String threadFileName = vars.get(&quot;threadFileName&quot;);
+ String threadPath = vars.get(&quot;threadPath&quot;);
+ String threadRebuildHash = vars.get(&quot;threadRebuildHash&quot;);
+
+ log.info(&quot;Thread data: &quot; + uuid + &quot;,&quot; + threadFileName + &quot;,&quot; + threadPath + &quot;,&quot; + &quot;.*,&quot; + threadRebuildHash  );
 </stringProp>
           <stringProp name="BeanShellSampler.filename"></stringProp>
           <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -390,7 +392,7 @@ StringBuilder logCommandOutput = new StringBuilder();
 SampleResult.setSuccessful(false);
 String line;
 String respCode;
-log.info(&quot;rebuild hash is &quot;+threadRebuildHash);
+log.info(threadFileName + &quot;- Rebuild hash is &quot; + threadRebuildHash);
 
 while( (line = in.readLine()) != null) {
   logCommandOutput.append(line);
@@ -405,7 +407,7 @@ while( (line = in.readLine()) != null) {
   if (!threadRebuildHash.equals(out_checksum)) {
   	SampleResult.setSuccessful(false);
      SampleResult.setResponseCode(&quot;555&quot;);
-     log.info(&quot;Hash is mismatching &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;.Out File Hash is &quot;+out_checksum);
+     log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot;+out_checksum);
   }
   
   if (line.contains(&quot;ICAP/1.0 204&quot;)) {
@@ -589,7 +591,7 @@ else
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Remove the processed files" enabled="true">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
@@ -598,21 +600,21 @@ else
 String uuid=vars.get(&quot;uid&quot;);
 String threadFileName = vars.get(&quot;threadFileName&quot;);
 
-log.info(&quot;Cleaning the thread file &quot; + uuid + &quot;_&quot; + threadFileName);
+log.info(&quot;Removing the processed files &quot; + uuid + &quot;_&quot; + threadFileName);
 
 //clean in folder
 String removeInFile=&quot;rm -Rf &quot;+&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot;+threadFileName;
 s3p_out = Runtime.getRuntime().exec(removeInFile);
 s3p_out.waitFor();
 
-log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the input folder &quot;);
+//log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the input folder &quot;);
 
 //clean out folder
 String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName;
 s3p_out = Runtime.getRuntime().exec(removeOutFile);
 s3p_out.waitFor();
 
-log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the output folder &quot;);
+//log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the output folder &quot;);
 </stringProp>
             <stringProp name="scriptLanguage">java</stringProp>
           </JSR223Sampler>
@@ -675,7 +677,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFile
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Verify the ICAP Server" enabled="true">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
