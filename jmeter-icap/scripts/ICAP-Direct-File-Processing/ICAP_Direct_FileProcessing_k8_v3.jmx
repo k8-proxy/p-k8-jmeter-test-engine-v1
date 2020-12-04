@@ -169,7 +169,8 @@
 
  vars.put(&quot;threadFileName&quot;,&quot;${fileName}&quot;);
  vars.put(&quot;threadPath&quot;,&quot;${path}&quot;);
-
+ vars.put(&quot;threadRebuildHash&quot;,&quot;${rebuild_hash}&quot;);
+ 
 </stringProp>
           <stringProp name="BeanShellSampler.filename"></stringProp>
           <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -268,6 +269,7 @@ import java.security.NoSuchAlgorithmException;
 
 String uuid=vars.get(&quot;uid&quot;);
 String threadFileName = vars.get(&quot;threadFileName&quot;);
+String threadRebuildHash = vars.get(&quot;threadRebuildHash&quot;);
 
 log.info(&quot;Processing thread file &quot; + uuid + &quot;_&quot; + threadFileName);
 
@@ -388,22 +390,22 @@ StringBuilder logCommandOutput = new StringBuilder();
 SampleResult.setSuccessful(false);
 String line;
 String respCode;
-log.info(&quot;rebuild hash is &quot;+&quot;${rebuild_hash}&quot;);
+log.info(&quot;rebuild hash is &quot;+threadRebuildHash);
 
 while( (line = in.readLine()) != null) {
   logCommandOutput.append(line);
   log.info(&quot;line is &quot;+line);
 
-  if (line.contains(&quot;ICAP/1.0 200 OK&quot;)&amp;&amp;&quot;${rebuild_hash}&quot;.equals(out_checksum)) {
+  if (line.contains(&quot;ICAP/1.0 200 OK&quot;)&amp;&amp;threadRebuildHash.equals(out_checksum)) {
      SampleResult.setSuccessful(true);
      SampleResult.setResponseCode(&quot;200&quot;);
      log.info(&quot;My line is &quot;+line);
   }
 
-  if (!&quot;${rebuild_hash}&quot;.equals(out_checksum)) {
+  if (!threadRebuildHash.equals(out_checksum)) {
   	SampleResult.setSuccessful(false);
      SampleResult.setResponseCode(&quot;555&quot;);
-     log.info(&quot;Hash is mismatching &quot;+ &quot;Rebuild hash is &quot;+ &quot;${rebuild_hash}&quot;+&quot;.Out File Hash is &quot;+out_checksum);
+     log.info(&quot;Hash is mismatching &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;.Out File Hash is &quot;+out_checksum);
   }
   
   if (line.contains(&quot;ICAP/1.0 204&quot;)) {
@@ -486,7 +488,7 @@ while( (line = in.readLine()) != null) {
      SampleResult.setSuccessful(false);
      SampleResult.setResponseMessage(&quot;403 Fordbidden&quot;);
      log.info(&quot;Response Code is 403. File is &quot; + threadFileName);
-     if (&quot;${rebuild_hash}&quot;.equals(&quot;NULL&quot;))
+     if (threadRebuildHash.equals(&quot;NULL&quot;))
      SampleResult.setSuccessful(true);
      break;
   }
