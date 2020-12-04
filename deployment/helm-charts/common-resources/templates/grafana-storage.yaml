@@ -26,3 +26,20 @@ spec:
   resources:
     requests:
       storage: "10Gi"
+
+{{- if eq .Values.cloud "local" }}
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+spec:
+  storageClassName: {{ .Values.grafana.storageclass  }}
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: {{ .Values.grafana.storage }}
+
+{{ end }}

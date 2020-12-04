@@ -13,9 +13,11 @@
 
 ## Introduction
 
-This script launches a Kubernetes cluster that spins up load generators then creates Grafana Dashboards that display various metrics from said load generators.
+This script launches number of pods depend on user count and generate traffic to provided endpoint then creates Grafana Dashboards that display various metrics from said traffic generators.
 
 ## Prerequisites
+
+Note: Make sure you have cloned the repo - [https://github.com/k8-proxy/p-k8-jmeter-test-engine.git](https://github.com/k8-proxy/p-k8-jmeter-test-engine.git)
 
 1. Install Python version 3.8 or later (see [Python](https://www.python.org/downloads/))
 
@@ -24,7 +26,7 @@ This script launches a Kubernetes cluster that spins up load generators then cre
     pip3 install -r requirements.txt
 ```
 
-3. Create a new config.env file or modify [the existing one here](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/jmeter-icap/scripts/config.env) provided as a sample file. Update the values there to correspond to your test setup - [refer to the table of parameters available below](#options-available-for-the-create-stack-dashpy-script)
+3. Nevigate to jmeter-icap/scripts and Create a new config.env file or modify [the existing one here](https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/jmeter-icap/scripts/config.env) provided as a sample file. Update the values there to correspond to your test setup - [refer to the table of parameters available below](#options-available-for-the-create-stack-dashpy-script)
 
 5. If using AWS Secrets Manager to store the Grafana API Key, a secret name would need to be provided either in the config.env file or via the command line:
 

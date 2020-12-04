@@ -55,34 +55,18 @@ spec:
 
 {{- if eq .Values.cloud "local" }}
 
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: efs-pv
-  labels:
-    type: local
-spec:
-  storageClassName: manual
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/minio"
-
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: efs-claim
 spec:
-  storageClassName: manual
+  storageClassName: {{ .Values.minio.storageclass }}
   accessModes:
     - "ReadWriteOnce"
   resources:
     requests:
-      storage: "10Gi"
+      storage: {{ .Values.minio.storage }}
 
 
 {{ end }}

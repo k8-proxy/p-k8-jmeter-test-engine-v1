@@ -40,6 +40,7 @@ class Main():
     icap_server_port = '1344'
     enable_tls = False
     tls_verification_method = 'no-verify'
+    jmx_file_path = 'none'
 
     @staticmethod
     def get_microk8s():
@@ -95,6 +96,9 @@ class Main():
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
             logger.error("Wrong icap server port value {}".format(Main.icap_server_port))
             exit(1)
+        if not os.path.exists(Main.jmx_file_path):
+            logger.error("File {} does not exist".format(Main.jmx_file_path))
+            exit(1)
 
 
     @staticmethod
@@ -128,7 +132,7 @@ class Main():
         try:
             a = uuid.uuid4()
             jmeter_script_name = str(a)
-            shutil.copyfile("ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx",jmeter_script_name)
+            shutil.copyfile(Main.jmx_file_path,jmeter_script_name)
             Main.replace_in_file(jmeter_script_name,"$number_of_threads$", Main.users_per_instance)
             Main.replace_in_file(jmeter_script_name,"$duration_in_seconds$", Main.duration)
             Main.replace_in_file(jmeter_script_name,"$minio_endpoint$", Main.minio_url)
@@ -237,7 +241,7 @@ class Main():
     def main(argv):
         help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -275,6 +279,8 @@ class Main():
                 Main.enable_tls = arg
             elif opt in ("-tls", "--tls_verification_method"):
                 Main.tls_verification_method = arg
+            elif opt in ("-jmx", "--jmx_file_path"):
+                Main.jmx_file_path = arg
 
         Main.log_level(LOG_LEVEL)
         logger.info("TOTAL USERS         {}".format(Main.total_users))
@@ -304,6 +310,8 @@ class Main():
 
         Main.get_microk8s()
         logger.info("Micro k8s           {}".format(Main.microk8s))
+
+        logger.info("JMX FILE PATH       {}".format(Main.jmx_file_path))
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()

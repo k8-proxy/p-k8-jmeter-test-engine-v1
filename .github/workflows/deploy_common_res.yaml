@@ -57,7 +57,7 @@ jobs:
         with:
           namespace: 'grafana'
           manifests: |
-              kubernetes/common_resources/grafana.yaml
+              deployment/kubernetes/common_resources/grafana.yaml
           kubectl-version: 'latest'
 
       # - name: Deploy ELK
@@ -90,7 +90,7 @@ jobs:
         with:
           namespace: 'minio'
           manifests: |
-              kubernetes/common_resources/minio.yaml
+              deployment/kubernetes/common_resources/minio.yaml
           kubectl-version: 'latest'
 
       - name: Deploy Prometheus
@@ -112,7 +112,7 @@ jobs:
         with:
           namespace: 'influxdb'
           manifests: |
-              kubernetes/common_resources/influxdb/influxdb.yaml
+              deployment/kubernetes/common_resources/influxdb/influxdb.yaml
           kubectl-version: 'latest'
 
       - name: Deploy Loki

@@ -162,10 +162,17 @@
         <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Generate UUID" enabled="true">
           <stringProp name="BeanShellSampler.query">
 
-// String bumid1  = ${__UUID};
-
  vars.put(&quot;uid&quot;,&quot;${__UUID()}&quot;);
- log.info(&quot;UUID is&quot;+uuid)
+ vars.put(&quot;threadFileName&quot;,&quot;${fileName}&quot;);
+ vars.put(&quot;threadPath&quot;,&quot;${path}&quot;);
+ vars.put(&quot;threadRebuildHash&quot;,&quot;${rebuild_hash}&quot;);
+
+ String uuid=vars.get(&quot;uid&quot;);
+ String threadFileName = vars.get(&quot;threadFileName&quot;);
+ String threadPath = vars.get(&quot;threadPath&quot;);
+ String threadRebuildHash = vars.get(&quot;threadRebuildHash&quot;);
+
+ log.info(&quot;Thread data: &quot; + uuid + &quot;,&quot; + threadFileName + &quot;,&quot; + threadPath + &quot;,&quot; + &quot;.*,&quot; + threadRebuildHash  );
 </stringProp>
           <stringProp name="BeanShellSampler.filename"></stringProp>
           <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -177,12 +184,14 @@
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="download - moving py dependency" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Download the file from Minio" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">import io.minio.MinioClient;
+            <stringProp name="script">
+
+import io.minio.MinioClient;
 import io.minio.ServerSideEncryption;
 import io.minio.ServerSideEncryptionCustomerKey;
 import io.minio.UploadObjectArgs;
@@ -193,9 +202,13 @@ import io.minio.DownloadObjectArgs
 import java.io.IOException;
 
 String uuid=vars.get(&quot;uid&quot;);
+String threadFileName = vars.get(&quot;threadFileName&quot;);
+String threadPath = vars.get(&quot;threadPath&quot;);
+
+log.info(&quot;Downloading thread file &quot; + uuid + &quot;_&quot; + threadFileName);
 
 log.info(&quot;Bucket is &quot; + &quot;${MINIO_BUCKET}&quot;);
-log.info(&quot;Object is &quot; + &quot;${path}/${fileName}&quot;);
+log.info(&quot;Object is &quot; + threadPath + &quot;/&quot;+threadFileName);
 
 try {
       MinioClient minioClient =
@@ -203,25 +216,29 @@ try {
               .endpoint(&quot;${MINIO_URL}&quot;)
               .credentials(&quot;${MINIO_ACCESS_KEY}&quot;, &quot;${MINIO_SECRET_KEY}&quot;)
               .build();
-	// Check if the bucket already exists.
-	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-	if(isExist) {
-	        //System.out.println(&quot;Bucket already exists.&quot;);
-	      } else {
-	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
-	      }
-	// Download file from the bucket
-	//It will download object with specified name into location specified as filename
-	inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_${fileName}&quot;;
-	minioClient.downloadObject(
-	       DownloadObjectArgs.builder()
-	                .bucket(&quot;${MINIO_BUCKET}&quot;)
-	                .object(&quot;${path}/${fileName}&quot;)
-	                .filename(inFileName)
-	                .build());
-	log.info(&quot;File is downloaded to in folder &quot;+inFileName);
-     } catch (MinioException e) {
-		 System.out.println(&quot;Error occurred: &quot; + e);
+      // Check if the bucket already exists.
+      boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+      if(!isExist) {
+        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET}&quot;).build());
+      }
+      // Download file from the bucket
+      // It will download object with specified name into location specified as filename
+      inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_&quot;+threadFileName;
+      minioClient.downloadObject(
+            DownloadObjectArgs.builder()
+              .bucket(&quot;${MINIO_BUCKET}&quot;)
+              .object(threadPath + &quot;/&quot;+threadFileName)
+              .filename(inFileName)
+              .build());
+
+      File f = new File(inFileName); 
+      if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) {
+        log.info(&quot;File has been downloaded &quot;+inFileName);
+      } else {
+        log.info(&quot;File has NOT been downloaded &quot;+inFileName);
+      }
+    } catch (MinioException e) {
+		  log.error(&quot;Error occurred: &quot; + e);
 		}
 
 </stringProp>
@@ -233,7 +250,7 @@ try {
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="ICAP file processing" enabled="true">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
@@ -253,14 +270,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 String uuid=vars.get(&quot;uid&quot;);
-/*log.info(&quot;UUID is &quot;+uuid);
-log.info(&quot;Coping files from s3 to localdisk&quot;);
-String s3cp=&quot;aws s3 cp s3://&quot;+vars.get(&quot;s3bucketName&quot;)+&quot;/${path}/&quot;+&quot;${fileName}&quot;+&quot; &quot;+vars.get(&quot;path&quot;)+&quot;/&quot;+&quot;${fileName}&quot;;
+String threadFileName = vars.get(&quot;threadFileName&quot;);
+String threadRebuildHash = vars.get(&quot;threadRebuildHash&quot;);
 
-// Create a process object and let this object execute the command
-Process s3p = Runtime.getRuntime().exec(s3cp);
-s3p.waitFor();
-log.info(&quot;File copied to in. &quot;+s3cp);*/
+log.info(&quot;Processing thread file &quot; + uuid + &quot;_&quot; + threadFileName);
+
+inFileName=&quot;${inPath}/&quot;+ uuid +&quot;_&quot;+threadFileName;
+
+File f = new File(inFileName); 
+if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
+{
+
+log.info("Processing " + inFileName);
 
 String command1 = &quot;&quot;;
 String command2 = &quot;&quot;;
@@ -270,19 +291,17 @@ log.info(&quot;Use TLS set to: &quot;+vars.get(&quot;use_tls&quot;));
 
 if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
  	command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -tls -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;  // for unix
-	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} &quot;+vars.get(&quot;tls&quot;)+ &quot; -v&quot;;
+	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_&quot; + threadFileName + &quot; -o ${outputPath}/&quot;+ uuid +&quot;_&quot; + threadFileName + &quot; &quot; + vars.get(&quot;tls&quot;)+ &quot; -v&quot;;
 }
 else {
  	command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;    // for unix
-	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} -v&quot;;
+	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_&quot; + threadFileName + &quot; -o ${outputPath}/&quot;+ uuid +&quot;_&quot; + threadFileName + &quot; -v&quot;;
 }
 
 String command=command1+command2;
 // Print the generated status check command
 
-log.info(&quot;Command 1 is &quot;+command1);
-log.info(&quot;Command 2 is &quot;+command2);
-log.info(&quot;Full command is &quot;+command);
+log.info(&quot;The command is &quot;+command);
 
 // Create a process object and let this object execute the icap client command
 Process p = Runtime.getRuntime().exec(command);
@@ -326,7 +345,7 @@ private static String getFileChecksum(MessageDigest digest, File file) throws IO
 //checksum md5
 
 //Create checksum for this file
-//File inFile = new File(&quot;${inPath}/${fileName}&quot;);
+//File inFile = new File(&quot;${inPath}/&quot;+threadFileName);
 //String in_checksum=&quot;in&quot;;
 //Use MD5 algorithm
 //MessageDigest in_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
@@ -344,7 +363,7 @@ private static String getFileChecksum(MessageDigest digest, File file) throws IO
 
  
 //Create checksum for this file
-File outFile = new File(&quot;${outputPath}/&quot;+uuid+&quot;_${fileName}&quot;);
+File outFile = new File(&quot;${outputPath}/&quot;+uuid+&quot;_&quot;+threadFileName);
  
 //Use MD5 algorithm
 MessageDigest out_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
@@ -373,22 +392,22 @@ StringBuilder logCommandOutput = new StringBuilder();
 SampleResult.setSuccessful(false);
 String line;
 String respCode;
-log.info(&quot;rebuild hash is &quot;+&quot;${rebuild_hash}&quot;);
+log.info(threadFileName + &quot;- Rebuild hash is &quot; + threadRebuildHash);
 
 while( (line = in.readLine()) != null) {
   logCommandOutput.append(line);
   log.info(&quot;line is &quot;+line);
 
-  if (line.contains(&quot;ICAP/1.0 200 OK&quot;)&amp;&amp;&quot;${rebuild_hash}&quot;.equals(out_checksum)) {
+  if (line.contains(&quot;ICAP/1.0 200 OK&quot;)&amp;&amp;threadRebuildHash.equals(out_checksum)) {
      SampleResult.setSuccessful(true);
      SampleResult.setResponseCode(&quot;200&quot;);
      log.info(&quot;My line is &quot;+line);
   }
 
-  if (!&quot;${rebuild_hash}&quot;.equals(out_checksum)) {
+  if (!threadRebuildHash.equals(out_checksum)) {
   	SampleResult.setSuccessful(false);
      SampleResult.setResponseCode(&quot;555&quot;);
-     log.info(&quot;Hash is mismatching &quot;+ &quot;Rebuild hash is &quot;+ &quot;${rebuild_hash}&quot;+&quot;.Out File Hash is &quot;+out_checksum);
+     log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot;+out_checksum);
   }
   
   if (line.contains(&quot;ICAP/1.0 204&quot;)) {
@@ -470,15 +489,21 @@ while( (line = in.readLine()) != null) {
      SampleResult.setResponseCode(&quot;403&quot;);
      SampleResult.setSuccessful(false);
      SampleResult.setResponseMessage(&quot;403 Fordbidden&quot;);
-     log.info(&quot;Response Code is 403. File is &quot;+ &quot;${fileName}&quot;);
-     if (&quot;${rebuild_hash}&quot;.equals(&quot;NULL&quot;))
+     log.info(&quot;Response Code is 403. File is &quot; + threadFileName);
+     if (threadRebuildHash.equals(&quot;NULL&quot;))
      SampleResult.setSuccessful(true);
      break;
   }
 }
 
 in.close();
-log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());</stringProp>
+log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());
+
+}
+else {
+  log.info("CANNOT process " + inFileName);
+}
+</stringProp>
             <stringProp name="scriptLanguage">java</stringProp>
           </JSR223Sampler>
           <hashTree/>
@@ -494,7 +519,7 @@ log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());</stringProp
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="upload - moving py dependecy" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Upload to minio" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -510,6 +535,16 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 
 String uuid=vars.get(&quot;uid&quot;);
+String threadFileName = vars.get(&quot;threadFileName&quot;);
+
+log.info(&quot;Uploading thread file &quot; + uuid + &quot;_&quot; + threadFileName);
+
+outFileName=&quot;${outputPath}/&quot;+ uuid +&quot;_&quot; + threadFileName;
+
+File f = new File(outFileName); 
+if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
+{
+  log.error("Uploading " + outFileName)
 
 try {
       MinioClient minioClient =
@@ -519,14 +554,12 @@ try {
               .build();
 	// Check if the bucket already exists.
 	boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
-	if(isExist) {
-	        //System.out.println(&quot;Bucket already exists.&quot;);
-	      } else {
-	        minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
+	if(!isExist) {
+    minioClient.makeBucket(MakeBucketArgs.builder().bucket(&quot;${MINIO_BUCKET_OUTPUT}&quot;).build());
 	}
 	
 	// Upload file to the bucket with putObject
-	String name = uuid + &quot;_${fileName}&quot;;
+	String name = uuid + &quot;_&quot; + threadFileName;
 	String filePath = &quot;${outputPath}/&quot; + name;
 	
 	vars.put(&quot;filePath&quot;, filePath);
@@ -537,7 +570,13 @@ try {
 	minioClient.putObject(&quot;${MINIO_BUCKET_OUTPUT}&quot;,&quot;icap-processed/&quot; + name,filePath,null);
     } catch(MinioException e) {
       System.out.println(&quot;Error occurred: &quot; + e);
-    }</stringProp>
+    }
+}
+else
+{
+  log.error("CANNOT upload " + outFileName)
+}    
+    </stringProp>
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
@@ -552,30 +591,30 @@ try {
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Remove the processed files" enabled="true">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="script">
+
 String uuid=vars.get(&quot;uid&quot;);
-log.info(&quot;UUID is &quot;+uuid);
+String threadFileName = vars.get(&quot;threadFileName&quot;);
 
-
-log.info(&quot;Cleaning file from out folder &quot;);
+log.info(&quot;Removing the processed files &quot; + uuid + &quot;_&quot; + threadFileName);
 
 //clean in folder
-String removeInFile=&quot;rm -Rf &quot;+&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
+String removeInFile=&quot;rm -Rf &quot;+&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot;+threadFileName;
 s3p_out = Runtime.getRuntime().exec(removeInFile);
 s3p_out.waitFor();
 
-log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&quot; file deleted from the input folder &quot;);
+//log.info(&quot;${inPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the input folder &quot;);
 
 //clean out folder
-String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;;
+String removeOutFile=&quot;rm -Rf &quot;+&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName;
 s3p_out = Runtime.getRuntime().exec(removeOutFile);
 s3p_out.waitFor();
 
-log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&quot; file deleted from the output folder &quot;);
+//log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_&quot; + threadFileName + &quot; file deleted from the output folder &quot;);
 </stringProp>
             <stringProp name="scriptLanguage">java</stringProp>
           </JSR223Sampler>
@@ -638,7 +677,7 @@ log.info(&quot;${outputPath}&quot;+&quot;/&quot;+uuid+&quot;_${fileName}&quot;+&
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler" enabled="true">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Verify the ICAP Server" enabled="true">
             <stringProp name="cacheKey">true</stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
@@ -879,7 +918,6 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
 	     while( (line = br.readLine()) != null ) {
 	     	
 	         if (!(line.contentEquals(list_measurements[i+1]))){
-	            	//	System.out.println(line);
 	         line = line.replaceAll(&quot;=&quot;,&quot;&quot;);
 	         line = line.replaceAll(&quot;: | : &quot;, &quot;=&quot;);
 	         line = line.replaceAll(&quot; &quot;,&quot;_&quot;);
