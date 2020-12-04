@@ -154,7 +154,6 @@ def __start_delete_stack(additional_delay, config):
 
 # creates a list of args to be passed to create_stack from Config (i.e. config.env or command line args)
 def get_args_list(config, options):
-
     # go through Config object, compile list of relevant arguments
     args_list = []
     for key in config.__dict__:
@@ -165,8 +164,8 @@ def get_args_list(config, options):
 
     return args_list
 
-def run_using_ui(ui_json_params):
 
+def run_using_ui(ui_json_params):
     # Set Config values gotten from front end
     if ui_json_params['total_users']:
         Config.total_users = ui_json_params['total_users']
@@ -179,38 +178,60 @@ def run_using_ui(ui_json_params):
     if ui_json_params['prefix']:
         Config.prefix = ui_json_params['prefix']
     if ui_json_params['load_type']:
-        __determineLoadType(ui_json_params['load_type'])
+        __ui_set_files_for_load_type(ui_json_params['load_type'])
 
     # ensure that preserve stack and create_dashboard are at default values
     Config.preserve_stack = False
     Config.exclude_dashboard = False
 
+    __ui_set_tls_and_port_params(ui_json_params['load_type'], ui_json_params['enable_tls'],
+                                 ui_json_params['tls_ignore_error'], ui_json_params['port'])
+
     # Setting values for local setup
     Config.grafana_url = "http://localhost:3000/"
-
 
     dashboard_url = main(Config)
 
     return dashboard_url
 
-def __determineLoadType(load: str):
+
+def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ignore_verification, input_port):
+    if input_load_type == "Direct":
+
+        # enable/disable tls based on user input
+        Config.enable_tls = str(input_enable_tls).lower()
+
+        # if user entered a port, use that. Otherwise port will be set depending on tls_enabled below.
+        if input_port:
+            Config.icap_server_port = input_port
+
+        # if user did not provide port, set one depending on whether or not tls is enabled
+        if not input_port:
+            if input_enable_tls:
+                Config.icap_server_port = "443"
+            else:
+                Config.icap_server_port = "1344"
+
+        # If TLS is enabled, get the user preference as to whether or not TLS verification should be used
+        if input_enable_tls:
+            Config.tls_verification_method = "tls-no-verify" if input_tls_ignore_verification else ""
+
+
+def __ui_set_files_for_load_type(load: str):
     if load == "Direct":
         print("Using direct")
-        Config.test_directory = 'ICAP-Direct-File-Processing'
-        Config.jmx_script_name = 'ICAP_Direct_FileProcessing_Local_v4.jmx'
-        Config.grafana_file = 'aws-test-engine-dashboard.json'
+        Config.jmx_script_name = 'ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
+        Config.grafana_file = '../grafana_dashboards/k8-test-engine-dashboard.json'
         Config.test_data_file = 'gov_uk_files.csv'
 
     elif load == "Proxy":
         print("Using proxy")
-        Config.test_directory = 'ICAP-Proxy-Site'
-        Config.jmx_script_name = 'ProxySite_Processing_v1.jmx'
-        Config.grafana_file = 'ProxySite_Dashboard_Template.json'
-        Config.test_data_file = 'proxysitefiles.csv'
+        Config.jmx_script_name = './k8-proxy-test/ProxySite_Processing_v1.jmx'
+        Config.grafana_file = './k8-proxy-test/ProxySite_Dashboard_Template.json'
+        Config.test_data_file = './k8-proxy-test/proxyfiles.csv'
 
 
 def main(config):
-
     dashboard_url = ''
 
     if config.exclude_dashboard:
@@ -258,7 +279,6 @@ if __name__ == "__main__":
     Config.grafana_secret = args.grafana_secret
     Config.icap_server_port = args.icap_server_port
     Config.tls_verification_method = args.tls_verification_method
-
     # these are flag/boolean arguments
     if args.exclude_dashboard:
         Config.exclude_dashboard = True
