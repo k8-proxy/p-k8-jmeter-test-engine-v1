@@ -168,6 +168,7 @@
  log.info(&quot;UUID is&quot;+uuid);
 
  vars.put(&quot;threadFileName&quot;,&quot;${fileName}&quot;);
+ vars.put(&quot;threadPath&quot;,&quot;${path}&quot;);
 
 </stringProp>
           <stringProp name="BeanShellSampler.filename"></stringProp>
@@ -199,11 +200,12 @@ import java.io.IOException;
 
 String uuid=vars.get(&quot;uid&quot;);
 String threadFileName = vars.get(&quot;threadFileName&quot;);
+String threadPath = vars.get(&quot;threadPath&quot;);
 
 log.info(&quot;Downloading thread file &quot; + uuid + &quot;_&quot; + threadFileName);
 
 log.info(&quot;Bucket is &quot; + &quot;${MINIO_BUCKET}&quot;);
-log.info(&quot;Object is &quot; + &quot;${path}/&quot;+threadFileName);
+log.info(&quot;Object is &quot; + threadPath + &quot;/&quot;+threadFileName);
 
 try {
       MinioClient minioClient =
@@ -222,7 +224,7 @@ try {
       minioClient.downloadObject(
             DownloadObjectArgs.builder()
               .bucket(&quot;${MINIO_BUCKET}&quot;)
-              .object(&quot;${path}/&quot;+threadFileName)
+              .object(threadPath + &quot;/&quot;+threadFileName)
               .filename(inFileName)
               .build());
 
@@ -285,11 +287,11 @@ log.info(&quot;Use TLS set to: &quot;+vars.get(&quot;use_tls&quot;));
 
 if (vars.get(&quot;use_tls&quot;).equals(&quot;true&quot;)) {
  	command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -tls -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;  // for unix
-	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} &quot;+vars.get(&quot;tls&quot;)+ &quot; -v&quot;;
+	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_&quot; + threadFileName + &quot; -o ${outputPath}/&quot;+ uuid +&quot;_&quot; + threadFileName + &quot; &quot; + vars.get(&quot;tls&quot;)+ &quot; -v&quot;;
 }
 else {
  	command1 = &quot;/usr/bin/c-icap-client -i &quot; + vars.get(&quot;icapServer&quot;)+&quot; -p &quot; + vars.get(&quot;port&quot;)+&quot; -s gw_rebuild&quot;;    // for unix
-	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_${fileName} -o ${outputPath}/&quot;+ uuid +&quot;_${fileName} -v&quot;;
+	command2=&quot; -f ${inPath}/&quot; + uuid + &quot;_&quot; + threadFileName + &quot; -o ${outputPath}/&quot;+ uuid +&quot;_&quot; + threadFileName + &quot; -v&quot;;
 }
 
 String command=command1+command2;
