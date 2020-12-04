@@ -219,13 +219,11 @@ def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ig
 
 def __ui_set_files_for_load_type(load: str):
     if load == "Direct":
-        print("Using direct")
         Config.jmx_script_name = 'ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
         Config.grafana_file = '../grafana_dashboards/k8-test-engine-dashboard.json'
         Config.test_data_file = 'gov_uk_files.csv'
 
     elif load == "Proxy":
-        print("Using proxy")
         Config.jmx_script_name = './k8-proxy-test/ProxySite_Processing_v1.jmx'
         Config.grafana_file = './k8-proxy-test/ProxySite_Dashboard_Template.json'
         Config.test_data_file = './k8-proxy-test/proxyfiles.csv'
