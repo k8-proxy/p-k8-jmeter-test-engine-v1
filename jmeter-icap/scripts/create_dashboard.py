@@ -1,5 +1,6 @@
 import requests
 import json
+from create_stack import Main
 
 
 # If the grafana file passed does not contain the appropriate elements with appropriate values, modify it
@@ -39,6 +40,17 @@ def __add_prefix_to_grafana_loki_source_job(grafana_json, prefix):
                     j['expr'] = '{job_name="' + prefix + '-' + 'jmeterjob"}'
 
 
+
+# add instances_required field to Grafana JSON under Number of Users
+def __add_pods_req_to_grafana_json(grafana_json, no_of_pods):
+    for i in grafana_json["dashboard"]['panels']:
+        for j in i:
+            if 'targets' in j:
+                for k in i['targets']:
+                    if "alias" in k and k["alias"] == "Number of Users":
+                        k["select"][0][1]["params"][0] = "*" + str(no_of_pods)
+
+
 # Modifies green info bar at the top of dashboard to display info on current test run
 def __modify_dashboard_info_bar(grafana_json, total_users, duration, endpoint_url):
     if "options" in grafana_json["dashboard"]['panels'][0]:
@@ -57,6 +69,7 @@ def __post_grafana_dash(config):
     total_users = config.total_users
     duration = config.duration
     icap_server = config.icap_server
+    number_of_pods = Main.parallelism
 
     if not grafana_url.startswith("http"):
         grafana_url = "http://" + grafana_url
@@ -76,6 +89,7 @@ def __post_grafana_dash(config):
     with open(grafana_template) as json_file:
         grafana_json = json.load(json_file)
         grafana_json = __convert_grafana_json_to_template(grafana_json)
+        __add_pods_req_to_grafana_json(grafana_json, number_of_pods)
         __add_prefix_to_grafana_json(grafana_json, prefix)
         __add_prefix_to_grafana_loki_source_job(grafana_json, prefix)
         __modify_dashboard_info_bar(grafana_json, total_users, duration, icap_server)
