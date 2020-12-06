@@ -3,13 +3,16 @@ OVA image encapsulates the JMeter engine test environment within a single virtua
 ![traffic](pngs/jmeter-test-ova.png)<br/>
 The environment does not have to scale up capabilities (like in EKS or AKS). However, it allows us to demonstrate the whole workflow along with results visualization in a Grafana dashboard.
 # Test engine deployment with the OVA file
+## How to deploy OVA
 1. Get the latest OVA image from Glasswall AWS S3 icap-performance-test-data-bucket bucket<br/>
 ![bucket](pngs/aws-bucket.png)
 2. 
     - When deploying on a VMware ESXi host, create a new VM (In Virtual Machines click on 'Create / Register VM') and choose 'Deploy a virtual machine from an OVF or OVA file'. Follow the deployment wizard instructions.
+    ![ova_esxi](pngs/ova_esxi.png)
     - When deploying on a VMware Workstation in select 'File/Open' menu and navigate to the OVA file location on the computer<br/>
+    ![ova_workstation](pngs/ova_workstation.png)
 3. Once the VM starts login with user `glasswall`
-4. Make sure the VM can access the network. <br\>
+4. Make sure the VM can access the network. <br/>
 The VM has a preset static IP address to run on Glasswall VMware ESXi host.<br/>
 ![ip](pngs/ip-setting.png)<br/>
 Depending on your network configuration, change to automatic IP (must have DHCP server accessible)<br/>
@@ -36,8 +39,8 @@ The output should look like
     common        loki-0                                       0/1     Running
     kube-system   tiller-deploy-69c484895f-sj4tv               0/1     Running
 ```
-wait until all the PODs are `READY` and `Running`
-6. In some case step 5 on the initially deployed VM might fail with the following error
+wait until all the PODs are `READY` and `Running`<br/>
+6. In some cases step 5 on the initially deployed VM might fail with the following error
 ```
     Unable to connect to the server: x509: certificate has expired or is not yet valid: current time 2020-05-03T23:53:06Z is after 2020-05-03T16:38:01Z
 ```
@@ -46,7 +49,8 @@ If this is the case run the command below
     sudo microk8s.refresh-cert
 ```
 Wait until microk8s restarts and retry step 5
-7. Open a new terminal tab and run the following:
+## How to generate Load with command line
+1. Open a new terminal tab and run the following:
 ```
     kubectl port-forward -n common service/minio-service 9000:80
 ```
@@ -54,10 +58,10 @@ In another terminal tab
 ```
     kubectl port-forward -n common service/grafana-service 3000:80
 ```
-8. Open the Mozilla browser and navigate to the following pages 
+2. Open the Mozilla browser and navigate to the following pages 
 Minio http://localhost:9000
 Grafana http://localhost:3000
-9. Open a new terminal tab and run the following:
+3. Open a new terminal tab and run the following:
 ```
     cd ~/scripts
 ```
@@ -122,7 +126,7 @@ The output should look as follows:
     Stack will be deleted after 20.0 minutes
     0.0 minutes have elapsed, stack will be deleted in 20.0 minutes
 ```
-10. At the moment Grafana is supposed to have a newly created dashboard whose name starts with the `PREFIX` value in config.env passed to the master script. <br/>
+4. At the moment Grafana is supposed to have a newly created dashboard whose name starts with the `PREFIX` value passed to the master script in config.env. <br/>
 ![new-dashboard](pngs/new-dashboard.png)<br/>
 Open the dashboard and watch a visualization of the running test <br/>
 ![dashboard](pngs/dashboard.png)<br/>
