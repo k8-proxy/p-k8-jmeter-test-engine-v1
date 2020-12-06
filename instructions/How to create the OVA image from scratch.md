@@ -1,19 +1,19 @@
 # How to create the OVA image from scratch
 
-## Indroduction 
+## Introduction 
 
-The process decribed in the document utilizes VMware Workstation as a Hypervisor. <br/>
-However, with some minor adjustments it must be applicable on other [Hypervisors](https://en.wikipedia.org/wiki/Hypervisor) as well.
+The process described in the document utilizes VMware Workstation as a Hypervisor. <br/>
+The process (with some minor adjustments) must be applied to be run on other [Hypervisors](https://en.wikipedia.org/wiki/Hypervisor) as well.
 
 ## Provisioning a Virtual Machine
 
 - Download ISO for the latest version of [Ubuntu](https://ubuntu.com/download/desktop) 
-- In VMware workstation create a VM with at least 6 GB of RAM and 40 GB of hard drive. Follow VMware [instructions](https://kb.vmware.com/s/article/1018415)
+- In a VMware workstation create a VM with at least 6 GB of RAM and 40 GB of the hard drive. Follow VMware [instructions](https://kb.vmware.com/s/article/1018415)
 
-## Creating a local kubernetes node
+## Creating a local Kubernetes node
 
 The kubernetes environemet utilize [microk8s](https://microk8s.io/). <br/>
-Folow instructions for Linux to install it in your newly created VM <br/>
+Follow instructions for Linux to install it in your newly created VM <br/>
 Make sure you have access to the internet. 
 
 ```
@@ -47,7 +47,7 @@ To install helm run the following commands in the terminal:
     helm upgrade --install common ./common-resources/ -f ./common-resources/local.yaml  --namespace common
 ```
 
-## Install Loki and promtail
+## Install Loki and Promtail
 
 ```
     helm repo add loki https://grafana.github.io/loki/charts
@@ -63,4 +63,4 @@ To install helm run the following commands in the terminal:
 ## Create the OVA
 
 - Shut down the VM
-- Follow instruction for [Exporting a VM to OVF/OVA format](https://docs.vmware.com/en/VMware-Fusion/11/com.vmware.fusion.using.doc/GUID-16E390B1-829D-4289-8442-270A474C106A.html)
+- Follow the instruction for [Exporting a VM to OVF/OVA format](https://docs.vmware.com/en/VMware-Fusion/11/com.vmware.fusion.using.doc/GUID-16E390B1-829D-4289-8442-270A474C106A.html)
