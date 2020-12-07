@@ -3,14 +3,15 @@
 ## Introduction 
 
 The process described in the document utilizes VMware Workstation as a Hypervisor. <br/>
-The process (with some minor adjustments) may also be applied to be run on other [Hypervisors](https://en.wikipedia.org/wiki/Hypervisor) as well.
+With some minor adjustments, the process may be applied to other [Hypervisors](https://en.wikipedia.org/wiki/Hypervisor) as well.
 
 ## Provisioning a Virtual Machine
 
 - Download ISO for the latest version of [Ubuntu](https://ubuntu.com/download/desktop) 
 - In a VMware workstation create a VM with at least 6 GB of RAM and 40 GB of the hard drive. Follow VMware [instructions](https://kb.vmware.com/s/article/1018415)
 
-When creating a VM choose advanced settings and choose `Workstation 10` hardware compatibility mode. This will allow the VM to run on most modern VMware hypervisors.
+When creating a VM choose advanced settings and choose `Workstation 10` hardware compatibility mode. <br/>
+This will allow the VM to run on most modern VMware hypervisors.
 
 ## Creating a local Kubernetes node
 
@@ -67,8 +68,8 @@ Make it accessible in the browser with the following command
     kubectl port-forward -n common service/minio-service --address 0.0.0.0 9000:80
 ```
 The command above will allow to access the local minio service with the VM IP address from outside the VM as well. <br/>
-The URL will be Minio http://<vm-ip-address>:9000.<br/>
-Now you can utilize [s3-to-minio](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/jmeter-icap/scripts/s3-to-minio) script to upload test date from AWS S3 to the minio server
+The URL will be Minio http://vm-ip-address:9000.<br/>
+Now you can utilize [s3-to-minio](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/jmeter-icap/scripts/s3-to-minio) script to upload the test date from AWS S3 to the minio server
 
 ## Grafana settings
 
