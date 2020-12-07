@@ -174,7 +174,7 @@ def run_using_ui(ui_json_params):
     if ui_json_params['duration']:
         Config.duration = ui_json_params['duration']
     if ui_json_params['icap_endpoint_url']:
-        Config.icap_endpoint_url = ui_json_params['icap_endpoint_url']
+        Config.icap_server = ui_json_params['icap_endpoint_url']
     if ui_json_params['prefix']:
         Config.prefix = ui_json_params['prefix']
     if ui_json_params['load_type']:
