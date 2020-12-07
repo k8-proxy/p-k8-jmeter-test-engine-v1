@@ -58,7 +58,71 @@ To install helm run the following commands in the terminal:
 
 ## Upload test files to the Minio server
 
-## Add Data sources in Grafana
+At this moment you must have minio service running in your microk8s environemnt<br/`>
+Make it accessible in the browser with the following command
+```
+    kubectl port-forward -n common service/minio-service --address 0.0.0.0 9000:80
+```
+The command above will allow to access the local minio service with the VM IP address from outside the VM as well. <br/>
+The URL will be Minio http://<vm-ip-address>:9000.
+Now you can utilize [s3-to-minio](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/jmeter-icap/scripts/s3-to-minio) script to upload test date from AWS S3 to the minio server
+
+## Grafana settings
+
+Run the following command in the terminal
+```
+    kubectl port-forward -n common service/grafana-service 3000:80
+```
+Access Grafana in the local browser with URL http://localhost:3000 <br/>
+Add the following Grafana data sources: <br/> 
+
+a) Name: icapserver <br/> 
+   Querly language: InfluxQL <br/> 
+   URL: http://influxdb-service.common <br/> 
+   Database: icapserver <br/> 
+
+b) Name: InfluxDB <br/> 
+   Querly language: InfluxQL <br/> 
+   URL: http://influxdb-service.common <br/> 
+   Database: jmeter <br/> 
+
+c) Name: Loki <br/> 
+   URL: http://loki.common:3100 <br/> 
+ 
+Generate and safe a Grafana API key to be utilized on the next step
+
+## Adjust the config.env
+Edit settings for running the master traffic generation script
+```
+    cd ~/p-k8-jmeter-test-engine/jmeter-icap/scripts/
+    nano config.env
+```
+config.env content should look similar to the following:
+```
+WS_PROFILE_NAME=default
+REGION=eu-west-1
+TOTAL_USERS=100
+USERS_PER_INSTANCE=25
+DURATION=300
+TEST_DATA_FILE=gov_uk_files.csv
+MINIO_URL=http://minio-service.common:80
+MINIO_ACCESS_KEY=admin
+MINIO_SECRET_KEY=admin@123
+MINIO_INPUT_BUCKET=icap-performance-test-data-bucket
+MINIO_OUTPUT_BUCKET=output
+INFLUXDB_URL=http://influxdb-service.common:80
+PREFIX=test
+ICAP_SERVER_URL=eu.icap.glasswall-icap.com
+GRAFANA_URL=localhost:3000
+GRAFANA_API_KEY=eyJrIjoiZE9FWGt5MDl6Qld4VlhzcHd3TzVyWGh3MUJZZzkyNmEiLCJuIjoiSk1ldGVyIHRlc3QiLCJpZCI6MX0=
+GRAFANA_FILE=../grafana_dashboards/k8-test-engine-dashboard.json
+EXCLUDE_DASHBOARD=0
+PRESERVE_STACK=0
+ICAP_SERVER_PORT=1344
+ENABLE_TLS=0
+TLS_VERIFICATION_METHOD=no-verify
+JMX_FILE_PATH=ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx
+```
 
 ## Create the OVA
 
