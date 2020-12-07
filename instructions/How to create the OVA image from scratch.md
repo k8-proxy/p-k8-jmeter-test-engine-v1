@@ -3,23 +3,26 @@
 ## Introduction 
 
 The process described in the document utilizes VMware Workstation as a Hypervisor. <br/>
-The process (with some minor adjustments) must be applied to be run on other [Hypervisors](https://en.wikipedia.org/wiki/Hypervisor) as well.
+The process (with some minor adjustments) may also be applied to be run on other [Hypervisors](https://en.wikipedia.org/wiki/Hypervisor) as well.
 
 ## Provisioning a Virtual Machine
 
 - Download ISO for the latest version of [Ubuntu](https://ubuntu.com/download/desktop) 
 - In a VMware workstation create a VM with at least 6 GB of RAM and 40 GB of the hard drive. Follow VMware [instructions](https://kb.vmware.com/s/article/1018415)
 
+When creating a VM choose advanced settings and choose `Workstation 10` hardware compatibility mode. This will allow the VM to run on most modern VMware hypervisors.
+
 ## Creating a local Kubernetes node
 
-The kubernetes environemet utilize [microk8s](https://microk8s.io/). <br/>
-Follow instructions for Linux to install it in your newly created VM <br/>
 Make sure you have access to the internet. 
 
 ```
     ping yahoo.com
 ```
-In case the internet is not accessible configure the network by following the [instucsions](https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu)
+In case the internet is not accessible configure the network by following the [instucsions](https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu)<br/>
+<br/>
+As a kubernetes environemet utilize [microk8s](https://microk8s.io/). <br/>
+Follow instructions for [Linux](https://microk8s.io/) to install it in your newly created VM <br/>
 
 ## Install helm
 
@@ -58,13 +61,13 @@ To install helm run the following commands in the terminal:
 
 ## Upload test files to the Minio server
 
-At this moment you must have minio service running in your microk8s environemnt<br/`>
+At this moment you must have minio service running in your microk8s environemnt<br/>
 Make it accessible in the browser with the following command
 ```
     kubectl port-forward -n common service/minio-service --address 0.0.0.0 9000:80
 ```
 The command above will allow to access the local minio service with the VM IP address from outside the VM as well. <br/>
-The URL will be Minio http://<vm-ip-address>:9000.
+The URL will be Minio http://<vm-ip-address>:9000.<br/>
 Now you can utilize [s3-to-minio](https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/jmeter-icap/scripts/s3-to-minio) script to upload test date from AWS S3 to the minio server
 
 ## Grafana settings
@@ -89,7 +92,7 @@ b) Name: InfluxDB <br/>
 c) Name: Loki <br/> 
    URL: http://loki.common:3100 <br/> 
  
-Generate and safe a Grafana API key to be utilized on the next step
+Generate and safe a Grafana API key to be utilized on the next step.
 
 ## Adjust the config.env
 Edit settings for running the master traffic generation script
