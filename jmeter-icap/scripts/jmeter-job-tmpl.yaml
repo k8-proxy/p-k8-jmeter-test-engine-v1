@@ -73,6 +73,19 @@ spec:
         - name: filesvol
           mountPath: "/usr/share/data"
           readOnly: true
+        - name: workdir
+          mountPath: /usr/share/workdir
+      initContainers:
+      - name: install
+        image: busybox
+        command:
+        - wget
+        - "-O"
+        - "/Test/work-dir/index.html"
+        - http://info.cern.ch
+        volumeMounts:
+        - name: workdir
+          mountPath: "/work-dir"
       volumes:
       - name: jmetervol
         secret:
@@ -80,4 +93,6 @@ spec:
       - name: filesvol
         secret:
           secretName: filesconf
+      - name: workdir
+        emptyDir: {}
       restartPolicy: Never
