@@ -81,7 +81,7 @@ spec:
         command:
         - wget
         - "-O"
-        - "/Test/work-dir/index.html"
+        - "/work-dir/index.html"
         - http://info.cern.ch
         volumeMounts:
         - name: workdir
