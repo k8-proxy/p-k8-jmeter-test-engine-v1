@@ -112,3 +112,4 @@ def main(config):
     if created_dashboard_url:
         print("Dashboard created at: ")
         print(created_dashboard_url)
+        return created_dashboard_url
