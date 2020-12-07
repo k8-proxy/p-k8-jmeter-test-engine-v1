@@ -25,6 +25,17 @@ In case the internet is not accessible configure the network by following the [i
 As a kubernetes environemet utilize [microk8s](https://microk8s.io/). <br/>
 Follow instructions for [Linux](https://microk8s.io/) to install it in your newly created VM <br/>
 
+## kubectl alias
+
+microk8s has its custom implementation of kubectl which may be invoked with 
+
+```
+    sudo microk8s kubectl
+```
+To make it in as a regular `kubectl` crete the following alias 
+```
+    alias kubectl="sudo microk8s kubectl"
+```
 ## Install helm
 
 To install helm run the following commands in the terminal:
