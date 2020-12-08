@@ -81,8 +81,8 @@ spec:
         command:
         - wget
         - "-O"
-        - "/work-dir/index.html"
-        - http://info.cern.ch
+        - "/work-dir/files"
+        - https://github.com/k8-proxy/p-k8-jmeter-test-engine/raw/master/jmeter-icap/scripts/allfiles.csv
         volumeMounts:
         - name: workdir
           mountPath: "/work-dir"
