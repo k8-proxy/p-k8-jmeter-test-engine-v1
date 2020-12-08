@@ -88,9 +88,9 @@ class Main():
         if int(Main.duration) <= 0:
             logger.error("Test duration must be positive number")
             exit(1)
-        if not os.path.exists(Main.filelist):
-            logger.error("File {} does not exist".format(Main.filelist))
-            exit(1)
+        #if not os.path.exists(Main.filelist):
+        #    logger.error("File {} does not exist".format(Main.filelist))
+        #    exit(1)
         Main.verify_url('minio', Main.minio_url)
         Main.verify_url('influxdb', Main.influxdb_url)
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
@@ -107,11 +107,11 @@ class Main():
             if Main.microk8s:
                 os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
                 os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
-                os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
+                #os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
             else:
                 os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
                 os.system("kubectl delete --ignore-not-found secret jmeterconf")
-                os.system("kubectl delete --ignore-not-found secret filesconf")
+                #os.system("kubectl delete --ignore-not-found secret filesconf")
         except Exception as e:
             logger.error(e)
             exit(1)
@@ -196,14 +196,14 @@ class Main():
             shutil.copyfile(jmeter_script_name,'jmeter-conf.jmx')
             os.remove(jmeter_script_name)
 
-            shutil.copyfile(Main.filelist,'files')
+            #shutil.copyfile(Main.filelist,'files')
 
             if Main.microk8s:
                 os.system("microk8s kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-                os.system("microk8s kubectl create secret generic filesconf --from-file=files")
+                #os.system("microk8s kubectl create secret generic filesconf --from-file=files")
             else:
                 os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-                os.system("kubectl create secret generic filesconf --from-file=files")
+                #os.system("kubectl create secret generic filesconf --from-file=files")
 
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')
@@ -230,7 +230,7 @@ class Main():
                 os.system("kubectl create -f job-0.yaml")
 
             os.remove('jmeter-conf.jmx')
-            os.remove('files')
+            #os.remove('files')
             os.remove('job-0.yaml')
 
         except Exception as e:

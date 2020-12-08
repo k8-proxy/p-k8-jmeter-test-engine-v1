@@ -36,11 +36,11 @@ class Main():
             if Main.microk8s:
                 os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
                 os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
-                os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
+                #os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
             else:
                 os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
                 os.system("kubectl delete --ignore-not-found secret jmeterconf")
-                os.system("kubectl delete --ignore-not-found secret filesconf")
+                #os.system("kubectl delete --ignore-not-found secret filesconf")
         except Exception as e:
             logger.error(e)
             exit(1)
