@@ -1,6 +1,19 @@
-## How to use load/traffic generation capability within OVA
+# How to generate Load with the OVA using User interface
 
 For OVA deployment follow the instructions in ["How to deploy OVA"](How%20to%20deploy%20OVA.md)
+
+## Introduction
+
+The following diagram shows generic view of what processes are running and how are they connected:
+
+![vm_load_vision](pngs/Icap-Performance-Traffic-Generator-OVA.png)
+
+The load/traffic generator comes with 2 features:
+
+- Load Generation Capability
+- Performance Dashboard
+
+# How to utilize the load/traffic generation capability within OVA
 
 Load generation can be triggered via provided UI interface.
 

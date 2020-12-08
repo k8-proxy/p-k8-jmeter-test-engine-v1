@@ -82,13 +82,4 @@ The output should look as follows:
 ![new-dashboard](pngs/new-dashboard.png)<br/>
 Open the dashboard and watch a visualization of the running test <br/>
 ![dashboard](pngs/dashboard.png)<br/>
-## How to generate Load with the UI
 
-The following diagram shows generic view of what processes are running and how are they connected:
-
-![vm_load_vision](pngs/Icap-Performance-Traffic-Generator-OVA.png)
-
-The load/traffic generator comes with 2 features:
-
-- Load Generation Capability
-- Performance Dashboard
