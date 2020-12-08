@@ -1,4 +1,4 @@
-# How to generate Load with OVA using command line
+# How to generate Load with OVA utilizing command line
 
 For OVA deployment follow the instructions in ["How to deploy OVA"](How%20to%20deploy%20OVA.md)
 

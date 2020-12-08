@@ -1,4 +1,4 @@
-# How to generate Load with the OVA using User interface
+# How to generate Load with the OVA utilizing User interface
 
 For OVA deployment follow the instructions in ["How to deploy OVA"](How%20to%20deploy%20OVA.md)
 
