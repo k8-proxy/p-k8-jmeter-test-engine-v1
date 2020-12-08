@@ -1,12 +1,13 @@
 import os
 from argparse import ArgumentParser
-import time
 from datetime import timedelta, datetime, timezone
 import delete_stack
 import create_stack
 import create_dashboard
 from dotenv import load_dotenv
 from aws_secrets import get_secret_value
+from threading import Thread
+from time import sleep
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
@@ -147,7 +148,7 @@ def __start_delete_stack(additional_delay, config):
             diff = datetime.now(timezone.utc) - start_time
             print("{0:.1f} minutes have elapsed, stack will be deleted in {1:.1f} minutes".format(diff.seconds / 60, (
                     total_wait_time - diff.seconds) / 60))
-        time.sleep(MESSAGE_INTERVAL)
+        sleep(MESSAGE_INTERVAL)
 
     delete_stack.Main.main(argv=delete_stack_args)
 
@@ -253,7 +254,8 @@ def main(config):
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
     else:
-        __start_delete_stack(DELETE_TIME_OFFSET, config)
+        thread = Thread(target=__start_delete_stack, args=(DELETE_TIME_OFFSET, config))
+        thread.start()
 
     return dashboard_url
 
