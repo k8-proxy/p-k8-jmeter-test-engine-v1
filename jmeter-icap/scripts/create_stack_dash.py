@@ -180,15 +180,17 @@ def run_using_ui(ui_json_params):
     if ui_json_params['load_type']:
         __ui_set_files_for_load_type(ui_json_params['load_type'])
 
+    # If Grafana API key provided, that takes precedence. Otherwise get key from AWS. If neither method provided, error output.
+    if not Config.grafana_api_key:
+        print("Must include a Grafana API key in config.env")
+        exit(0)
+
     # ensure that preserve stack and create_dashboard are at default values
     Config.preserve_stack = False
     Config.exclude_dashboard = False
 
     __ui_set_tls_and_port_params(ui_json_params['load_type'], ui_json_params['enable_tls'],
                                  ui_json_params['tls_ignore_error'], ui_json_params['port'])
-
-    # Setting values for local setup
-    Config.grafana_url = "http://localhost:3000/"
 
     dashboard_url = main(Config)
 
