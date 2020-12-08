@@ -83,7 +83,7 @@ spec:
         - wget
         - "-O"
         - "/data/files"
-        - https://raw.githubusercontent.com/k8-proxy/p-k8-jmeter-test-engine/master/jmeter-icap/scripts/gov_uk_files.csv
+        - $file_list_url$
         volumeMounts:
         - name: workdir
           mountPath: "/data"
