@@ -110,7 +110,7 @@ class Main():
         #logger.info(Main.MINIO_SECRET_KEY)
         logger.info(Main.MINIO_BUCKET)
         Main.upload_to_minio(Main.log_file_path)
-        Main.output_text_file(Main.log_file_path)
+        #Main.output_text_file(Main.log_file_path)
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
