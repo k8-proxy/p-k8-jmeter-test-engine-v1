@@ -2,6 +2,8 @@
 
 For OVA deployment follow the instructions in ["How to deploy OVA"](How%20to%20deploy%20OVA.md)
 
+In a newly created Virtual Machine follow the steps below 
+
 1. Open a new terminal tab and run the following:
 ```
     kubectl port-forward -n common service/minio-service 9000:80

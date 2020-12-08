@@ -13,7 +13,7 @@ The load/traffic generator comes with 2 features:
 - Load Generation Capability
 - Performance Dashboard
 
-# How to utilize the load/traffic generation capability within OVA
+## How to utilize the load/traffic generation capability within OVA
 
 Load generation can be triggered via provided UI interface.
 
