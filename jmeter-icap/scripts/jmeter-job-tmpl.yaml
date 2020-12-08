@@ -70,29 +70,30 @@ spec:
         - name: jmetervol
           mountPath: "/usr/share/jmx"
           readOnly: true
-        - name: filesvol
-          mountPath: "/usr/share/data"
-          readOnly: true
+        #- name: filesvol
+        #  mountPath: "/usr/share/data"
+        #  readOnly: true
         - name: workdir
-          mountPath: /usr/share/workdir
+          mountPath: /usr/share/data
+          readOnly: true
       initContainers:
       - name: install
         image: busybox
         command:
         - wget
         - "-O"
-        - "/work-dir/files"
-        - https://github.com/k8-proxy/p-k8-jmeter-test-engine/raw/master/jmeter-icap/scripts/allfiles.csv
+        - "/data/files"
+        - https://raw.githubusercontent.com/k8-proxy/p-k8-jmeter-test-engine/master/jmeter-icap/scripts/gov_uk_files.csv
         volumeMounts:
         - name: workdir
-          mountPath: "/work-dir"
+          mountPath: "/data"
       volumes:
       - name: jmetervol
         secret:
           secretName: jmeterconf          
-      - name: filesvol
-        secret:
-          secretName: filesconf
+      #- name: filesvol
+      #  secret:
+      #    secretName: filesconf
       - name: workdir
         emptyDir: {}
       restartPolicy: Never
