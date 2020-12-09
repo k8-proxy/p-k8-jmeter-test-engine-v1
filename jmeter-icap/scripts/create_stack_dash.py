@@ -249,13 +249,14 @@ def main(config):
     create_stack_args = get_args_list(config, create_stack_options)
 
     print("Creating Load Generators...")
-    create_stack.Main.main(create_stack_args)
+    create_stack_thread = Thread(target=create_stack.Main.main, args=create_stack_args)
+    create_stack_thread.start()
 
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
     else:
-        thread = Thread(target=__start_delete_stack, args=(DELETE_TIME_OFFSET, config))
-        thread.start()
+        delete_stack_thread = Thread(target=__start_delete_stack, args=(DELETE_TIME_OFFSET, config))
+        delete_stack_thread.start()
 
     return dashboard_url
 
