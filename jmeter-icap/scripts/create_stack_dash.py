@@ -20,6 +20,7 @@ class Config(object):
     BASEDIR = os.path.abspath(os.path.dirname(__file__))
     load_dotenv(os.path.join(BASEDIR, 'config.env'), override=True)
     try:
+        # these field names should not be changed as they correspond exactly to the names of create_stack's params.
         aws_profile_name = os.getenv("AWS_PROFILE_NAME")
         region = os.getenv("REGION")
         total_users = int(os.getenv("TOTAL_USERS"))
@@ -249,7 +250,8 @@ def main(config):
     create_stack_args = get_args_list(config, create_stack_options)
 
     print("Creating Load Generators...")
-    create_stack.Main.main(create_stack_args)
+    create_stack_thread = Thread(target=create_stack.Main.main(create_stack_args))
+    create_stack_thread.start()
 
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
