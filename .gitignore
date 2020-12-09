@@ -6,3 +6,4 @@ notes.txt
 secret.yaml
 terraform/eks/cluster-autoscaler-autodiscover.yaml
 /.idea
+/venv
