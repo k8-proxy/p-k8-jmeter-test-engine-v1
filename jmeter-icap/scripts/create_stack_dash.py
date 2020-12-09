@@ -8,7 +8,10 @@ from dotenv import load_dotenv
 from aws_secrets import get_secret_value
 from threading import Thread
 from time import sleep
+import logging
+import sys
 
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
 # Interval between "time elapsed" messages sent to user; should be set to 600.
