@@ -19,15 +19,15 @@ class Main():
     total_users = '100'
     users_per_instance = '25'
     duration = '60'
-    filelist = ''
-    minio_url = 'http://minio.minio.svc.cluster.local:9000'
+    filelist = 'https://raw.githubusercontent.com/k8-proxy/p-k8-jmeter-test-engine/master/jmeter-icap/scripts/gov_uk_files.csv'
+    minio_url = 'http://minio-service.common:80'
     minio_access_key = ''
     minio_secret_key = ''
     minio_input_bucket = 'input'
     minio_output_bucket = 'output'
-    influxdb_url = 'http://influxdb.influxdb.svc.cluster.local:8086'
-    influxHost = 'influxdb.influxdb.svc.cluster.local'
-    prefix = 'demo'
+    influxdb_url = 'http://influxdb-service.common:80'
+    influxHost = 'influxdb-service.common'
+    prefix = 'test'
     icap_server = 'icap02.glasswall-icap.com'
     requests_memory = '768'
     requests_cpu = '300'
@@ -69,6 +69,16 @@ class Main():
             exit(1)
 
     @staticmethod
+    def verify_file_list(url):
+        try:
+            if not (url.startswith('http://') or url.startswith('https://')):
+                logger.error("{} file list url must srart with \'http://\' or \'https://\'".format(url))
+                exit(1)
+        except Exception as e:
+            logger.error("{} URL vertification failed {}".format(service_name, e))
+            exit(1)
+
+    @staticmethod
     def sanity_checks():
         try:
             if not Main.microk8s:
@@ -88,9 +98,7 @@ class Main():
         if int(Main.duration) <= 0:
             logger.error("Test duration must be positive number")
             exit(1)
-        #if not os.path.exists(Main.filelist):
-        #    logger.error("File {} does not exist".format(Main.filelist))
-        #    exit(1)
+        Main.verify_file_list(Main.filelist)
         Main.verify_url('minio', Main.minio_url)
         Main.verify_url('influxdb', Main.influxdb_url)
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
@@ -100,18 +108,15 @@ class Main():
             logger.error("File {} does not exist".format(Main.jmx_file_path))
             exit(1)
 
-
     @staticmethod
     def stop_jmeter_jobs():
         try:
             if Main.microk8s:
                 os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
                 os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
-                #os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
             else:
                 os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
                 os.system("kubectl delete --ignore-not-found secret jmeterconf")
-                #os.system("kubectl delete --ignore-not-found secret filesconf")
         except Exception as e:
             logger.error(e)
             exit(1)
@@ -196,14 +201,10 @@ class Main():
             shutil.copyfile(jmeter_script_name,'jmeter-conf.jmx')
             os.remove(jmeter_script_name)
 
-            #shutil.copyfile(Main.filelist,'files')
-
             if Main.microk8s:
                 os.system("microk8s kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-                #os.system("microk8s kubectl create secret generic filesconf --from-file=files")
             else:
                 os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-                #os.system("kubectl create secret generic filesconf --from-file=files")
 
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')
