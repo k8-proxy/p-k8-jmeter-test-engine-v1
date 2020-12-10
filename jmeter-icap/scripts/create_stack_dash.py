@@ -1,12 +1,13 @@
 import os
 from argparse import ArgumentParser
-import time
 from datetime import timedelta, datetime, timezone
 import delete_stack
 import create_stack
 import create_dashboard
 from dotenv import load_dotenv
 from aws_secrets import get_secret_value
+from threading import Thread
+from time import sleep
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
@@ -147,7 +148,7 @@ def __start_delete_stack(additional_delay, config):
             diff = datetime.now(timezone.utc) - start_time
             print("{0:.1f} minutes have elapsed, stack will be deleted in {1:.1f} minutes".format(diff.seconds / 60, (
                     total_wait_time - diff.seconds) / 60))
-        time.sleep(MESSAGE_INTERVAL)
+        sleep(MESSAGE_INTERVAL)
 
     delete_stack.Main.main(argv=delete_stack_args)
 
@@ -221,14 +222,14 @@ def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ig
 
 def __ui_set_files_for_load_type(load: str):
     if load == "Direct":
-        Config.jmx_script_name = 'ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
-        Config.grafana_file = '../grafana_dashboards/k8-test-engine-dashboard.json'
-        Config.test_data_file = 'gov_uk_files.csv'
+        Config.jmx_script_name = './ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
+        Config.grafana_file = './ICAP-Direct-File-Processing/k8-test-engine-dashboard.json'
+        Config.test_data_file = './ICAP-Direct-File-Processing/gov_uk_files.csv'
 
     elif load == "Proxy":
-        Config.jmx_script_name = './k8-proxy-test/ProxySite_Processing_v1.jmx'
-        Config.grafana_file = './k8-proxy-test/ProxySite_Dashboard_Template.json'
-        Config.test_data_file = './k8-proxy-test/proxyfiles.csv'
+        Config.jmx_script_name = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
+        Config.grafana_file = './ICAP-Proxy-Site/ProxySite_Dashboard_Template.json'
+        Config.test_data_file = './ICAP-Proxy-Site/proxyfiles.csv'
 
 
 def main(config):
@@ -253,7 +254,8 @@ def main(config):
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
     else:
-        __start_delete_stack(DELETE_TIME_OFFSET, config)
+        delete_stack_thread = Thread(target=__start_delete_stack, args=(DELETE_TIME_OFFSET, config))
+        delete_stack_thread.start()
 
     return dashboard_url
 
