@@ -93,4 +93,4 @@ If this is the case run the command below
 ```
 Wait until microk8s restarts and retry step 5
 
-Generate Load using Command Line using https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/instructions/How%20to%20generate%20load%20with%20OVA%20utilizing%20command%20line.md
+Generate Load using Command Line - https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/instructions/How%20to%20generate%20load%20with%20OVA%20utilizing%20command%20line.md
