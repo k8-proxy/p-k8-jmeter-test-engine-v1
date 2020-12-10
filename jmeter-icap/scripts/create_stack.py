@@ -145,6 +145,7 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$prefix$", Main.prefix)
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
             Main.replace_in_file(jmeter_script_name,"$icap_server_port$", Main.icap_server_port)
+
             if Main.enable_tls:
                 Main.replace_in_file(jmeter_script_name,"$use_tls$", "true")
             else:
@@ -211,7 +212,7 @@ class Main():
             shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
 
             Main.parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
-            logger.info("Number of pods to be created: {}".format(Main.parallelism))
+            print("Number of pods to be created: {}".format(Main.parallelism))
             Main.replace_in_file('job-0.yaml','$parallelism-number', str(Main.parallelism))
 
             Main.apply_resource_table()
@@ -276,42 +277,43 @@ class Main():
             elif opt in ("-port", "--icap_server_port"):
                 Main.icap_server_port = arg
             elif opt in ("-et", "--enable_tls"):
-                Main.enable_tls = arg
+                if arg.lower() == 'true' or arg == '1':
+                    Main.enable_tls = True
             elif opt in ("-tls", "--tls_verification_method"):
                 Main.tls_verification_method = arg
             elif opt in ("-jmx", "--jmx_file_path"):
                 Main.jmx_file_path = arg
 
         Main.log_level(LOG_LEVEL)
-        logger.info("TOTAL USERS         {}".format(Main.total_users))
-        logger.info("USERS PER INSTANCE  {}".format(Main.users_per_instance))
-        logger.info("TEST DURATION       {}".format(Main.duration))
-        logger.info("FILE LIST           {}".format(Main.filelist))
+        print("TOTAL USERS         {}".format(Main.total_users))
+        print("USERS PER INSTANCE  {}".format(Main.users_per_instance))
+        print("TEST DURATION       {}".format(Main.duration))
+        print("FILE LIST           {}".format(Main.filelist))
 
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
-        logger.info("MINIO URL           {}".format(Main.minio_url))
-        #logger.info("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
-        #logger.info("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
-        logger.info("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
-        logger.info("MINIO outPUT BUCKET {}".format(Main.minio_output_bucket))
+        print("MINIO URL           {}".format(Main.minio_url))
+        #print("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
+        #print("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
+        print("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
+        print("MINIO outPUT BUCKET {}".format(Main.minio_output_bucket))
 
         Main.influxHost = Main.influxdb_url.replace('http://', '')
         Main.influxHost = Main.influxHost.split(':', 1)[0]
-        logger.info("INFLUXDB URL        {}".format(Main.influxdb_url))
-        logger.info("INFLUX HOST         {}".format(Main.influxHost))
-        logger.info("PREFIX              {}".format(Main.prefix))
+        print("INFLUXDB URL        {}".format(Main.influxdb_url))
+        print("INFLUX HOST         {}".format(Main.influxHost))
+        print("PREFIX              {}".format(Main.prefix))
 
-        logger.info("ICAP SERVER         {}".format(Main.icap_server))
-        logger.info("ICAP SERVER PORT    {}".format(Main.icap_server_port))
+        print("ICAP SERVER         {}".format(Main.icap_server))
+        print("ICAP SERVER PORT    {}".format(Main.icap_server_port))
 
-        logger.info("ENABLE TLS          {}".format(Main.enable_tls))
-        logger.info("TLS VERIFICATION    {}".format(Main.tls_verification_method))
+        print("ENABLE TLS          {}".format(Main.enable_tls))
+        print("TLS VERIFICATION    {}".format(Main.tls_verification_method))
 
         Main.get_microk8s()
-        logger.info("Micro k8s           {}".format(Main.microk8s))
+        print("Micro k8s           {}".format(Main.microk8s))
 
-        logger.info("JMX FILE PATH       {}".format(Main.jmx_file_path))
+        print("JMX FILE PATH       {}".format(Main.jmx_file_path))
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()
