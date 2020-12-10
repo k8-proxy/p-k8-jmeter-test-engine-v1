@@ -70,6 +70,62 @@ To install helm run the following commands in the terminal:
     helm upgrade --install loki --namespace=common loki/loki-stack
     helm upgrade --install promtail --namespace=common loki/promtail --set "loki.serviceName=loki"   
 ```
+# Angular UI Component Installation and Deployment
+
+## Prerequisites
+
+Install Node.js
+
+```bash
+sudo apt install nodejs -y
+sudo apt install npm -y
+sudo npm install -g @angular/cli
+sudo npm install -g http-server
+```
+Install python
+
+```bash
+sudo apt update
+sudo apt -y upgrade
+sudo apt install -y python3-pip
+sudo apt install -y build-essential libssl-dev libffi-dev python3-dev
+```
+For back end, install Flask and dependencies. A requirements file is already set up and can be used to get the necessary packages. Navigate to folder and install:
+
+```
+cd /p-k8-jmeter-test-engine/jmeter-icap/scripts
+sudo pip3 install -r requirements.txt
+```
+
+## Setting up UI Project from Repository
+
+To install the Angular project and all dependencies, navigate to the folder containing the project files in the repository and use npm like so:
+```
+cd /p-k8-jmeter-test-engine/UI/master-script-form
+sudo npm install
+```
+This will automatically download all dependencies and setup files/folders required to test/develop/deploy this angular project. It could take a couple of minutes to install.
+
+## Deploying Angular Project 
+
+Deploying UI for Local run, in the terminal, run:
+```
+cd /p-k8-jmeter-test-engine/UI/master-script-form
+ng serve
+```
+once is successfully run you will get url for Test UI 
+
+Now the UI should be accessible via http://localhost:4200/ 
+
+## Run Flask Server Back end 
+
+Run this command to get backend server running to communicate with UI
+
+```
+cd /p-k8-jmeter-test-engine/jmeter-icap/scripts
+sudo python3 flask_server.py
+```
+Note: If you see any error in create_stack_dash.py while using UI please re-run the command.
 
 ## Upload test files to the Minio server
 
@@ -116,10 +172,10 @@ config.env content should look similar to the following:
 ```
 WS_PROFILE_NAME=default
 REGION=eu-west-1
-TOTAL_USERS=100
+TOTAL_USERS=25
 USERS_PER_INSTANCE=25
 DURATION=300
-TEST_DATA_FILE=gov_uk_files.csv
+TEST_DATA_FILE=../scripts/ICAP-Direct-File-Processing/gov_uk_files.csv
 MINIO_URL=http://minio-service.common:80
 MINIO_ACCESS_KEY=admin
 MINIO_SECRET_KEY=admin@123
