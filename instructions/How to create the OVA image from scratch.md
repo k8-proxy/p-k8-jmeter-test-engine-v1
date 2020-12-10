@@ -117,15 +117,71 @@ once is successfully run you will get url for Test UI
 
 Now the UI should be accessible via http://localhost:4200/ 
 
-## Run Flask Server Back end 
+## Deploying Angular Project to Web Server
 
-Run this command to get backend server running to communicate with UI
+The project must first be built in order to be deployed. In the project directory, in the terminal, run:
+```
+cd /p-k8-jmeter-test-engine/UI/master-script-form
+sudo ng build --prod
+```
 
+This will generate a dist folder that contains the files that need to be copied into the apache server.
+
+```
+sudo cp -a /p-k8-jmeter-test-engine/UI/master-script-form/dist/master-script-form/. /var/www/html/
+```
+
+Now the UI should be accessible via the virtual machine's IP (i.e. http://virtual-macine-ip)
+
+## Setting Up Backend Server as a Service
+
+To setup the backend service, navigate to the folder containing the project files in the repository and copy the flask.service file to the system folder, and provide "exec.sh" with the correct permissions as shown below:
 ```
 cd /p-k8-jmeter-test-engine/jmeter-icap/scripts
-sudo python3 flask_server.py
+sudo chmod +x exec.sh
+sudo cp flask.service /etc/systemd/system/
 ```
-Note: If you see any error in create_stack_dash.py while using UI please re-run the command.
+
+Flask.service's contents point to the directory where the project's python server scripts exist and to exec.sh, which runs those scripts. Please ensure that *WorkingDirectory* and *ExecStart* paths match the project repository path (they should by default):
+
+```
+# /etc/systemd/system/flask.service
+[Unit]
+Description=WSGI App for ICAP Testing UI Front End
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/usr/glasswall/home/p-k8-jmeter-test-engine/jmeter-icap/scripts
+ExecStart=/usr/glasswall/home/p-k8-jmeter-test-engine/scripts/exec.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+Once flask.service is put into "/etc/systemd/system/" and contains the correct directory information, it will have to be enabled then started.
+To do this, run the following:
+
+```
+sudo systemctl enable flask
+sudo systemctl start flask
+```
+
+Check if the service is running correctly using:
+
+```
+sudo systemctl status flask
+```
+
+The service should now be started and running in the background. To view this service's logs, use the following:
+
+```
+sudo journalctl -u flask
+```
+
 
 ## Upload test files to the Minio server
 
