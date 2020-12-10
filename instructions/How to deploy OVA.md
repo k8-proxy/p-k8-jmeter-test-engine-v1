@@ -11,21 +11,19 @@ The environment does not have to scale up capabilities (like in EKS or AKS). How
     - When deploying on a VMware Workstation in select 'File/Open' menu and navigate to the OVA file location on the computer<br/>
     ![ova_workstation](pngs/ova_workstation.png)
 3. Once the VM starts login with user `glasswall`
-4. Make sure the VM can access the network. <br/>
+4. Steps to setup static IP. <br/>
 The VM has a preset static IP address to run on Glasswall VMware ESXi host.<br/>
-![ip](pngs/ip-setting.png)<br/>
-Depending on your network configuration, change to automatic IP (must have DHCP server accessible)<br/>
-![auto](pngs/ip-auto.png)<br/>
-
-## Steps to setup static IP
 
 - Identify available network interface
   
   ```sh
    ip link show
   ```
+  Result:
+  
    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</br>
+    
    2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000 link/ether 00:0c:29:00:22:80 brd ff:ff:ff:ff:ff:ff
  
 - Enable the network interface
@@ -58,13 +56,10 @@ network:
 sudo netplan apply
 reboot
 ```
-Refer this link for more information - https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu
 
-
-or set static IP by following the [instructions](https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu)
 5. In a terminal window try listing the current pods with the following command:
 ```
-    kubectl get pods --all-namespaces
+    kubectl get pods -A
 ```
 The output should look like
 ```
@@ -97,3 +92,5 @@ If this is the case run the command below
     sudo microk8s.refresh-cert
 ```
 Wait until microk8s restarts and retry step 5
+
+Generate Load using Command Line using https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/instructions/How%20to%20generate%20load%20with%20OVA%20utilizing%20command%20line.md
