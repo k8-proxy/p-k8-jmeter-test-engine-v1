@@ -19,8 +19,9 @@ class Main():
     total_users = '100'
     users_per_instance = '25'
     duration = '60'
-    filelist = 'https://raw.githubusercontent.com/k8-proxy/p-k8-jmeter-test-engine/master/jmeter-icap/scripts/gov_uk_files.csv'
+    filelist = ''
     minio_url = 'http://minio-service.common:80'
+    minio_external_url = 'http://localhost:9000'
     minio_access_key = ''
     minio_secret_key = ''
     minio_input_bucket = 'input'
@@ -100,6 +101,7 @@ class Main():
             exit(1)
         Main.verify_file_list(Main.filelist)
         Main.verify_url('minio', Main.minio_url)
+        Main.verify_url('minio external', Main.minio_external_url)
         Main.verify_url('influxdb', Main.influxdb_url)
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
             logger.error("Wrong icap server port value {}".format(Main.icap_server_port))
@@ -150,6 +152,7 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$prefix$", Main.prefix)
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.icap_server)
             Main.replace_in_file(jmeter_script_name,"$icap_server_port$", Main.icap_server_port)
+
             if Main.enable_tls:
                 Main.replace_in_file(jmeter_script_name,"$use_tls$", "true")
             else:
@@ -212,7 +215,7 @@ class Main():
             shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
 
             Main.parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
-            logger.info("Number of pods to be created: {}".format(Main.parallelism))
+            print("Number of pods to be created: {}".format(Main.parallelism))
             Main.replace_in_file('job-0.yaml','$parallelism-number', str(Main.parallelism))
 
             Main.apply_resource_table()
@@ -240,9 +243,9 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_external_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_external_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -260,6 +263,8 @@ class Main():
                 Main.filelist = arg
             elif opt in ("-m", "--minio_url"):
                 Main.minio_url = arg
+            elif opt in ("-me", "--minio_external_url"):
+                Main.minio_external_url = arg
             elif opt in ("-a", "--minio_access_key"):
                 Main.minio_access_key = arg
             elif opt in ("-s", "--minio_secret_key"):
@@ -277,42 +282,45 @@ class Main():
             elif opt in ("-port", "--icap_server_port"):
                 Main.icap_server_port = arg
             elif opt in ("-et", "--enable_tls"):
-                Main.enable_tls = arg
+                if arg.lower() == 'true' or arg == '1':
+                    Main.enable_tls = True
             elif opt in ("-tls", "--tls_verification_method"):
                 Main.tls_verification_method = arg
             elif opt in ("-jmx", "--jmx_file_path"):
                 Main.jmx_file_path = arg
 
         Main.log_level(LOG_LEVEL)
-        logger.info("TOTAL USERS         {}".format(Main.total_users))
-        logger.info("USERS PER INSTANCE  {}".format(Main.users_per_instance))
-        logger.info("TEST DURATION       {}".format(Main.duration))
-        logger.info("FILE LIST           {}".format(Main.filelist))
+        print("TOTAL USERS         {}".format(Main.total_users))
+        print("USERS PER INSTANCE  {}".format(Main.users_per_instance))
+        print("TEST DURATION       {}".format(Main.duration))
+        print("FILE LIST           {}".format(Main.filelist))
 
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
-        logger.info("MINIO URL           {}".format(Main.minio_url))
-        #logger.info("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
-        #logger.info("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
-        logger.info("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
-        logger.info("MINIO outPUT BUCKET {}".format(Main.minio_output_bucket))
+        print("MINIO URL           {}".format(Main.minio_url))
+        print("MINIO EXTERNAL URL  {}".format(Main.minio_external_url))
+        
+        #print("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
+        #print("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
+        print("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
+        print("MINIO outPUT BUCKET {}".format(Main.minio_output_bucket))
 
         Main.influxHost = Main.influxdb_url.replace('http://', '')
         Main.influxHost = Main.influxHost.split(':', 1)[0]
-        logger.info("INFLUXDB URL        {}".format(Main.influxdb_url))
-        logger.info("INFLUX HOST         {}".format(Main.influxHost))
-        logger.info("PREFIX              {}".format(Main.prefix))
+        print("INFLUXDB URL        {}".format(Main.influxdb_url))
+        print("INFLUX HOST         {}".format(Main.influxHost))
+        print("PREFIX              {}".format(Main.prefix))
 
-        logger.info("ICAP SERVER         {}".format(Main.icap_server))
-        logger.info("ICAP SERVER PORT    {}".format(Main.icap_server_port))
+        print("ICAP SERVER         {}".format(Main.icap_server))
+        print("ICAP SERVER PORT    {}".format(Main.icap_server_port))
 
-        logger.info("ENABLE TLS          {}".format(Main.enable_tls))
-        logger.info("TLS VERIFICATION    {}".format(Main.tls_verification_method))
+        print("ENABLE TLS          {}".format(Main.enable_tls))
+        print("TLS VERIFICATION    {}".format(Main.tls_verification_method))
 
         Main.get_microk8s()
-        logger.info("Micro k8s           {}".format(Main.microk8s))
+        print("Micro k8s           {}".format(Main.microk8s))
 
-        logger.info("JMX FILE PATH       {}".format(Main.jmx_file_path))
+        print("JMX FILE PATH       {}".format(Main.jmx_file_path))
 
         Main.sanity_checks()
         Main.stop_jmeter_jobs()

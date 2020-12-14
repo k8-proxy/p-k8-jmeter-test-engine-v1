@@ -11,15 +11,55 @@ The environment does not have to scale up capabilities (like in EKS or AKS). How
     - When deploying on a VMware Workstation in select 'File/Open' menu and navigate to the OVA file location on the computer<br/>
     ![ova_workstation](pngs/ova_workstation.png)
 3. Once the VM starts login with user `glasswall`
-4. Make sure the VM can access the network. <br/>
+4. Steps to setup static IP. <br/>
 The VM has a preset static IP address to run on Glasswall VMware ESXi host.<br/>
-![ip](pngs/ip-setting.png)<br/>
-Depending on your network configuration, change to automatic IP (must have DHCP server accessible)<br/>
-![auto](pngs/ip-auto.png)<br/>
-or set static IP by following the [instructions](https://www.howtoforge.com/linux-basics-set-a-static-ip-on-ubuntu)
+
+- Identify available network interface
+  
+  ```sh
+   ip link show
+  ```
+  Result:
+  
+   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</br>
+    
+   2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000 link/ether 00:0c:29:00:22:80 brd ff:ff:ff:ff:ff:ff
+ 
+- Enable the network interface
+
+```sh
+sudo ifconfig ens33 up
+```
+
+```sh
+sudo nano /etc/netplan/01-network-manager-all.yaml
+```
+
+- Add below content to `/etc/netplan/01-network-manager-all.yaml`. Mention network interface name and other network details accordingly.
+
+Sample:
+```yaml
+network:
+    ethernets:
+        ens33:
+            addresses: [91.109.26.22/27]
+            gateway4: 91.109.26.30
+            nameservers:
+              addresses: [8.8.4.4,8.8.8.8]
+    version: 2
+```
+
+- Once done run below commands to apply network changes
+
+```sh
+sudo netplan apply
+reboot
+```
+
 5. In a terminal window try listing the current pods with the following command:
 ```
-    kubectl get pods --all-namespaces
+    kubectl get pods -A
 ```
 The output should look like
 ```
@@ -43,8 +83,14 @@ wait until all the PODs are `READY` and `Running`<br/>
 ```
     Unable to connect to the server: x509: certificate has expired or is not yet valid: current time 2020-05-03T23:53:06Z is after 2020-05-03T16:38:01Z
 ```
+or 
+```
+The connection to the server 127.0.0.1:16443 was refused - did you specify the right host or port?
+```
 If this is the case run the command below
 ```
     sudo microk8s.refresh-cert
 ```
 Wait until microk8s restarts and retry step 5
+
+Generate Load using Command Line - https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/instructions/How%20to%20generate%20load%20with%20OVA%20utilizing%20command%20line.md
