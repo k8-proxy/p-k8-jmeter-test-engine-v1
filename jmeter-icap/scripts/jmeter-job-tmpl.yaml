@@ -70,30 +70,14 @@ spec:
         - name: jmetervol
           mountPath: "/usr/share/jmx"
           readOnly: true
-        #- name: filesvol
-        #  mountPath: "/usr/share/data"
-        #  readOnly: true
-        - name: workdir
-          mountPath: /usr/share/data
+        - name: filesvol
+          mountPath: "/usr/share/data"
           readOnly: true
-      initContainers:
-      - name: install
-        image: busybox
-        command:
-        - wget
-        - "-O"
-        - "/data/files"
-        - $file_list_url$
-        volumeMounts:
-        - name: workdir
-          mountPath: "/data"
       volumes:
       - name: jmetervol
         secret:
           secretName: jmeterconf          
-      #- name: filesvol
-      #  secret:
-      #    secretName: filesconf
-      - name: workdir
-        emptyDir: {}
+      - name: filesvol
+        secret:
+          secretName: filesconf
       restartPolicy: Never
