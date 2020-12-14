@@ -21,6 +21,7 @@ class Main():
     duration = '60'
     filelist = ''
     minio_url = 'http://minio.minio.svc.cluster.local:9000'
+    minio_external_url = 'http://localhost:9000'
     minio_access_key = ''
     minio_secret_key = ''
     minio_input_bucket = 'input'
@@ -92,6 +93,7 @@ class Main():
             logger.error("File {} does not exist".format(Main.filelist))
             exit(1)
         Main.verify_url('minio', Main.minio_url)
+        Main.verify_url('minio external', Main.minio_external_url)
         Main.verify_url('influxdb', Main.influxdb_url)
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
             logger.error("Wrong icap server port value {}".format(Main.icap_server_port))
@@ -240,9 +242,9 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_external_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_external_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -260,6 +262,8 @@ class Main():
                 Main.filelist = arg
             elif opt in ("-m", "--minio_url"):
                 Main.minio_url = arg
+            elif opt in ("-me", "--minio_external_url"):
+                Main.minio_external_url = arg
             elif opt in ("-a", "--minio_access_key"):
                 Main.minio_access_key = arg
             elif opt in ("-s", "--minio_secret_key"):
@@ -293,6 +297,8 @@ class Main():
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
         print("MINIO URL           {}".format(Main.minio_url))
+        print("MINIO EXTERNAL URL  {}".format(Main.minio_external_url))
+        
         #print("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
         #print("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
         print("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
