@@ -74,16 +74,6 @@ class Main():
             exit(1)
 
     @staticmethod
-    def verify_file_list(url):
-        try:
-            if not (url.startswith('http://') or url.startswith('https://')):
-                print("{} file list url must srart with \'http://\' or \'https://\'".format(url))
-                exit(1)
-        except Exception as e:
-            print("{} URL vertification failed {}".format(service_name, e))
-            exit(1)
-
-    @staticmethod
     def sanity_checks():
         try:
             if not Main.microk8s:
@@ -103,7 +93,9 @@ class Main():
         if int(Main.duration) <= 0:
             print("Test duration must be positive number")
             exit(1)
-        Main.verify_file_list(Main.filelist)
+        if not os.path.exists(Main.filelist):
+            print("File {} does not exist".format(Main.filelist))
+            exit(1)
         Main.verify_url('minio', Main.minio_url)
         Main.verify_url('minio external', Main.minio_external_url)
         Main.verify_url('influxdb', Main.influxdb_url)
@@ -238,7 +230,6 @@ class Main():
                 os.system("kubectl create -f job-0.yaml")
 
             os.remove('jmeter-conf.jmx')
-            #os.remove('files')
             os.remove('job-0.yaml')
 
         except Exception as e:
