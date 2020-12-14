@@ -222,7 +222,6 @@ class Main():
             Main.replace_in_file('job-0.yaml','$Xms_value$', Main.Xms_value)
             Main.replace_in_file('job-0.yaml','$Xmx_value$', Main.Xmx_value)
             Main.replace_in_file('job-0.yaml','$prefix$', Main.prefix)
-            Main.replace_in_file('job-0.yaml','$file_list_url$', Main.filelist)
 
             if Main.microk8s:
                 os.system("microk8s kubectl create -f job-0.yaml")
