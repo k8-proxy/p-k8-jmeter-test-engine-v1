@@ -34,7 +34,7 @@ export class ConfigFormComponent implements OnInit {
   hideStoppedAlert = true;
   IcapOrProxy = this.urlChoices[0];
   public popoverTitle: string = "Please Confirm";
-  public popoverMessage: string = "Are you sure you wish to stop the test?";
+  public popoverMessage: string = "Are you sure you wish to stop all load?";
   public confirmClicked: boolean = false;
   public cancelClicked: boolean = false;
 
