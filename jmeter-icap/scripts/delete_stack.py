@@ -18,6 +18,7 @@ class Main():
     prefix = 'demo'
     microk8s = False
     kubectl_string = ''
+    delete_all = True
 
     @staticmethod
     def get_microk8s():
@@ -36,8 +37,11 @@ class Main():
     @staticmethod
     def stop_jmeter_jobs():
         try:
-            os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-            os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found secret jmeterconf")
+            if Main.delete_all:
+                os.system(Main.kubectl_string + "delete namespace jmeterjobs")
+            else:
+                os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found secret jmeterconf")
         except Exception as e:
             logger.error(e)
             exit(1)
@@ -56,6 +60,7 @@ class Main():
                 sys.exit()
             elif opt in ('-p', '--prefix'):
                 Main.prefix = arg
+                Main.delete_all = False
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.prefix)
