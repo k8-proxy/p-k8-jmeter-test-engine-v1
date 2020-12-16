@@ -17,14 +17,18 @@ class Main():
 
     prefix = 'demo'
     microk8s = False
+    kubectl_string = ''
+    delete_all = True
 
     @staticmethod
     def get_microk8s():
         try:
             subprocess.call(["microk8s", "kubectl", "version"])
             Main.microk8s = True
+            Main.kubectl_string = "microk8s kubectl "
         except:
             Main.microk8s = False    
+            Main.kubectl_string = "kubectl "    
 
     @staticmethod
     def log_level(level):
@@ -33,19 +37,18 @@ class Main():
     @staticmethod
     def stop_jmeter_jobs():
         try:
-            if Main.microk8s:
-                os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
+            if Main.delete_all:
+                os.system(Main.kubectl_string + "delete namespace jmeterjobs")
             else:
-                os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("kubectl delete --ignore-not-found secret jmeterconf")
+                os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found secret jmeterconf")
         except Exception as e:
             logger.error(e)
             exit(1)
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 delete_stack.py --prefix <job prefix>'
+        help_string = 'To delete a job by prefix:\n\nsudo python3 delete_stack.py <-p job_prefix>\n\nWhen running with no prefix specified, all current jmeter jogs will be deleted'
         try:
             opts, args = getopt.getopt(argv,"hp:",["help=","prefix="])
         except getopt.GetoptError:
@@ -57,6 +60,7 @@ class Main():
                 sys.exit()
             elif opt in ('-p', '--prefix'):
                 Main.prefix = arg
+                Main.delete_all = False
 
         Main.log_level(LOG_LEVEL)
         logger.info(Main.prefix)

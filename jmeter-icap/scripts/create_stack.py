@@ -46,14 +46,17 @@ class Main():
     tls_verification_method = 'no-verify'
     jmx_file_path = 'none'
     filelist_bucket = 'filelist'
+    kubectl_string = ''
 
     @staticmethod
     def get_microk8s():
         try:
             subprocess.call(["microk8s", "kubectl", "version"])
             Main.microk8s = True
+            Main.kubectl_string = "microk8s kubectl "
         except:
             Main.microk8s = False    
+            Main.kubectl_string = "kubectl "    
 
     @staticmethod
     def log_level(level):
@@ -109,12 +112,8 @@ class Main():
     @staticmethod
     def stop_jmeter_jobs():
         try:
-            if Main.microk8s:
-                os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
-            else:
-                os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("kubectl delete --ignore-not-found secret jmeterconf")
+            os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+            os.system(Main.kubectl_string +" -n jmeterjobs delete --ignore-not-found secret jmeterconf")
         except Exception as e:
             print(e)
             exit(1)
@@ -199,11 +198,8 @@ class Main():
             jmeter_script_name = Main.get_jmx_file()
             shutil.copyfile(jmeter_script_name,'jmeter-conf.jmx')
             os.remove(jmeter_script_name)
-
-            if Main.microk8s:
-                os.system("microk8s kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-            else:
-                os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
+            os.system(Main.kubectl_string + "create namespace jmeterjobs")
+            os.system(Main.kubectl_string + "-n jmeterjobs create secret generic jmeterconf --from-file=jmeter-conf.jmx")
 
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')
@@ -223,10 +219,7 @@ class Main():
             Main.replace_in_file('job-0.yaml','$Xmx_value$', Main.Xmx_value)
             Main.replace_in_file('job-0.yaml','$prefix$', Main.prefix)
 
-            if Main.microk8s:
-                os.system("microk8s kubectl create -f job-0.yaml")
-            else:
-                os.system("kubectl create -f job-0.yaml")
+            os.system(Main.kubectl_string + "create -f job-0.yaml")
 
             os.remove('jmeter-conf.jmx')
             os.remove('job-0.yaml')
