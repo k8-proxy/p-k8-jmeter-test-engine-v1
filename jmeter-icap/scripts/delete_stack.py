@@ -48,7 +48,7 @@ class Main():
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 delete_stack.py --prefix <job prefix>'
+        help_string = 'To delete a job by prefix:\n\nsudo python3 delete_stack.py <-p job_prefix>\n\nWhen running with no prefix specified, all current jmeter jogs will be deleted'
         try:
             opts, args = getopt.getopt(argv,"hp:",["help=","prefix="])
         except getopt.GetoptError:
