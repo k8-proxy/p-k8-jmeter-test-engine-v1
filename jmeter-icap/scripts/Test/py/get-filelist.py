@@ -19,7 +19,8 @@ class Main():
     MINIO_URL = ""
     MINIO_ACCESS_KEY = ""
     MINIO_SECRET_KEY = ""
-    MINIO_BUCKET = ""
+    MINIO_BUCKET = "filelist"
+    file_name = 'files'
 
     prefix = os.getenv('POD_NAME',str(uuid.uuid4()))
 
@@ -28,17 +29,15 @@ class Main():
         logging.basicConfig(level=getattr(logging, level))
 
     @staticmethod
-    def upload_to_minio(file_path):
+    def get_filelist():
         try:
-            logger.info('Uploading file {}.'.format(file_path))
             s3 = boto3.resource('s3', endpoint_url=Main.MINIO_URL, aws_access_key_id=Main.MINIO_ACCESS_KEY,
                                 aws_secret_access_key=Main.MINIO_SECRET_KEY, config=Config(signature_version='s3v4'))
-            logger.debug('Checking if the Bucket to upload files exists or not.')
             if (s3.Bucket(Main.MINIO_BUCKET) in s3.buckets.all()) == False:
-                logger.info('Bucket not Found. Creating Bucket.')
-                s3.create_bucket(Bucket=Main.MINIO_BUCKET)
-            logger.debug('Uploading file to bucket {} minio {}'.format(Main.MINIO_BUCKET, Main.MINIO_URL))
-            s3.Bucket(Main.MINIO_BUCKET).upload_file(file_path, 'jmeter-logs/' + Main.prefix + '-' + os.path.basename(file_path))
+                logger.error('Bucket not Found.')
+                exit(1)
+            logger.debug('dwonloading file from bucket {} minio {}'.format(Main.MINIO_BUCKET, Main.MINIO_URL))
+            s3.Bucket(Main.MINIO_BUCKET).download_file(Main.file_name, Main.file_name)
         except Exception as e:
             logger.info("Error {}".format(e))
 
@@ -50,7 +49,6 @@ class Main():
             MINIO_URL_line = 0
             MINIO_ACCESS_KEY_line = 0
             MINIO_SECRET_KEY_line = 0
-            MINIO_BUCKET_line = 0
             for line in search.readlines():
                 linenumber += 1
                 if "<stringProp name=\"Argument.name\">MINIO_URL</stringProp>" in line:
@@ -65,30 +63,15 @@ class Main():
                     MINIO_SECRET_KEY_line = linenumber + 1
                 if linenumber == MINIO_SECRET_KEY_line:
                     Main.MINIO_SECRET_KEY = line.strip().replace("<stringProp name=\"Argument.value\">${__P(p_minio_secret_key,","").replace(")}</stringProp>","").replace('&amp;','&') 
-                if "<stringProp name=\"Argument.name\">MINIO_BUCKET_OUTPUT</stringProp>" in line:
-                    MINIO_BUCKET_line = linenumber + 1
-                if linenumber == MINIO_BUCKET_line:
-                    Main.MINIO_BUCKET = line.strip().replace("<stringProp name=\"Argument.value\">${__P(p_minio_bucket_output,","").replace(")}</stringProp>","")
         except Exception as e:
             logger.info(e)
 
-    @staticmethod
-    def output_text_file(filepath):
-        try:
-            file1 = open(filepath, 'r')
-            Lines = file1.readlines()
-
-            for line in Lines:
-                print("{}".format(line.strip()))
-
-        except Exception as e:
-            logger.info("Error {}".format(e))
 
     @staticmethod
     def main(argv):
-        helpstring = 'pyton3 upload-jmeter-log.py -l <log file path> -j <jmeter conf file>'
+        helpstring = 'pyton3 get-filelist.py -j <jmeter conf file>'
         try:
-            opts, args = getopt.getopt(argv,"hl:j:",["help=","log_file_path=","jmx_file_path="])
+            opts, args = getopt.getopt(argv,"hj:",["help=","jmx_file_path="])
         except getopt.GetoptError:
             print (helpstring)
             sys.exit(2)
@@ -96,8 +79,6 @@ class Main():
             if opt == '-h':
                 print (helpstring)
                 sys.exit()
-            elif opt in ("-l", "--log_file_path"):
-                Main.log_file_path = arg
             elif opt in ("-j", "--jmx_file_path"):
                 Main.jmx_file_path = arg
 
@@ -109,8 +90,7 @@ class Main():
         #logger.info(Main.MINIO_ACCESS_KEY)
         #logger.info(Main.MINIO_SECRET_KEY)
         logger.info(Main.MINIO_BUCKET)
-        Main.upload_to_minio(Main.log_file_path)
-        #Main.output_text_file(Main.log_file_path)
+        Main.get_filelist()
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])

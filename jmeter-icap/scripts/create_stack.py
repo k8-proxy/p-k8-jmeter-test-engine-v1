@@ -8,11 +8,14 @@ import subprocess
 import shutil
 import fileinput
 import math
+import boto3
+import requests
+from botocore.client import Config
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger('create_stack')
 
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
-
 
 class Main():
 
@@ -20,14 +23,15 @@ class Main():
     users_per_instance = '25'
     duration = '60'
     filelist = ''
-    minio_url = 'http://minio.minio.svc.cluster.local:9000'
+    minio_url = 'http://minio-service.common:80'
+    minio_external_url = 'http://localhost:9000'
     minio_access_key = ''
     minio_secret_key = ''
     minio_input_bucket = 'input'
     minio_output_bucket = 'output'
-    influxdb_url = 'http://influxdb.influxdb.svc.cluster.local:8086'
-    influxHost = 'influxdb.influxdb.svc.cluster.local'
-    prefix = 'demo'
+    influxdb_url = 'http://influxdb-service.common:80'
+    influxHost = 'influxdb-service.common'
+    prefix = 'test'
     icap_server = 'icap02.glasswall-icap.com'
     requests_memory = '768'
     requests_cpu = '300'
@@ -41,14 +45,18 @@ class Main():
     enable_tls = False
     tls_verification_method = 'no-verify'
     jmx_file_path = 'none'
+    filelist_bucket = 'filelist'
+    kubectl_string = ''
 
     @staticmethod
     def get_microk8s():
         try:
             subprocess.call(["microk8s", "kubectl", "version"])
             Main.microk8s = True
+            Main.kubectl_string = "microk8s kubectl "
         except:
             Main.microk8s = False    
+            Main.kubectl_string = "kubectl "    
 
     @staticmethod
     def log_level(level):
@@ -58,14 +66,14 @@ class Main():
     def verify_url(service_name, url):
         try:
             if not (url.startswith('http://') or url.startswith('https://')):
-                logger.error("{} url must srart with \'http://\' or \'https://\'".format(service_name))
+                print("{} url must srart with \'http://\' or \'https://\'".format(service_name))
                 exit(1)
             port = int(url.split(':', 2)[2])
             if not (port > 0 and port < 0xffff):
-                logger.error("{} url must contain a valid port number".format(service_name))
+                print("{} url must contain a valid port number".format(service_name))
                 exit(1)
         except Exception as e:
-            logger.error("{} URL vertification failed {}".format(service_name, e))
+            print("{} URL vertification failed {}".format(service_name, e))
             exit(1)
 
     @staticmethod
@@ -74,46 +82,40 @@ class Main():
             if not Main.microk8s:
                 subprocess.call(["kubectl", "version"])
         except Exception as e:
-            logger.error("failed to run kubectl: {}".format(e))
+            print("failed to run kubectl: {}".format(e))
             exit(1)
         if int(Main.total_users) <= 0:
-            logger.error("Total users must be positive number")
+            print("Total users must be positive number")
             exit(1)
         if int(Main.users_per_instance) <= 0:
-            logger.error("Users per instance must be positive number")
+            print("Users per instance must be positive number")
             exit(1)
         if int(Main.users_per_instance) > 200:
-            logger.error("Users per instance cannot be greater than 200")
+            print("Users per instance cannot be greater than 200")
             exit(1)
         if int(Main.duration) <= 0:
-            logger.error("Test duration must be positive number")
+            print("Test duration must be positive number")
             exit(1)
         if not os.path.exists(Main.filelist):
-            logger.error("File {} does not exist".format(Main.filelist))
+            print("File {} does not exist".format(Main.filelist))
             exit(1)
         Main.verify_url('minio', Main.minio_url)
+        Main.verify_url('minio external', Main.minio_external_url)
         Main.verify_url('influxdb', Main.influxdb_url)
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
-            logger.error("Wrong icap server port value {}".format(Main.icap_server_port))
+            print("Wrong icap server port value {}".format(Main.icap_server_port))
             exit(1)
         if not os.path.exists(Main.jmx_file_path):
-            logger.error("File {} does not exist".format(Main.jmx_file_path))
+            print("File {} does not exist".format(Main.jmx_file_path))
             exit(1)
-
 
     @staticmethod
     def stop_jmeter_jobs():
         try:
-            if Main.microk8s:
-                os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
-                os.system("microk8s kubectl delete --ignore-not-found secret filesconf")
-            else:
-                os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("kubectl delete --ignore-not-found secret jmeterconf")
-                os.system("kubectl delete --ignore-not-found secret filesconf")
+            os.system(Main.kubectl_string + "-n jmeterjobs delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+            os.system(Main.kubectl_string +" -n jmeterjobs delete --ignore-not-found secret jmeterconf")
         except Exception as e:
-            logger.error(e)
+            print(e)
             exit(1)
 
     @staticmethod
@@ -124,7 +126,7 @@ class Main():
                     print(line.replace(prev_str, new_str), end='')
             os.remove(filename + '.bak')
         except Exception as e:
-            logger.error(e)
+            print(e)
             exit(1)
 
     @staticmethod
@@ -153,7 +155,7 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$tls_verification_method$", Main.tls_verification_method)
             return jmeter_script_name
         except Exception as e:
-            logger.error(e)
+            print(e)
             exit(1)
 
     @staticmethod
@@ -184,7 +186,7 @@ class Main():
                 Main.Xmx_value = '2048'
                 return
         except Exception as e:
-            logger.error(e)
+            print(e)
             exit(1)
 
     @staticmethod
@@ -196,15 +198,8 @@ class Main():
             jmeter_script_name = Main.get_jmx_file()
             shutil.copyfile(jmeter_script_name,'jmeter-conf.jmx')
             os.remove(jmeter_script_name)
-
-            shutil.copyfile(Main.filelist,'files')
-
-            if Main.microk8s:
-                os.system("microk8s kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-                os.system("microk8s kubectl create secret generic filesconf --from-file=files")
-            else:
-                os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
-                os.system("kubectl create secret generic filesconf --from-file=files")
+            os.system(Main.kubectl_string + "create namespace jmeterjobs")
+            os.system(Main.kubectl_string + "-n jmeterjobs create secret generic jmeterconf --from-file=jmeter-conf.jmx")
 
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')
@@ -222,27 +217,39 @@ class Main():
             Main.replace_in_file('job-0.yaml','$limits_cpu$', Main.limits_cpu)
             Main.replace_in_file('job-0.yaml','$Xms_value$', Main.Xms_value)
             Main.replace_in_file('job-0.yaml','$Xmx_value$', Main.Xmx_value)
-
             Main.replace_in_file('job-0.yaml','$prefix$', Main.prefix)
 
-            if Main.microk8s:
-                os.system("microk8s kubectl create -f job-0.yaml")
-            else:
-                os.system("kubectl create -f job-0.yaml")
+            os.system(Main.kubectl_string + "create -f job-0.yaml")
 
             os.remove('jmeter-conf.jmx')
-            os.remove('files')
             os.remove('job-0.yaml')
 
         except Exception as e:
-            logger.error(e)
+            print(e)
+            exit(1)
+
+    @staticmethod
+    def upload_to_minio(file_path):
+        try:
+            logger.info('Uploading file {}.'.format(file_path))
+            s3 = boto3.resource('s3', endpoint_url=Main.minio_external_url, aws_access_key_id=Main.minio_access_key,
+                                aws_secret_access_key=Main.minio_secret_key, config=Config(signature_version='s3v4'))
+            logger.debug('Checking if the Bucket to upload files exists or not.')
+            if (s3.Bucket(Main.filelist_bucket) in s3.buckets.all()) == False:
+                logger.info('Bucket not Found. Creating Bucket.')
+                s3.create_bucket(Bucket=Main.filelist_bucket)
+            logger.debug('Uploading file to bucket {} minio {}'.format(Main.filelist_bucket, Main.minio_external_url))
+            s3.Bucket(Main.filelist_bucket).upload_file(file_path, 'files')
+            #s3.Bucket(Main.filelist_bucket).download_file('files', 'files')
+        except Exception as e:
+            print("Cannot upload the file list to minio {}".format(e))
             exit(1)
 
     @staticmethod
     def main(argv):
-        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
+        help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_external_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_external_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -260,6 +267,8 @@ class Main():
                 Main.filelist = arg
             elif opt in ("-m", "--minio_url"):
                 Main.minio_url = arg
+            elif opt in ("-me", "--minio_external_url"):
+                Main.minio_external_url = arg
             elif opt in ("-a", "--minio_access_key"):
                 Main.minio_access_key = arg
             elif opt in ("-s", "--minio_secret_key"):
@@ -293,6 +302,8 @@ class Main():
         Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
         Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
         print("MINIO URL           {}".format(Main.minio_url))
+        print("MINIO EXTERNAL URL  {}".format(Main.minio_external_url))
+        
         #print("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
         #print("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
         print("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
@@ -316,6 +327,7 @@ class Main():
         print("JMX FILE PATH       {}".format(Main.jmx_file_path))
 
         Main.sanity_checks()
+        Main.upload_to_minio(Main.filelist)
         Main.stop_jmeter_jobs()
         Main.start_jmeter_job()
 

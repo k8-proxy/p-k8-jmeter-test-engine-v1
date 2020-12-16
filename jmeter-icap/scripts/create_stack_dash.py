@@ -28,6 +28,7 @@ class Config(object):
         duration = os.getenv("DURATION")
         list = os.getenv("TEST_DATA_FILE")
         minio_url = os.getenv("MINIO_URL")
+        minio_external_url = os.getenv("MINIO_EXTERNAL_URL")
         minio_access_key = os.getenv("MINIO_ACCESS_KEY")
         minio_secret_key = os.getenv("MINIO_SECRET_KEY")
         minio_input_bucket = os.getenv("MINIO_INPUT_BUCKET")
@@ -71,6 +72,9 @@ def __get_commandline_args():
 
     parser.add_argument('--minio_url', '-m', default=Config.minio_url,
                         help='Minio URL (default: "http://minio.minio.svc.cluster.local:9000")')
+
+    parser.add_argument('--minio_external_url', '-me', default=Config.minio_external_url,
+                        help='Minio URL (default: "http://localhost:9000")')
 
     parser.add_argument('--minio_access_key', '-a', default=Config.minio_access_key,
                         help='Minio access key')
@@ -247,7 +251,7 @@ def main(config):
         dashboard_url = create_dashboard.main(config)
 
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
-    create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_access_key",
+    create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
                "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
                "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path"]
 
