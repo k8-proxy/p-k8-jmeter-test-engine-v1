@@ -110,11 +110,11 @@ class Main():
     def stop_jmeter_jobs():
         try:
             if Main.microk8s:
-                os.system("microk8s kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("microk8s kubectl delete --ignore-not-found secret jmeterconf")
+                os.system("microk8s kubectl -n jmeterjobs delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system("microk8s kubectl -n jmeterjobs delete --ignore-not-found secret jmeterconf")
             else:
-                os.system("kubectl delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
-                os.system("kubectl delete --ignore-not-found secret jmeterconf")
+                os.system("kubectl -n jmeterjobs delete --ignore-not-found jobs -l jobgroup=" + Main.prefix + "-jmeter")
+                os.system("kubectl -n jmeterjobs delete --ignore-not-found secret jmeterconf")
         except Exception as e:
             print(e)
             exit(1)
@@ -201,9 +201,11 @@ class Main():
             os.remove(jmeter_script_name)
 
             if Main.microk8s:
-                os.system("microk8s kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
+                os.system("microk8s kubectl create namespace jmeterjobs")
+                os.system("microk8s kubectl -n jmeterjobs create secret generic jmeterconf --from-file=jmeter-conf.jmx")
             else:
-                os.system("kubectl create secret generic jmeterconf --from-file=jmeter-conf.jmx")
+                os.system("kubectl create namespace jmeterjobs")
+                os.system("kubectl -n jmeterjobs create secret generic jmeterconf --from-file=jmeter-conf.jmx")
 
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')

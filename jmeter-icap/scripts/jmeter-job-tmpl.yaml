@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: $prefix$-jmeterjob
+  namespace: jmeterjobs
   labels:
     env: test
     jobgroup: $prefix$-jmeter
