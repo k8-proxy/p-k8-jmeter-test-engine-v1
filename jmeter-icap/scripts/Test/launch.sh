@@ -22,6 +22,9 @@ python3 /usr/share/Test/py/get-filelist.py -j /usr/share/jmx/jmeter-conf.jmx
 echo "START Running Jmeter on `date`"
 echo "JVM_ARGS=${JVM_ARGS}"
 
+cp ${T_DIR}/input/placeholder ${R_DIR}/jmeter.log
+tail -f ${R_DIR}/jmeter.log &
+
 /usr/local/apache-jmeter-5.3/bin/jmeter -n \
         -t /usr/share/jmx/jmeter-conf.jmx \
         -l ${R_DIR}/icap.jtl \
