@@ -1,2 +1,3 @@
 create database proxysite
 create database jmeter
+create database icapserver

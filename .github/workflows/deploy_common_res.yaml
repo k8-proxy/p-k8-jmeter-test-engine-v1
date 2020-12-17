@@ -104,7 +104,7 @@ jobs:
         with:
           namespace: 'influxdb'
           secret-type: 'generic'
-          arguments:  --from-file=kubernetes/common_resources/influxdb/init-influxdb.iql
+          arguments:  --from-file=deployment/kubernetes/common_resources/influxdb/init-influxdb.iql
           secret-name: init-script
       
       - name: Deploy InfluxDB
