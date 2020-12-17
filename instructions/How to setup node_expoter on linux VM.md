@@ -13,13 +13,17 @@
 
 ```sh
 sudo useradd -rs /bin/false node_exporter
-sudo cat << EOF >> /etc/prometheus/node_exporter.config
+sudo cat << EOF >> /etc/systemd/system/node_exporter.service
 [Unit]
 Description=Node Exporter
+After=network.target
+
 [Service]
 User=node_exporter
-EnvironmentFile=/etc/prometheus/node_exporter.config
-ExecStart=/usr/sbin/node_exporter $OPTIONS
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
 [Install]
 WantedBy=multi-user.target
 EOF
