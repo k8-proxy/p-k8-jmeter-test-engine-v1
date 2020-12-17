@@ -13,7 +13,7 @@
 
 ```sh
 sudo useradd -rs /bin/false node_exporter
-sudo cat << EOF >> /etc/systemd/system/node_exporter.service
+sudo bash -c  'cat << EOF >> /etc/systemd/system/node_exporter.service
 [Unit]
 Description=Node Exporter
 After=network.target
@@ -26,7 +26,7 @@ ExecStart=/usr/local/bin/node_exporter
 
 [Install]
 WantedBy=multi-user.target
-EOF
+EOF'
 
 ```
 
