@@ -258,7 +258,7 @@ def main(config):
     create_stack_args = get_args_list(config, create_stack_options)
 
     print("Creating Load Generators...")
-    create_stack_thread = Thread(target=create_stack.Main.main, args=(create_stack_args,))
+    create_stack_thread = Thread(target=create_stack.Main.main(create_stack_args))
     create_stack_thread.start()
 
     if config.preserve_stack:
