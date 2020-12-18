@@ -203,6 +203,10 @@ def run_using_ui(ui_json_params):
     return dashboard_url
 
 
+def stop_tests_using_ui():
+    delete_stack.Main.main(argv=[])
+
+
 def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ignore_verification, input_port):
     if input_load_type == "Direct":
 

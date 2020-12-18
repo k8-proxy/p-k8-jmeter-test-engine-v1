@@ -53,11 +53,11 @@
     </div>
 
     <div class="form-group">
-        <label>ICAP Server/Proxy Endpoint URL*</label>
+        <label>{{ IcapOrProxy }}</label>
         <input type="text" class="form-control" formControlName="icap_endpoint_url" placeholder="Required">
-        <small class="form-text text-muted">ICAP server/Proxy endpoint *this field is required</small>
+        <small class="form-text text-muted">*this field is required</small>
         <div *ngIf="icap_endpoint_url.touched && icap_endpoint_url.invalid">
-            <div class="alert alert-danger" *ngIf="icap_endpoint_url.errors.required">An ICAP server endpoint is required</div>
+            <div class="alert alert-danger" *ngIf="icap_endpoint_url.errors.required">This field is required.</div>
             <div class="alert alert-danger" *ngIf="icap_endpoint_url.errors.cannotContainSpaces">Field cannot contain spaces.</div>
         </div>
     </div>
@@ -80,15 +80,29 @@
             <div class="alert alert-danger" *ngIf="prefix.errors.cannotContainSpaces">Field cannot contain spaces.</div>
         </div>
     </div>
-    <!--
-    <div class="form-group">
-        <label for="test_data_file">Choose Test Data File:</label>
-        <input type="file" class="form-control-file" formControlName="test_data_file" (change)="onFileChange($event.target.files)">
-    </div>
--->
+    
     <button id="submit" type="submit" class="btn btn-primary" [disabled]="!isValid">Generate Load</button>
+
+
+    <button id="stop-tests" 
+    class="btn btn-danger"
+    mwlConfirmationPopover
+    [popoverTitle]="popoverTitle"
+    [popoverMessage]="popoverMessage"
+    placement="right"
+    (confirm)="onStopTests()"
+    (cancel)="cancelClicked = true"
+     type="button">
+        Stop Load
+    </button>
+
+
+    <div [@animationState]="animState" class="alert alert-info" role="alert" style="opacity: 0; display:inline-block;" type="text">
+        Load generation stopped.
+    </div>
     <br />
     <br />
+    
     <div *ngIf="formSubmitted" class="alert alert-primary" role="alert">
         Test submitted. Generating Load...
     </div>

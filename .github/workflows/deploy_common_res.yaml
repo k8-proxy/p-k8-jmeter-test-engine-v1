@@ -97,14 +97,14 @@ jobs:
         run: |
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
-          helm upgrade --install  prometheus --namespace=prometheus stable/prometheus
+          helm upgrade --install  prometheus --namespace=prometheus prometheus-community/prometheus
 
       - name: Create secret with init-influxdb.iql script in influxdb namespace
         uses: azure/k8s-create-secret@v1
         with:
           namespace: 'influxdb'
           secret-type: 'generic'
-          arguments:  --from-file=kubernetes/common_resources/influxdb/init-influxdb.iql
+          arguments:  --from-file=deployment/kubernetes/common_resources/influxdb/init-influxdb.iql
           secret-name: init-script
       
       - name: Deploy InfluxDB
