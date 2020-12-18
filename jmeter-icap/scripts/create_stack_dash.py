@@ -207,7 +207,7 @@ def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ig
     if input_load_type == "Direct":
 
         # enable/disable tls based on user input
-        Config.enable_tls = str(input_enable_tls).lower()
+        Config.enable_tls = str(input_enable_tls)
 
         # if user entered a port, use that. Otherwise port will be set depending on tls_enabled below.
         if input_port:
@@ -254,7 +254,7 @@ def main(config):
     create_stack_args = get_args_list(config, create_stack_options)
 
     print("Creating Load Generators...")
-    create_stack_thread = Thread(target=create_stack.Main.main(create_stack_args))
+    create_stack_thread = Thread(target=create_stack.Main.main, args=(create_stack_args,))
     create_stack_thread.start()
 
     if config.preserve_stack:

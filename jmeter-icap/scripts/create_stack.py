@@ -286,8 +286,7 @@ class Main():
             elif opt in ("-port", "--icap_server_port"):
                 Main.icap_server_port = arg
             elif opt in ("-et", "--enable_tls"):
-                if arg.lower() == 'true' or arg == '1':
-                    Main.enable_tls = True
+                Main.enable_tls = arg
             elif opt in ("-tls", "--tls_verification_method"):
                 Main.tls_verification_method = arg
             elif opt in ("-jmx", "--jmx_file_path"):
