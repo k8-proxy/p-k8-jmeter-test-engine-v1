@@ -29,9 +29,9 @@ The Load Generator UI form has the following options:
 
 | vCPU     | RAM | Total Users    | 
 | :----:   | :----:   |    :----: |
-| 2-4      | 2-4 GB     | 50-500   |
-| 4-6  | 8-16  GB      | 500-1000| 
-| 8+ | 32+  GB      | 4000| 
+| 2-4      | 2-4 GB     | 50-100   |
+| 4-6  | 6-8  GB      | 100-200| 
+| 8+ | 8+  GB      | 400| 
 
 - Rampup time: How fast you would like to ramp up total users? Default is 300.
 - Duration: How long would you like to generate load? Default is 900
