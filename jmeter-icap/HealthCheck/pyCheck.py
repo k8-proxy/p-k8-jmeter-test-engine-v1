@@ -33,6 +33,22 @@ def microk8s_verification():
         print('ERROR: {} PODs are not running'.format(retcode))
         return retcode
 
+    minio = os.popen('microk8s kubectl get pods -A | grep minio').read()
+    if not minio:
+        print('minio pod not found')
+        return 1
+
+    grafana = os.popen('microk8s kubectl get pods -A | grep grafana').read()
+    if not grafana:
+        print('grafana pod not found')
+        return 1
+
+    influxdb = os.popen('microk8s kubectl get pods -A | grep influxdb').read()
+    if not influxdb:
+        print('influxdb pod not found')
+        return 1
+
+
     return retcode
 
 def connection_verification():
