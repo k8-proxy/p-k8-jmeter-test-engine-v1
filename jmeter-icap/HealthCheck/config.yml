@@ -10,14 +10,15 @@ hosts:
   - address: google.com
     prot: httpstring
     httpstring: google
-  - address: 192.0.2.253
-    prot: icmp
   - address: 8.8.8.8
     prot: tcp
     tcpport: 53
-  - address: 8.8.8.8
-    prot: tcp
-    tcpport: 80
   - address: google.com
     prot: tcp
     tcpport: 80
+  - address: localhost
+    prot: tcp
+    tcpport: 9000
+  - address: localhost
+    prot: tcp
+    tcpport: 3000
