@@ -3,7 +3,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
 export class ConfigFormValidators {
 
     static hasNumberLimit(control: AbstractControl) : ValidationErrors | null {
-        if(control.value > 4000) {
+        if(control.value > 400) {
             return {exceedsNumberLimit: true};
         }
 
