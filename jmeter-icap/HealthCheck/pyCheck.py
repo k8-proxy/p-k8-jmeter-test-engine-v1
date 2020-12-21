@@ -9,9 +9,31 @@ import socket
 import requests
 import re
 import logging
+import os
 
 FAIL = "\033[1;91m" + "FAIL" + "\033[0m"
 PASS = "\033[1;92m" + "PASS" + "\033[0m"
+
+def microk8s_verification():
+    retcode = 0
+
+    try:
+        subprocess.call(["microk8s", "kubectl", "version"])
+    except:
+        print('ERROR: no microk8s running in the system')
+        return 1
+
+    not_runnig = os.popen('microk8s kubectl get pods -A | grep -v STATUS | grep -v Running').read()
+
+    if not not_runnig :
+        print('All PODs are running')
+    else:
+        print(not_runnig)
+        retcode = len(not_runnig.split('\n')) - 1
+        print('ERROR: {} PODs are not running'.format(retcode))
+        return retcode
+
+    return retcode
 
 def connection_verification():
     retcode = 0
@@ -79,6 +101,10 @@ def connection_verification():
 
 def main(args):
     retcode = 0
+
+    retcode = microk8s_verification()
+    if retcode != 0:
+        return retcode
 
     retcode = connection_verification()
     if retcode != 0:

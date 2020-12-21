@@ -10,5 +10,5 @@ The script performs a health check of the k8 Jmeter test engine environment depl
 ### Usage
 
 ```
-    python3 pyCheck.py
+    sudo python3 pyCheck.py
 ```
