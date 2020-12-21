@@ -10,11 +10,13 @@ import requests
 import re
 import logging
 
-def main(args):
+FAIL = "\033[1;91m" + "FAIL" + "\033[0m"
+PASS = "\033[1;92m" + "PASS" + "\033[0m"
+
+def connection_verification():
     retcode = 0
 
-    FAIL = "\033[1;91m" + "FAIL" + "\033[0m"
-    PASS = "\033[1;92m" + "PASS" + "\033[0m"
+    print('Connection Verification Test')
 
     SSLVerify = False
     logging.captureWarnings(True)
@@ -71,6 +73,14 @@ def main(args):
             r = requests.get(url.geturl(), verify=SSLVerify)
             print(f'{PASS if re.search(i["httpstring"],r.text) else FAIL}')
             retcode = retcode + (0 if re.search(i["httpstring"],r.text) else 1)
+
+    return retcode
+
+
+def main(args):
+    retcode = 0
+
+    retcode = connection_verification()
 
     return retcode
 
