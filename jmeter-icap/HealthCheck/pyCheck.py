@@ -81,6 +81,9 @@ def main(args):
     retcode = 0
 
     retcode = connection_verification()
+    if retcode != 0:
+        print ("Connection verification {} test(s) failed".format(retcode))
+        return retcode
 
     return retcode
 
