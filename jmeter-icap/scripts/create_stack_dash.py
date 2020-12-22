@@ -11,8 +11,6 @@ from time import sleep
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
-# Interval between "time elapsed" messages sent to user; should be set to 600.
-MESSAGE_INTERVAL = 600
 
 
 class Config(object):
@@ -142,6 +140,7 @@ def __start_delete_stack(additional_delay, config):
     delete_stack_args = get_args_list(config, delete_stack_options)
     duration = config.duration
     total_wait_time = additional_delay + int(duration)
+    message_interval = total_wait_time / 4
     minutes = total_wait_time / 60
     finish_time = datetime.now(timezone.utc) + timedelta(seconds=total_wait_time)
     start_time = datetime.now(timezone.utc)
@@ -153,7 +152,7 @@ def __start_delete_stack(additional_delay, config):
             diff = datetime.now(timezone.utc) - start_time
             print("{0:.1f} minutes have elapsed, stack will be deleted in {1:.1f} minutes".format(diff.seconds / 60, (
                     total_wait_time - diff.seconds) / 60))
-        sleep(MESSAGE_INTERVAL)
+        sleep(message_interval)
 
     delete_stack.Main.main(argv=delete_stack_args)
 
@@ -203,8 +202,13 @@ def run_using_ui(ui_json_params):
     return dashboard_url
 
 
-def stop_tests_using_ui():
-    delete_stack.Main.main(argv=[])
+def stop_tests_using_ui(prefix=''):
+
+    if prefix == '':
+        delete_stack.Main.main(argv=[])
+    else:
+        delete_stack_options = ["prefix", prefix]
+        delete_stack.Main.main(argv=delete_stack_options)
 
 
 def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ignore_verification, input_port):
