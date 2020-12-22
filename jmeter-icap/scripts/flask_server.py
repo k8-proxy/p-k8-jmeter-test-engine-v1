@@ -17,7 +17,7 @@ def parse_request():
     if button_pressed == 'generate_load':
         data = json.loads(request.form.get('form'))
         print('Data sent from UI: {0}'.format(data))
-        returned_url = returned_url = run_using_ui(data)
+        returned_url = run_using_ui(data)
         if returned_url:
             return make_response(jsonify(returned_url), 201)
         else:
