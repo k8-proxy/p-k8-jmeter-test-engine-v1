@@ -231,14 +231,14 @@ def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ig
 
 def __ui_set_files_for_load_type(load: str):
     if load == "Direct":
-        Config.jmx_script_name = './ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
+        Config.jmx_file_path = './ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
         Config.grafana_file = './ICAP-Direct-File-Processing/k8-test-engine-dashboard.json'
-        Config.test_data_file = './ICAP-Direct-File-Processing/gov_uk_files.csv'
+        Config.list = './ICAP-Direct-File-Processing/gov_uk_files.csv'
 
     elif load == "Proxy":
-        Config.jmx_script_name = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
+        Config.jmx_file_path = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
         Config.grafana_file = './ICAP-Proxy-Site/ProxySite_Dashboard_Template.json'
-        Config.test_data_file = './ICAP-Proxy-Site/proxyfiles.csv'
+        Config.list = './ICAP-Proxy-Site/proxyfiles.csv'
 
 
 def main(config):
