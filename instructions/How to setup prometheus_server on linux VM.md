@@ -44,19 +44,8 @@ scrape_configs:
   - job_name: 'icap_metrics'
     scrape_interval: 5s
     static_configs:
-      - targets: ['91.109.25.70:9100', '91.109.25.76:9100', '91.109.25.78:9100']
-  - job_name: 'ICAP-01'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['91.109.25.76:32045']
-        labels:
-          clusterID: ICAP-01
-  - job_name: 'ICAP-03'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['91.109.25.70:32045']
-        labels:
-          clusterID: ICAP-03
+      - targets: ['91.109.25.70:9100', '91.109.25.76:9100', '91.109.25.78:9100'] ## Update IPs
+
 ```
 
 - Add user to run it as a service and create service configuration file.
