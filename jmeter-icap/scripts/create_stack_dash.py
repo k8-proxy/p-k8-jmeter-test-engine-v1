@@ -44,6 +44,7 @@ class Config(object):
         enable_tls = os.getenv("ENABLE_TLS")
         jmx_file_path = os.getenv("JMX_FILE_PATH")
         tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
+        proxy_static_ip = os.getenv("PROXY_STATIC_IP")
     except Exception as e:
         print(
             "Please create config.env file similar to config.env.sample or set environment variables for all variables in config.env.sample file")
@@ -178,12 +179,22 @@ def run_using_ui(ui_json_params):
         Config.ramp_up_time = ui_json_params['ramp_up_time']
     if ui_json_params['duration']:
         Config.duration = ui_json_params['duration']
-    if ui_json_params['icap_endpoint_url']:
-        Config.icap_server = ui_json_params['icap_endpoint_url']
     if ui_json_params['prefix']:
         Config.prefix = ui_json_params['prefix']
-    if ui_json_params['load_type']:
-        __ui_set_files_for_load_type(ui_json_params['load_type'])
+
+    if ui_json_params['icap_endpoint_url']:
+        if ui_json_params['load_type'] == "Direct":
+            Config.icap_server = ui_json_params['icap_endpoint_url']
+            print("setting icap")
+        elif ui_json_params['load_type'] == "Proxy":
+            # this comes as "icap_endpoint_url" from front end, but may also represent proxy IP if proxy load selected
+            Config.proxy_static_ip = ui_json_params['icap_endpoint_url']
+            print("setting proxy")
+
+
+    print("got LT {0}, got subsequent val as {1}".format(ui_json_params['load_type'], ui_json_params['icap_endpoint_url']))
+
+    __ui_set_files_for_load_type(ui_json_params['load_type'])
 
     # If Grafana API key provided, that takes precedence. Otherwise get key from AWS. If neither method provided, error output.
     if not Config.grafana_api_key:
@@ -257,7 +268,7 @@ def main(config):
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
                "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
-               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path"]
+               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path" "proxy_static_ip"]
 
     create_stack_args = get_args_list(config, create_stack_options)
 

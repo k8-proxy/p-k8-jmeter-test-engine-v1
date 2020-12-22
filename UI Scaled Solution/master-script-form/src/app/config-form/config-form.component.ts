@@ -43,10 +43,22 @@ export class ConfigFormComponent implements OnInit {
     this.configForm.valueChanges.subscribe((data) => {
       this.hideSubmitMessages = true;
     });
+    this.setIcapOrProxyValidation();
   }
 
   setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
+  }
+
+  setIcapOrProxyValidation() {
+    this.configForm.get('load_type').valueChanges.subscribe(loadType => {
+      if (loadType == "Proxy") {
+        this.icap_endpoint_url.setValidators([Validators.required, ConfigFormValidators.cannotContainSpaces, Validators.pattern(/^(([1-9]?\d|1\d\d|2[0-5][0-5]|2[0-4]\d)\.){3}([1-9]?\d|1\d\d|2[0-5][0-5]|2[0-4]\d)$/)]);
+      } else {
+        this.icap_endpoint_url.setValidators([Validators.required, ConfigFormValidators.cannotContainSpaces]);
+      }
+      this.configForm.get('icap_endpoint_url').updateValueAndValidity();
+    })
   }
 
   initializeForm(): void {
@@ -55,7 +67,7 @@ export class ConfigFormComponent implements OnInit {
       duration: new FormControl('', [Validators.pattern(/^(?=.*\d)[\d ]+$/), ConfigFormValidators.cannotContainSpaces]),
       ramp_up_time: new FormControl('', [Validators.pattern(/^(?=.*\d)[\d ]+$/), ConfigFormValidators.cannotContainSpaces]),
       load_type: AppSettings.loadTypes[0],
-      icap_endpoint_url: new FormControl('', [Validators.required, ConfigFormValidators.cannotContainSpaces]),
+      icap_endpoint_url: new FormControl('', ),
       prefix: new FormControl('', [ConfigFormValidators.cannotContainSpaces, ConfigFormValidators.cannotContainDuplicatePrefix, Validators.required]),
       enable_tls: true,
       tls_ignore_error: true,
