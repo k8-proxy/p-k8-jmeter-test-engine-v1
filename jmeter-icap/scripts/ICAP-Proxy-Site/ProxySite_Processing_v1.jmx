@@ -76,10 +76,35 @@
           </elementProp>
           <elementProp name="filetype" elementType="Argument">
             <stringProp name="Argument.name">filetype</stringProp>
-            <stringProp name="Argument.value">${__P(p_filetype,/usr/share/data/files)}</stringProp>
+            <stringProp name="Argument.value">${__P(p_filetype,/files)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>         
+          <elementProp name="MINIO_URL" elementType="Argument">
+            <stringProp name="Argument.name">MINIO_URL</stringProp>
+            <stringProp name="Argument.value">$minio_endpoint$</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-        </collectionProp>
+          <elementProp name="MINIO_ACCESS_KEY" elementType="Argument">
+            <stringProp name="Argument.name">MINIO_ACCESS_KEY</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_access_key,$minio_access_key$)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="MINIO_SECRET_KEY" elementType="Argument">
+            <stringProp name="Argument.name">MINIO_SECRET_KEY</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_secret_key,$minio_secret_key$)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="MINIO_BUCKET" elementType="Argument">
+            <stringProp name="Argument.name">MINIO_BUCKET</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_bucket,$minio_input_bucket$)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="MINIO_BUCKET_OUTPUT" elementType="Argument">
+            <stringProp name="Argument.name">MINIO_BUCKET_OUTPUT</stringProp>
+            <stringProp name="Argument.value">${__P(p_minio_bucket_output,$minio_output_bucket$)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>        
         <stringProp name="TestPlan.comments">aws-testengine-s3  ${__P(p_url,gw-icap01.westeurope.azurecontainer.io)} ${__P(p_influxHost,localhost)}</stringProp>
       </Arguments>
       <hashTree/>
