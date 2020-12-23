@@ -304,6 +304,7 @@ if __name__ == "__main__":
     Config.grafana_secret = args.grafana_secret
     Config.icap_server_port = args.icap_server_port
     Config.tls_verification_method = args.tls_verification_method
+    Config.proxy_static_ip = args.proxy_static_ip
     # these are flag/boolean arguments
     if args.exclude_dashboard:
         Config.exclude_dashboard = True
