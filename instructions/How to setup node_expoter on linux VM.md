@@ -1,3 +1,6 @@
+![node_exporter workflow](pngs/create_stack_dash.png)
+
+
 ## Steps
 
 - Download `node_exporter` and extract the content to `bin` location.
