@@ -18,7 +18,7 @@ def microk8s_verification():
     retcode = 0
 
     try:
-        subprocess.call(["microk8s", "kubectl", "version"])
+        var = subprocess.Popen(["microk8s", "kubectl", "version"], stdout=subprocess.PIPE)
     except:
         print('ERROR: no microk8s running in the system')
         return 1
@@ -59,7 +59,8 @@ def connection_verification():
     SSLVerify = False
     logging.captureWarnings(True)
 
-    with open('config.yml') as file:
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    with open('{}/config.yml'.format(script_path)) as file:
         config = yaml.load(file, Loader=yaml.Loader)
 
     for i in config['hosts']:
