@@ -132,6 +132,9 @@ def __get_commandline_args():
     parser.add_argument('--jmx_file_path', '-jmx', default=Config.jmx_file_path,
                         help='The file path of the JMX file under the test')
 
+    parser.add_argument('--proxy_static_ip', '-proxy', default=Config.proxy_static_ip,
+                        help='Static IP for when proxy is used')
+
     return parser.parse_args()
 
 
@@ -185,14 +188,9 @@ def run_using_ui(ui_json_params):
     if ui_json_params['icap_endpoint_url']:
         if ui_json_params['load_type'] == "Direct":
             Config.icap_server = ui_json_params['icap_endpoint_url']
-            print("setting icap")
         elif ui_json_params['load_type'] == "Proxy":
             # this comes as "icap_endpoint_url" from front end, but may also represent proxy IP if proxy load selected
             Config.proxy_static_ip = ui_json_params['icap_endpoint_url']
-            print("setting proxy")
-
-
-    print("got LT {0}, got subsequent val as {1}".format(ui_json_params['load_type'], ui_json_params['icap_endpoint_url']))
 
     __ui_set_files_for_load_type(ui_json_params['load_type'])
 
@@ -268,7 +266,7 @@ def main(config):
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
                "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
-               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path" "proxy_static_ip"]
+               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path", "proxy_static_ip"]
 
     create_stack_args = get_args_list(config, create_stack_options)
 
@@ -306,6 +304,7 @@ if __name__ == "__main__":
     Config.grafana_secret = args.grafana_secret
     Config.icap_server_port = args.icap_server_port
     Config.tls_verification_method = args.tls_verification_method
+    Config.proxy_static_ip = args.proxy_static_ip
     # these are flag/boolean arguments
     if args.exclude_dashboard:
         Config.exclude_dashboard = True
