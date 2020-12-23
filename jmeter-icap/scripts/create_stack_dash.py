@@ -11,8 +11,6 @@ from time import sleep
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
-# Interval between "time elapsed" messages sent to user; should be set to 600.
-MESSAGE_INTERVAL = 600
 
 
 class Config(object):
@@ -46,6 +44,7 @@ class Config(object):
         enable_tls = os.getenv("ENABLE_TLS")
         jmx_file_path = os.getenv("JMX_FILE_PATH")
         tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
+        proxy_static_ip = os.getenv("PROXY_STATIC_IP")
     except Exception as e:
         print(
             "Please create config.env file similar to config.env.sample or set environment variables for all variables in config.env.sample file")
@@ -133,6 +132,9 @@ def __get_commandline_args():
     parser.add_argument('--jmx_file_path', '-jmx', default=Config.jmx_file_path,
                         help='The file path of the JMX file under the test')
 
+    parser.add_argument('--proxy_static_ip', '-proxy', default=Config.proxy_static_ip,
+                        help='Static IP for when proxy is used')
+
     return parser.parse_args()
 
 
@@ -142,6 +144,7 @@ def __start_delete_stack(additional_delay, config):
     delete_stack_args = get_args_list(config, delete_stack_options)
     duration = config.duration
     total_wait_time = additional_delay + int(duration)
+    message_interval = total_wait_time / 4
     minutes = total_wait_time / 60
     finish_time = datetime.now(timezone.utc) + timedelta(seconds=total_wait_time)
     start_time = datetime.now(timezone.utc)
@@ -153,7 +156,7 @@ def __start_delete_stack(additional_delay, config):
             diff = datetime.now(timezone.utc) - start_time
             print("{0:.1f} minutes have elapsed, stack will be deleted in {1:.1f} minutes".format(diff.seconds / 60, (
                     total_wait_time - diff.seconds) / 60))
-        sleep(MESSAGE_INTERVAL)
+        sleep(message_interval)
 
     delete_stack.Main.main(argv=delete_stack_args)
 
@@ -179,12 +182,17 @@ def run_using_ui(ui_json_params):
         Config.ramp_up_time = ui_json_params['ramp_up_time']
     if ui_json_params['duration']:
         Config.duration = ui_json_params['duration']
-    if ui_json_params['icap_endpoint_url']:
-        Config.icap_server = ui_json_params['icap_endpoint_url']
     if ui_json_params['prefix']:
         Config.prefix = ui_json_params['prefix']
-    if ui_json_params['load_type']:
-        __ui_set_files_for_load_type(ui_json_params['load_type'])
+
+    if ui_json_params['icap_endpoint_url']:
+        if ui_json_params['load_type'] == "Direct":
+            Config.icap_server = ui_json_params['icap_endpoint_url']
+        elif ui_json_params['load_type'] == "Proxy":
+            # this comes as "icap_endpoint_url" from front end, but may also represent proxy IP if proxy load selected
+            Config.proxy_static_ip = ui_json_params['icap_endpoint_url']
+
+    __ui_set_files_for_load_type(ui_json_params['load_type'])
 
     # If Grafana API key provided, that takes precedence. Otherwise get key from AWS. If neither method provided, error output.
     if not Config.grafana_api_key:
@@ -203,8 +211,13 @@ def run_using_ui(ui_json_params):
     return dashboard_url
 
 
-def stop_tests_using_ui():
-    delete_stack.Main.main(argv=[])
+def stop_tests_using_ui(prefix=''):
+
+    if prefix == '':
+        delete_stack.Main.main(argv=[])
+    else:
+        delete_stack_options = ["prefix", prefix]
+        delete_stack.Main.main(argv=delete_stack_options)
 
 
 def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ignore_verification, input_port):
@@ -253,7 +266,7 @@ def main(config):
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
                "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
-               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path"]
+               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path" "proxy_static_ip"]
 
     create_stack_args = get_args_list(config, create_stack_options)
 
