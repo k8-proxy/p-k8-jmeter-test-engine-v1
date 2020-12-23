@@ -1,4 +1,4 @@
-![node_exporter workflow](pngs/create_stack_dash.png)
+![node_exporter workflow](pngs/node_exporter_workflow.png)
 
 
 ## Steps
