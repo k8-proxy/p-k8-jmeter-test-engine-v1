@@ -18,7 +18,7 @@ def microk8s_verification():
     retcode = 0
 
     try:
-        subprocess.call(["microk8s", "kubectl", "version"])
+        var = subprocess.Popen(["microk8s", "kubectl", "version"], stdout=subprocess.PIPE)
     except:
         print('ERROR: no microk8s running in the system')
         return 1
