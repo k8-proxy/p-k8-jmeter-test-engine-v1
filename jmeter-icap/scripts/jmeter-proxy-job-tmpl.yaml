@@ -1,0 +1,81 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: $prefix$-jmeterjob
+  namespace: jmeterjobs
+  labels:
+    env: test
+    jobgroup: $prefix$-jmeter
+spec:
+  parallelism: $parallelism-number
+  ttlSecondsAfterFinished: 60
+  template:
+    metadata:
+      name: $prefix$-jmeter
+      labels:
+        jobgroup: $prefix$-jmeter
+    spec:
+      hostAliases:
+      - ip: $proxy-static-ip$
+        hostnames:
+        - "www.gov.uk"
+        - "assets.publishing.service.gov.uk"
+      tolerations:
+      - key: "sku"
+        operator: "Equal"
+        value: "jmeter"
+        effect: "NoSchedule"       
+      containers:
+      - name: jmeter
+        image: ggrig/jmeter-c-icap:4.06
+        resources:
+          requests:
+            memory: "$requests_memory$Mi"
+            cpu: "$requests_cpu$m"
+          limits:
+            memory: "$limits_memory$Mi"
+            cpu: "$limits_cpu$m"
+        imagePullPolicy: IfNotPresent
+        env:
+          # Log Level (Default to Info)
+          - name: LOG_LEVEL
+            value: info
+          # Environment info
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: MY_POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          # JVM
+          - name: JVM_ARGS
+            value: "-Xms$Xms_value$m -Xmx$Xmx_value$m"
+        volumeMounts:
+        - name: jmetervol
+          mountPath: "/usr/share/jmx"
+          readOnly: true
+        #- name: filesvol
+        #  mountPath: "/usr/share/data"
+        #  readOnly: true
+      volumes:
+      - name: jmetervol
+        secret:
+          secretName: jmeterconf          
+      #- name: filesvol
+      #  secret:
+      #    secretName: filesconf
+      restartPolicy: Never

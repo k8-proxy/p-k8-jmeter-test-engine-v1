@@ -12,6 +12,7 @@ import boto3
 import requests
 from botocore.client import Config
 from botocore.exceptions import ClientError
+from ipaddress import ip_address, IPv4Address 
 
 logger = logging.getLogger('create_stack')
 
@@ -47,11 +48,13 @@ class Main():
     jmx_file_path = 'none'
     filelist_bucket = 'filelist'
     kubectl_string = ''
+    proxy_static_ip = ''
+    load_type = 'Direct'
 
     @staticmethod
     def get_microk8s():
         try:
-            subprocess.call(["microk8s", "kubectl", "version"])
+            var = subprocess.Popen(["microk8s", "kubectl", "version"], stdout=subprocess.PIPE)
             Main.microk8s = True
             Main.kubectl_string = "microk8s kubectl "
         except:
@@ -66,48 +69,61 @@ class Main():
     def verify_url(service_name, url):
         try:
             if not (url.startswith('http://') or url.startswith('https://')):
-                print("{} url must srart with \'http://\' or \'https://\'".format(service_name))
+                print("ERROR: {} url must srart with \'http://\' or \'https://\'".format(service_name))
                 exit(1)
             port = int(url.split(':', 2)[2])
             if not (port > 0 and port < 0xffff):
-                print("{} url must contain a valid port number".format(service_name))
+                print("ERROR: {} url must contain a valid port number".format(service_name))
                 exit(1)
         except Exception as e:
-            print("{} URL vertification failed {}".format(service_name, e))
+            print("ERROR: {} URL vertification failed {}".format(service_name, e))
             exit(1)
 
     @staticmethod
     def sanity_checks():
         try:
             if not Main.microk8s:
-                subprocess.call(["kubectl", "version"])
+                var = subprocess.Popen(["microk8s", "kubectl", "version"], stdout=subprocess.PIPE)
         except Exception as e:
-            print("failed to run kubectl: {}".format(e))
+            print("ERROR: failed to run kubectl: {}".format(e))
             exit(1)
         if int(Main.total_users) <= 0:
-            print("Total users must be positive number")
+            print("ERROR: Total users must be positive number")
             exit(1)
         if int(Main.users_per_instance) <= 0:
-            print("Users per instance must be positive number")
+            print("ERROR: Users per instance must be positive number")
             exit(1)
         if int(Main.users_per_instance) > 200:
-            print("Users per instance cannot be greater than 200")
+            print("ERROR: Users per instance cannot be greater than 200")
             exit(1)
         if int(Main.duration) <= 0:
-            print("Test duration must be positive number")
+            print("ERROR: Test duration must be positive number")
             exit(1)
         if not os.path.exists(Main.filelist):
-            print("File {} does not exist".format(Main.filelist))
+            print("ERROR: File {} does not exist".format(Main.filelist))
             exit(1)
         Main.verify_url('minio', Main.minio_url)
         Main.verify_url('minio external', Main.minio_external_url)
         Main.verify_url('influxdb', Main.influxdb_url)
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
-            print("Wrong icap server port value {}".format(Main.icap_server_port))
+            print("ERROR: Wrong icap server port value {}".format(Main.icap_server_port))
             exit(1)
         if not os.path.exists(Main.jmx_file_path):
-            print("File {} does not exist".format(Main.jmx_file_path))
+            print("ERROR: File {} does not exist".format(Main.jmx_file_path))
             exit(1)
+
+        load_type_values = ['Direct','Proxy']
+        if not Main.load_type in load_type_values:
+            print("ERROR: Unsupported load type: {}".format(Main.load_type))
+            exit(1)
+        elif Main.load_type == 'Proxy':
+            try: 
+                if not type(ip_address(Main.proxy_static_ip)) is IPv4Address:
+                    print("ERROR: Invalid Proxy IP address {}".format(Main.proxy_static_ip))
+                    exit(1)
+            except ValueError: 
+                print("ERROR: Invalid Proxy IP address {}".format(Main.proxy_static_ip))
+                exit(1)
 
     @staticmethod
     def stop_jmeter_jobs():
@@ -204,7 +220,11 @@ class Main():
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')
 
-            shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
+            if Main.load_type == 'Direct':
+                shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
+            elif Main.load_type == 'Proxy':
+                shutil.copyfile('jmeter-proxy-job-tmpl.yaml','job-0.yaml')
+                Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.proxy_static_ip)
 
             Main.parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
             print("Number of pods to be created: {}".format(Main.parallelism))
@@ -242,14 +262,14 @@ class Main():
             s3.Bucket(Main.filelist_bucket).upload_file(file_path, 'files')
             #s3.Bucket(Main.filelist_bucket).download_file('files', 'files')
         except Exception as e:
-            print("Cannot upload the file list to minio {}".format(e))
+            print("ERROR: Cannot upload the file list to minio {}".format(e))
             exit(1)
 
     @staticmethod
     def main(argv):
         help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_external_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_external_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_external_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path=","proxy_static_ip=", "load_type="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -291,8 +311,14 @@ class Main():
                 Main.tls_verification_method = arg
             elif opt in ("-jmx", "--jmx_file_path"):
                 Main.jmx_file_path = arg
+            elif opt in ("-proxy", "--proxy_static_ip"):
+                Main.proxy_static_ip = arg
+            elif opt in ("-load", "--load_type"):
+                Main.load_type = arg
 
         Main.log_level(LOG_LEVEL)
+        print("LOAD TYPE           {}".format(Main.load_type))
+
         print("TOTAL USERS         {}".format(Main.total_users))
         print("USERS PER INSTANCE  {}".format(Main.users_per_instance))
         print("TEST DURATION       {}".format(Main.duration))
@@ -324,6 +350,7 @@ class Main():
         print("Micro k8s           {}".format(Main.microk8s))
 
         print("JMX FILE PATH       {}".format(Main.jmx_file_path))
+        print("PROXY STATIC IP     {}".format(Main.proxy_static_ip))
 
         Main.sanity_checks()
         Main.upload_to_minio(Main.filelist)
