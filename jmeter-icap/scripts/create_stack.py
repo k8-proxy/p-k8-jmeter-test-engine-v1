@@ -12,6 +12,7 @@ import boto3
 import requests
 from botocore.client import Config
 from botocore.exceptions import ClientError
+from ipaddress import ip_address, IPv4Address 
 
 logger = logging.getLogger('create_stack')
 
@@ -115,8 +116,14 @@ class Main():
         if not Main.load_type in load_type_values:
             print("ERROR: Unsupported load type: {}".format(Main.load_type))
             exit(1)
-
-        #verify proxy_static_ip
+        elif Main.load_type == 'Proxy':
+            try: 
+                if not type(ip_address(Main.proxy_static_ip)) is IPv4Address:
+                    print("ERROR: Invalid Proxy IP address {}".format(Main.proxy_static_ip))
+                    exit(1)
+            except ValueError: 
+                print("ERROR: Invalid Proxy IP address {}".format(Main.proxy_static_ip))
+                exit(1)
 
     @staticmethod
     def stop_jmeter_jobs():
@@ -344,7 +351,7 @@ class Main():
         Main.sanity_checks()
         Main.upload_to_minio(Main.filelist)
         Main.stop_jmeter_jobs()
-        Main.start_jmeter_job()
+        #Main.start_jmeter_job()
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
