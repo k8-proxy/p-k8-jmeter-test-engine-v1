@@ -47,6 +47,8 @@ class Main():
     jmx_file_path = 'none'
     filelist_bucket = 'filelist'
     kubectl_string = ''
+    proxy_static_ip = ''
+    load_type = 'Direct'
 
     @staticmethod
     def get_microk8s():
@@ -108,6 +110,7 @@ class Main():
         if not os.path.exists(Main.jmx_file_path):
             print("File {} does not exist".format(Main.jmx_file_path))
             exit(1)
+        #verify proxy_static_ip
 
     @staticmethod
     def stop_jmeter_jobs():
@@ -249,7 +252,7 @@ class Main():
     def main(argv):
         help_string = 'python3 create_stack.py --total_users <number of users> --users_per_instance <number of users> --duration <test duaration> --list <file list> --minio_url <url> --minio_external_url <url> --minio_access_key <access key> --minio_secret_key <secret key> --minio_input_bucket <bucket name> --minio_output_bucket <bucket name> --influxdb_url <url> --prefix <prefix> --icap_server <url>'
         try:
-            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_external_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path="])
+            opts, args = getopt.getopt(argv,"htudl:ma:s:ibxpv",["total_users=","users_per_instance=","duration=","list=","minio_url=","minio_external_url=","minio_access_key=","minio_secret_key=", "minio_input_bucket=", "minio_output_bucket=","influxdb_url=","prefix=","icap_server=","icap_server_port=","enable_tls=","tls_verification_method=","jmx_file_path=","proxy_static_ip=", "load_type="])
         except getopt.GetoptError:
             print (help_string)
             sys.exit(2)
@@ -291,8 +294,14 @@ class Main():
                 Main.tls_verification_method = arg
             elif opt in ("-jmx", "--jmx_file_path"):
                 Main.jmx_file_path = arg
+            elif opt in ("-proxy", "--proxy_static_ip"):
+                Main.proxy_static_ip = arg
+            elif opt in ("-load", "--load_type"):
+                Main.load_type = arg
 
         Main.log_level(LOG_LEVEL)
+        print("LOAD TYPE           {}".format(Main.load_type))
+
         print("TOTAL USERS         {}".format(Main.total_users))
         print("USERS PER INSTANCE  {}".format(Main.users_per_instance))
         print("TEST DURATION       {}".format(Main.duration))
@@ -324,6 +333,7 @@ class Main():
         print("Micro k8s           {}".format(Main.microk8s))
 
         print("JMX FILE PATH       {}".format(Main.jmx_file_path))
+        print("PROXY STATIC IP     {}".format(Main.proxy_static_ip))
 
         Main.sanity_checks()
         Main.upload_to_minio(Main.filelist)
