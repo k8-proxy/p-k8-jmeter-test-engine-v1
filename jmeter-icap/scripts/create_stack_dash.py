@@ -216,7 +216,7 @@ def stop_tests_using_ui(prefix=''):
     if prefix == '':
         delete_stack.Main.main(argv=[])
     else:
-        delete_stack_options = ["prefix", prefix]
+        delete_stack_options = ["--prefix", prefix]
         delete_stack.Main.main(argv=delete_stack_options)
 
 
