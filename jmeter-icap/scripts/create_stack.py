@@ -83,7 +83,7 @@ class Main():
     def sanity_checks():
         try:
             if not Main.microk8s:
-                var = subprocess.Popen(["microk8s", "kubectl", "version"], stdout=subprocess.PIPE)
+                var = subprocess.Popen(["kubectl", "version"], stdout=subprocess.PIPE)
         except Exception as e:
             print("ERROR: failed to run kubectl: {}".format(e))
             exit(1)
