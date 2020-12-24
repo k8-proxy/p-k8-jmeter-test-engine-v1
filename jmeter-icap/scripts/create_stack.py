@@ -54,7 +54,7 @@ class Main():
     @staticmethod
     def get_microk8s():
         try:
-            subprocess.call(["microk8s", "kubectl", "version"])
+            var = subprocess.Popen(["microk8s", "kubectl", "version"], stdout=subprocess.PIPE)
             Main.microk8s = True
             Main.kubectl_string = "microk8s kubectl "
         except:
@@ -83,7 +83,7 @@ class Main():
     def sanity_checks():
         try:
             if not Main.microk8s:
-                subprocess.call(["kubectl", "version"])
+                var = subprocess.Popen(["microk8s", "kubectl", "version"], stdout=subprocess.PIPE)
         except Exception as e:
             print("ERROR: failed to run kubectl: {}".format(e))
             exit(1)
@@ -351,7 +351,7 @@ class Main():
         Main.sanity_checks()
         Main.upload_to_minio(Main.filelist)
         Main.stop_jmeter_jobs()
-        #Main.start_jmeter_job()
+        Main.start_jmeter_job()
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
