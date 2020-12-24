@@ -68,14 +68,14 @@ class Main():
     def verify_url(service_name, url):
         try:
             if not (url.startswith('http://') or url.startswith('https://')):
-                print("{} url must srart with \'http://\' or \'https://\'".format(service_name))
+                print("ERROR: {} url must srart with \'http://\' or \'https://\'".format(service_name))
                 exit(1)
             port = int(url.split(':', 2)[2])
             if not (port > 0 and port < 0xffff):
-                print("{} url must contain a valid port number".format(service_name))
+                print("ERROR: {} url must contain a valid port number".format(service_name))
                 exit(1)
         except Exception as e:
-            print("{} URL vertification failed {}".format(service_name, e))
+            print("ERROR: {} URL vertification failed {}".format(service_name, e))
             exit(1)
 
     @staticmethod
@@ -84,32 +84,38 @@ class Main():
             if not Main.microk8s:
                 subprocess.call(["kubectl", "version"])
         except Exception as e:
-            print("failed to run kubectl: {}".format(e))
+            print("ERROR: failed to run kubectl: {}".format(e))
             exit(1)
         if int(Main.total_users) <= 0:
-            print("Total users must be positive number")
+            print("ERROR: Total users must be positive number")
             exit(1)
         if int(Main.users_per_instance) <= 0:
-            print("Users per instance must be positive number")
+            print("ERROR: Users per instance must be positive number")
             exit(1)
         if int(Main.users_per_instance) > 200:
-            print("Users per instance cannot be greater than 200")
+            print("ERROR: Users per instance cannot be greater than 200")
             exit(1)
         if int(Main.duration) <= 0:
-            print("Test duration must be positive number")
+            print("ERROR: Test duration must be positive number")
             exit(1)
         if not os.path.exists(Main.filelist):
-            print("File {} does not exist".format(Main.filelist))
+            print("ERROR: File {} does not exist".format(Main.filelist))
             exit(1)
         Main.verify_url('minio', Main.minio_url)
         Main.verify_url('minio external', Main.minio_external_url)
         Main.verify_url('influxdb', Main.influxdb_url)
         if not (int(Main.icap_server_port) > 0 and int(Main.icap_server_port) < 0xffff):
-            print("Wrong icap server port value {}".format(Main.icap_server_port))
+            print("ERROR: Wrong icap server port value {}".format(Main.icap_server_port))
             exit(1)
         if not os.path.exists(Main.jmx_file_path):
-            print("File {} does not exist".format(Main.jmx_file_path))
+            print("ERROR: File {} does not exist".format(Main.jmx_file_path))
             exit(1)
+
+        load_type_values = ['Direct','Proxy']
+        if not Main.load_type in load_type_values:
+            print("ERROR: Unsupported load type: {}".format(Main.load_type))
+            exit(1)
+
         #verify proxy_static_ip
 
     @staticmethod
@@ -245,7 +251,7 @@ class Main():
             s3.Bucket(Main.filelist_bucket).upload_file(file_path, 'files')
             #s3.Bucket(Main.filelist_bucket).download_file('files', 'files')
         except Exception as e:
-            print("Cannot upload the file list to minio {}".format(e))
+            print("ERROR: Cannot upload the file list to minio {}".format(e))
             exit(1)
 
     @staticmethod
