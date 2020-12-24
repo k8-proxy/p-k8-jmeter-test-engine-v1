@@ -220,7 +220,11 @@ class Main():
             if os.path.exists('job-0.yaml'):
                 os.remove('job-0.yaml')
 
-            shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
+            if Main.load_type == 'Direct':
+                shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
+            elif Main.load_type == 'Proxy':
+                shutil.copyfile('jmeter-proxy-job-tmpl.yaml','job-0.yaml')
+                Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.proxy_static_ip)
 
             Main.parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
             print("Number of pods to be created: {}".format(Main.parallelism))
