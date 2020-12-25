@@ -12,7 +12,8 @@ import boto3
 import requests
 from botocore.client import Config
 from botocore.exceptions import ClientError
-from ipaddress import ip_address, IPv4Address 
+from ipaddress import ip_address, IPv4Address
+import proxy_sites
 
 logger = logging.getLogger('create_stack')
 
@@ -225,6 +226,10 @@ class Main():
             elif Main.load_type == 'Proxy':
                 shutil.copyfile('jmeter-proxy-job-tmpl.yaml','job-0.yaml')
                 Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.proxy_static_ip)
+                proxy_sites.Main.file_path = Main.filelist
+                proxy_sites.Main.yaml_file = 'job-0.yaml'
+                proxy_sites.Main.get_domains()
+                proxy_sites.Main.update_yaml()
 
             Main.parallelism = math.ceil(int(Main.total_users) / int(Main.users_per_instance))
             print("Number of pods to be created: {}".format(Main.parallelism))
