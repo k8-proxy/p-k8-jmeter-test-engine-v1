@@ -12,6 +12,9 @@ from time import sleep
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
 
+# Interval for how often "time elapsed" messages are displayed for delete stack process
+MESSAGE_INTERVAL = 600
+
 
 class Config(object):
     # Load configuration
@@ -143,12 +146,9 @@ def __get_commandline_args():
 
 
 # Starts the process of calling delete_stack after duration. Starts timer and displays messages updating users on status
-def __start_delete_stack(additional_delay, config):
-    delete_stack_options = ["prefix"]
-    delete_stack_args = get_args_list(config, delete_stack_options)
-    duration = config.duration
+def __start_delete_stack(additional_delay, prefix, duration):
+    delete_stack_args = ["--prefix", prefix]
     total_wait_time = additional_delay + int(duration)
-    message_interval = total_wait_time / 4
     minutes = total_wait_time / 60
     finish_time = datetime.now(timezone.utc) + timedelta(seconds=total_wait_time)
     start_time = datetime.now(timezone.utc)
@@ -156,12 +156,13 @@ def __start_delete_stack(additional_delay, config):
     print("Stack will be deleted after {0:.1f} minutes".format(minutes))
 
     while datetime.now(timezone.utc) < finish_time:
-        if datetime.now(timezone.utc) != start_time:
+        if datetime.now(timezone.utc) != start_time and datetime.now(timezone.utc) + timedelta(seconds=MESSAGE_INTERVAL) < finish_time:
             diff = datetime.now(timezone.utc) - start_time
             print("{0:.1f} minutes have elapsed, stack will be deleted in {1:.1f} minutes".format(diff.seconds / 60, (
                     total_wait_time - diff.seconds) / 60))
-        sleep(message_interval)
+            sleep(MESSAGE_INTERVAL)
 
+    print("Deleting stack with prefix: {0}".format(prefix))
     delete_stack.Main.main(argv=delete_stack_args)
 
 
@@ -179,6 +180,9 @@ def get_args_list(config, options):
 
 
 def run_using_ui(ui_json_params):
+    additional_delay = 0
+    prefix = ''
+    duration = ''
     # Set Config values gotten from front end
     if ui_json_params['total_users']:
         Config.total_users = ui_json_params['total_users']
@@ -186,9 +190,10 @@ def run_using_ui(ui_json_params):
         Config.ramp_up_time = ui_json_params['ramp_up_time']
     if ui_json_params['duration']:
         Config.duration = ui_json_params['duration']
+        duration = ui_json_params['duration']
     if ui_json_params['prefix']:
         Config.prefix = ui_json_params['prefix']
-
+        prefix = ui_json_params['prefix']
     if ui_json_params['icap_endpoint_url']:
         Config.load_type = ui_json_params['load_type']
         if ui_json_params['load_type'] == "Direct":
@@ -211,7 +216,7 @@ def run_using_ui(ui_json_params):
     __ui_set_tls_and_port_params(ui_json_params['load_type'], ui_json_params['enable_tls'],
                                  ui_json_params['tls_ignore_error'], ui_json_params['port'])
 
-    dashboard_url = main(Config)
+    dashboard_url = main(Config, additional_delay, prefix, duration)
 
     return dashboard_url
 
@@ -259,7 +264,7 @@ def __ui_set_files_for_load_type(load: str):
         Config.list = './ICAP-Proxy-Site/proxyfiles.csv'
 
 
-def main(config):
+def main(config, additional_delay, prefix, duration):
     dashboard_url = ''
 
     if config.exclude_dashboard:
@@ -271,18 +276,17 @@ def main(config):
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
                "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
-               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path", "proxy_static_ip", "load_type"]
+               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path", "proxy_static_ip"]
 
     create_stack_args = get_args_list(config, create_stack_options)
 
     print("Creating Load Generators...")
-    create_stack_thread = Thread(target=create_stack.Main.main, args=(create_stack_args,))
-    create_stack_thread.start()
+    create_stack.Main.main(create_stack_args)
 
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
     else:
-        delete_stack_thread = Thread(target=__start_delete_stack, args=(DELETE_TIME_OFFSET, config))
+        delete_stack_thread = Thread(target=__start_delete_stack, args=(additional_delay, prefix, duration))
         delete_stack_thread.start()
 
     return dashboard_url
@@ -337,4 +341,4 @@ if __name__ == "__main__":
         if secret_val:
             print("Grafana secret key retrieved.")
 
-    main(Config)
+    main(Config, DELETE_TIME_OFFSET, Config.prefix, Config.duration)
