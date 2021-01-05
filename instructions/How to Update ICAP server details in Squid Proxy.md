@@ -28,6 +28,11 @@ Once is done the new user got access to the Squid Machine
 ### How to Update ICAP Server Details
 Note - The Current Setup only Support ICAP server IP address
 
+Login to Squid Machine using below powershell command
+```shell
+ssh azureuser@www.gov.uk.glasswall-icap.com
+```
+
 In order to get IP address for ICAP Server if you are not aware please run below command
 ```shell
 dig +short <icap server url>
