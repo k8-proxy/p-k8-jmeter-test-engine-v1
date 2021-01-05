@@ -63,7 +63,7 @@ def __modify_dashboard_info_bar(grafana_json, total_users, duration, endpoint_ur
 
 # responsible for posting the dashboard to Grafana and returning the URL to it
 def __post_grafana_dash(config):
-    #grafana_api_key = config.grafana_api_key
+    grafana_api_key = config.grafana_api_key
     grafana_template = config.grafana_file
     prefix = config.prefix
     grafana_url = config.grafana_url
@@ -71,22 +71,26 @@ def __post_grafana_dash(config):
     duration = config.duration
     icap_server = config.icap_server    
     number_of_pods = Main.parallelism
-    username_pw = "admin:admin%40123"
-    httpStr = "http://"
+    username_pw = "{0}:{1}@".format(config.grafana_username, config.grafana_password)
+    http_str = "http://"
 
     if not grafana_url.startswith("http://"):
-        grafana_url = httpStr + grafana_url
+        grafana_url = http_str + grafana_url
 
-    grafana_api_url = grafana_url[:len(httpStr)] + username_pw + '@' + grafana_url[len(httpStr):]
+    # if no API key is provided or obtained from AWS secrets, use username/password combination for access
+    if grafana_api_key:
+        grafana_api_url = grafana_url
+        headers = {
+            "Authorization": "Bearer " + grafana_api_key,
+            "Content-Type": "application/json"}
+    else:
+        headers = {"Content-Type": "application/json"}
+        grafana_api_url = grafana_url[:len(http_str)] + username_pw + grafana_url[len(http_str):]
 
     if grafana_url[len(grafana_url) - 1] != '/':
         grafana_api_url += '/'
 
     grafana_api_url = grafana_api_url + 'api/dashboards/db'
-
-    headers = {
-    #    "Authorization": "Bearer " + grafana_api_key,
-        "Content-Type": "application/json"}
 
     # Modify grafana JSON to display current run's info
     with open(grafana_template) as json_file:

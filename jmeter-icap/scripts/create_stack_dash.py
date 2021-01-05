@@ -49,6 +49,8 @@ class Config(object):
         tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
         proxy_static_ip = os.getenv("PROXY_STATIC_IP")
         load_type = os.getenv("LOAD_TYPE")
+        grafana_username = os.getenv("GRAFANA_USERNAME")
+        grafana_password = os.getenv("GRAFANA_PASSWORD")
     except Exception as e:
         print(
             "Please create config.env file similar to config.env.sample or set environment variables for all variables in config.env.sample file")
@@ -140,6 +142,12 @@ def __get_commandline_args():
                         help='Static IP for when proxy is used')
 
     parser.add_argument('--load_type', '-load', default=Config.load_type,
+                        help='Load type: Direct or Proxy')
+
+    parser.add_argument('--grafana_username', '-un', default=Config.grafana_username,
+                        help='Load type: Direct or Proxy')
+
+    parser.add_argument('--grafana_password', '-pw', default=Config.grafana_password,
                         help='Load type: Direct or Proxy')
 
     return parser.parse_args()
@@ -315,6 +323,8 @@ if __name__ == "__main__":
     Config.tls_verification_method = args.tls_verification_method
     Config.proxy_static_ip = args.proxy_static_ip
     Config.load_type = args.load_type
+    Config.grafana_username = args.grafana_username
+    Config.grafana_password = args.grafana_password
     # these are flag/boolean arguments
     if args.exclude_dashboard:
         Config.exclude_dashboard = True
@@ -331,14 +341,14 @@ if __name__ == "__main__":
     Config.jmx_file_path = args.jmx_file_path
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
-    # if not Config.grafana_api_key and not Config.grafana_secret:
-    #     print("Must input either grafana_api_key or grafana_secret in config.env or using args")
-    #     exit(0)
-    # elif not Config.grafana_api_key and not Config.exclude_dashboard:
-    #     secret_response = get_secret_value(config=Config, secret_id=Config.grafana_secret)
-    #     secret_val = next(iter(secret_response.values()))
-    #     Config.grafana_api_key = secret_val
-    #     if secret_val:
-    #         print("Grafana secret key retrieved.")
+    if not Config.grafana_api_key and not Config.grafana_secret and not Config.grafana_username and not Config.grafana_password:
+        print("Must input either grafana_api_key, grafana_secret, or username/password in config.env or using args")
+        exit(0)
+    elif not Config.grafana_api_key and not Config.exclude_dashboard and not Config.grafana_username and not Config.grafana_password:
+        secret_response = get_secret_value(config=Config, secret_id=Config.grafana_secret)
+        secret_val = next(iter(secret_response.values()))
+        Config.grafana_api_key = secret_val
+        if secret_val:
+            print("Grafana secret key retrieved.")
 
     main(Config, DELETE_TIME_OFFSET, Config.prefix, Config.duration)
