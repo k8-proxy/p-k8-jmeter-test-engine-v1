@@ -341,10 +341,10 @@ if __name__ == "__main__":
     Config.jmx_file_path = args.jmx_file_path
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
-    if not Config.grafana_api_key and not Config.grafana_secret and not Config.grafana_username and not Config.grafana_password:
+    if not Config.grafana_api_key and not Config.grafana_secret and not (Config.grafana_username and Config.grafana_password):
         print("Must input either grafana_api_key, grafana_secret, or username/password in config.env or using args")
         exit(0)
-    elif not Config.grafana_api_key and not Config.exclude_dashboard and not Config.grafana_username and not Config.grafana_password:
+    elif not Config.grafana_api_key and not Config.exclude_dashboard and not (Config.grafana_username and Config.grafana_password):
         secret_response = get_secret_value(config=Config, secret_id=Config.grafana_secret)
         secret_val = next(iter(secret_response.values()))
         Config.grafana_api_key = secret_val
