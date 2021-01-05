@@ -1,6 +1,7 @@
 import requests
 import json
 from create_stack import Main
+from create_stack_dash import Config
 
 
 # If the grafana file passed does not contain the appropriate elements with appropriate values, modify it
@@ -70,11 +71,13 @@ def __post_grafana_dash(config):
     duration = config.duration
     icap_server = config.icap_server    
     number_of_pods = Main.parallelism
+    username_pw = "admin:admin%40123"
+    httpStr = "http://"
 
-    if not grafana_url.startswith("http"):
-        grafana_url = "http://" + "admin:admin%40123@" + grafana_url
+    if not grafana_url.startswith("http://"):
+        grafana_url = httpStr + grafana_url
 
-    grafana_api_url = grafana_url
+    grafana_api_url = grafana_url[:len(httpStr)] + username_pw + '@' + grafana_url[len(httpStr):]
 
     if grafana_url[len(grafana_url) - 1] != '/':
         grafana_api_url += '/'
