@@ -62,17 +62,17 @@ def __modify_dashboard_info_bar(grafana_json, total_users, duration, endpoint_ur
 
 # responsible for posting the dashboard to Grafana and returning the URL to it
 def __post_grafana_dash(config):
-    grafana_api_key = config.grafana_api_key
+    #grafana_api_key = config.grafana_api_key
     grafana_template = config.grafana_file
     prefix = config.prefix
     grafana_url = config.grafana_url
     total_users = config.total_users
     duration = config.duration
-    icap_server = config.icap_server
+    icap_server = config.icap_server    
     number_of_pods = Main.parallelism
 
     if not grafana_url.startswith("http"):
-        grafana_url = "http://" + grafana_url
+        grafana_url = "http://" + "admin:admin%40123@" + grafana_url
 
     grafana_api_url = grafana_url
 
@@ -82,7 +82,7 @@ def __post_grafana_dash(config):
     grafana_api_url = grafana_api_url + 'api/dashboards/db'
 
     headers = {
-        "Authorization": "Bearer " + grafana_api_key,
+    #    "Authorization": "Bearer " + grafana_api_key,
         "Content-Type": "application/json"}
 
     # Modify grafana JSON to display current run's info
