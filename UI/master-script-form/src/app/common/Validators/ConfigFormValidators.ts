@@ -1,12 +1,11 @@
+import { AppSettings } from './../app settings/AppSettings';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 export class ConfigFormValidators {
 
-    static limitedNumber(control: AbstractControl) : ValidationErrors | null {
-        if(isNaN(control.value)) {
-            return {isNumber: false};
-        }  else if(control.value <= 0) {
-            return {isMoreThanZero: false};
+    static hasNumberLimit(control: AbstractControl) : ValidationErrors | null {
+        if(control.value > 400) {
+            return {exceedsNumberLimit: true};
         }
 
         return null;
@@ -17,6 +16,13 @@ export class ConfigFormValidators {
             return {cannotContainSpaces: true}
         }
   
+        return null;
+    }
+
+    static cannotContainDuplicatePrefix(control: AbstractControl) : ValidationErrors | null {
+        if(control.value != null &&  AppSettings.testPrefixSet.has((control.value as string))){
+            return {cannotContainDuplicatePrefix: true}
+        }
         return null;
     }
 }

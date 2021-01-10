@@ -15,6 +15,11 @@ spec:
       labels:
         jobgroup: $prefix$-jmeter
     spec:
+      hostAliases:
+      - ip: $proxy-static-ip$
+        hostnames:
+        - "www.gov.uk"
+        - "assets.publishing.service.gov.uk"
       tolerations:
       - key: "sku"
         operator: "Equal"
@@ -22,7 +27,7 @@ spec:
         effect: "NoSchedule"       
       containers:
       - name: jmeter
-        image: glasswallsolutions/cloud-qa:jmeter-engine-v1.0
+        image: ggrig/jmeter-c-icap:4.06
         resources:
           requests:
             memory: "$requests_memory$Mi"

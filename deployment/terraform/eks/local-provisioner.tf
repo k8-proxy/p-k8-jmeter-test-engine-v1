@@ -123,7 +123,7 @@ resource "null_resource" "prometheus" {
 resource "null_resource" "expose_common_services" {
 
   depends_on = [
-    null_resource.promtail
+    null_resource.prometheus
   ]
 
   provisioner "local-exec" {
