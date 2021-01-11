@@ -70,6 +70,18 @@ To install helm run the following commands in the terminal:
     helm upgrade --install loki --namespace=common loki/loki-stack
     helm upgrade --install promtail --namespace=common loki/promtail --set "loki.serviceName=loki"   
 ```
+## Setup Grafana datasources
+
+To create necessary Grafana data sources run the following:
+
+```
+cd ~/p-k8-jmeter-test-engine-v1/jmeter-icap/scripts/
+python3 create_datasource.py
+```
+The script will create the following datasources:
+
+![vm_load_vision](pngs/Grafana-Datasource.png)
+
 # Angular UI Component Installation and Deployment
 
 ## Prerequisites
