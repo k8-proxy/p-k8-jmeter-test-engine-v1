@@ -4,49 +4,55 @@ import requests
 # defining the api-endpoint
 API_ENDPOINT = "http://localhost:3000/api/datasources"
 username="admin"
-password="admin"
+password="admin@123"
 
 # create influxdb datasource
 influx_data = {
   "name":"InfluxDB",
   "type":"influxdb",
-  "url":"http://localhost:8086",
+  "url":"http://influxdb-service.common",
   "access":"proxy",
   "database":"jmeter",
- "basicAuth": "false"
+  "basicAuth": "false"
     }
 
 headers={'content-type': 'application/json'}
 
-# sending post request and saving response as response object
-r = requests.post(url=API_ENDPOINT, data=influx_data,auth=(username, password))
+try:
+  # sending post request and saving response as response object
+  r = requests.post(url=API_ENDPOINT, data=influx_data,auth=(username, password))
 
-# extracting response text
+  # extracting response text
 
-print("InfluxDB  datasource :%s" % r.text)
+  print("InfluxDB  datasource :%s" % r.text)
+except Exception as e:
+  print(e)
 
 # create icapserver datasource
 icap_data = {
   "name":"icapserver",
   "type":"influxdb",
-  "url":"http://localhost:8086",
+  "url":"http://influxdb-service.common",
   "access":"proxy",
   "database":"icapserver",
- "basicAuth": "false"
+  "basicAuth": "false"
     }
 
 headers={'content-type': 'application/json'}
 
-# sending post request and saving response as response object
-r = requests.post(url=API_ENDPOINT, data=icap_data,auth=(username, password))
+try:
+  # sending post request and saving response as response object
+  r = requests.post(url=API_ENDPOINT, data=icap_data,auth=(username, password))
 
-print("ICAPServer  datasource :%s" % r.text)
+  print("ICAPServer  datasource :%s" % r.text)
+except Exception as e:
+  print(e)
 
 # create Loki datasource
 loki_data = {
   "name":"Loki",
   "type":"loki",
-  "url":"http://localhost:3100",
+  "url":"http://loki.common:3100",
   "access":"proxy",
   "basicAuth": "false",
   "jsonData":{
@@ -56,7 +62,10 @@ loki_data = {
 
 headers={'content-type': 'application/json'}
 
-# sending post request and saving response as response object
-r = requests.post(url=API_ENDPOINT, data=loki_data,auth=(username, password))
+try:
+  # sending post request and saving response as response object
+  r = requests.post(url=API_ENDPOINT, data=loki_data,auth=(username, password))
 
-print("Loki datasource :%s" % r.text)
+  print("Loki datasource :%s" % r.text)
+except Exception as e:
+  print(e)
