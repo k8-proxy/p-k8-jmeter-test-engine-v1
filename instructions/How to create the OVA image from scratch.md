@@ -70,17 +70,6 @@ To install helm run the following commands in the terminal:
     helm upgrade --install loki --namespace=common loki/loki-stack
     helm upgrade --install promtail --namespace=common loki/promtail --set "loki.serviceName=loki"   
 ```
-## Setup Grafana datasources
-
-To create necessary Grafana data sources run the following:
-
-```
-cd ~/p-k8-jmeter-test-engine-v1/jmeter-icap/scripts/
-python3 create_datasource.py
-```
-The script will create the following datasources:
-
-![vm_load_vision](pngs/Grafana-Datasource.png)
 
 # Angular UI Component Installation and Deployment
 
@@ -212,7 +201,19 @@ Run the following command in the terminal
 ```
     kubectl port-forward -n common service/grafana-service 3000:80
 ```
-Access Grafana in the local browser with URL http://localhost:3000 <br/>
+### Setup Grafana datasources
+
+To create necessary Grafana data sources with the corresponding script run the following:
+
+```
+cd ~/p-k8-jmeter-test-engine-v1/jmeter-icap/scripts/
+python3 create_datasource.py
+```
+The script will create the following datasources:
+
+![vm_load_vision](pngs/Grafana-Datasource.png)
+
+To do the same operation manually access Grafana in the local browser with URL http://localhost:3000 <br/>
 Add the following Grafana data sources: <br/> 
 
 a) Name: icapserver <br/> 
@@ -227,7 +228,9 @@ b) Name: InfluxDB <br/>
 
 c) Name: Loki <br/> 
    URL: http://loki.common:3100 <br/> 
- 
+
+### Grafana API Key
+
 Generate and safe a Grafana API key to be utilized on the next step.
 
 ## Adjust the config.env
