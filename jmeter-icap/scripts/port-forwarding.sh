@@ -16,6 +16,12 @@ if ! type "microk8s.kubectl" > /dev/null; then
                 echo "grafana-service not Running"
         fi
 
+        if [[ $(sudo kubectl get pods -A | grep influxdb | grep Running) ]]; then
+                kubectl port-forward -n common service/influxdb-service 8086:80 &
+        else
+                echo "influxdb-service not Running"
+        fi
+
 else
         if [[ $(sudo microk8s.kubectl get pods -A | grep minio | grep Running) ]]; then
                 microk8s.kubectl port-forward -n common service/minio-service 9000:80 &
@@ -28,4 +34,11 @@ else
         else
                 echo "grafana-service not Running"
         fi
+
+        if [[ $(sudo microk8s.kubectl get pods -A | grep influxdb | grep Running) ]]; then
+                microk8s.kubectl port-forward -n common service/influxdb-service 8086:80 &
+        else
+                echo "influxdb-service not Running"
+        fi
+
 fi
