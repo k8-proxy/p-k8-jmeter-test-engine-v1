@@ -10,9 +10,9 @@ class Main():
 
     hostname = ''
     hostport = ''
-    jmeter_db_client = InfluxDBClient('', '0', '', '', 'none')
-    icapserver_db_client = InfluxDBClient('', '0', '', '', 'none')
-    proxysite_db_client = InfluxDBClient('', '0', '', '', 'proxysite')
+    jmeter_db_client = ''
+    icapserver_db_client = ''
+    proxysite_db_client = ''
 
     @staticmethod
     def verify_database(db):
@@ -25,6 +25,19 @@ class Main():
     @staticmethod
     def log_level(level):
         logging.basicConfig(level=getattr(logging, level))
+
+    @staticmethod
+    def init():
+        Main.jmeter_db_client = InfluxDBClient(Main.hostname, Main.hostport, database='jmeter')
+        Main.verify_database(Main.jmeter_db_client)
+
+        Main.icapserver_db_client = InfluxDBClient(Main.hostname, Main.hostport, database='icapserver')
+        Main.verify_database(Main.icapserver_db_client)
+
+        Main.proxysite_db_client = InfluxDBClient(Main.hostname, Main.hostport, database='proxysite')
+        Main.verify_database(Main.proxysite_db_client)
+
+        print('Initialization Passed')
 
     @staticmethod
     def main(argv):
@@ -47,14 +60,7 @@ class Main():
         print("host name - {}".format(Main.hostname))
         print("host port - {}".format(Main.hostport))
 
-        Main.jmeter_db_client = InfluxDBClient(Main.hostname, Main.hostport, '', '', 'jmeter')
-        Main.verify_database(Main.jmeter_db_client)
-
-        Main.icapserver_db_client = InfluxDBClient(Main.hostname, Main.hostport, '', '', 'icapserver')
-        Main.verify_database(Main.icapserver_db_client)
-
-        Main.proxysite_db_client = InfluxDBClient(Main.hostname, Main.hostport, '', '', 'proxysite')
-        Main.verify_database(Main.proxysite_db_client)
+        Main.init()
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
