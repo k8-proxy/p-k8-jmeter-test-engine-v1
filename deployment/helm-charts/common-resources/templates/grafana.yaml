@@ -65,7 +65,7 @@ spec:
       volumes:
         - name: grafana-storage
           persistentVolumeClaim:
-            claimName: grafana-pvc
+            claimName: gp2-pvc-grafana
 
     {{- with .Values.nodeSelector }}
       nodeSelector:
