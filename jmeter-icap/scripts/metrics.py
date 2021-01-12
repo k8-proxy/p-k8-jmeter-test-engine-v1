@@ -1,6 +1,7 @@
 import os
 import logging
 import sys, getopt
+import json
 from influxdb import InfluxDBClient
 
 logger = logging.getLogger('proxy-sites')
@@ -40,6 +41,29 @@ class Main():
         print('Initialization Passed')
 
     @staticmethod
+    def initial_time(prefix):
+        rs = Main.jmeter_db_client.query('SELECT FIRST("avg") FROM ' + prefix + '_jmetericap;')
+        points = rs.get_points()
+        for item in points:
+            time = item['time']
+            if time:
+                return time
+        print('Error getting initial time')
+        exit(1)
+
+    @staticmethod
+    def final_time(prefix):
+        rs = Main.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
+        points = rs.get_points()
+        for item in points:
+            time = item['time']
+            if time:
+                return time
+        print('Error getting initial time')
+        exit(1)
+
+
+    @staticmethod
     def main(argv):
         help_string = 'python3 metrics.py -n <host name> -p <host port>'
         try:
@@ -61,6 +85,9 @@ class Main():
         print("host port - {}".format(Main.hostport))
 
         Main.init()
+
+        print('Initial time {}'.format(Main.initial_time('demo')))
+        print('Final time {}'.format(Main.final_time('demo')))
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
