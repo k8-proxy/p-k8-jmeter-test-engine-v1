@@ -28,11 +28,11 @@
     "provisioners":[
         {
          "type": "shell",
-         "script": "ui.sh"
+         "script": "provisioning_scripts/ui.sh"
          },
         {
         "type": "shell",
-        "script": "k8-installation.sh"
+        "script": "provisioning_scripts/k8-installation.sh"
         },
         {
          "type": "shell-local",
@@ -40,7 +40,7 @@
         },
         {
              "type": "shell-local",
-             "script": "ova-check.sh"
+             "script": "provisioning_scripts/ova-check.sh"
         }
      ],
     "post-processors":[
