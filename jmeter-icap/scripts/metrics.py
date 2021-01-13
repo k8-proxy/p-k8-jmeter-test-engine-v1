@@ -94,7 +94,7 @@ class Main():
             for item in points:
                 count = item['count']
                 if count:
-                    return count
+                    return int(count)
             return 0
         except Exception as e:
             print(e)
@@ -111,6 +111,29 @@ class Main():
     @staticmethod
     def successful_reguests(prefix, start, finish):
         return Main.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut=\'ok\'')
+
+    @staticmethod
+    def mean_query(prefix, start, finish, field):
+        try:
+            str_query = 'SELECT MEAN("' + field + '") FROM '\
+                    + prefix + '_jmetericap WHERE '\
+                    + ' time >= \'' + start + '\' AND ' \
+                    + ' time <= \'' + finish + '\';'
+            #print (str_query)
+            rs = Main.jmeter_db_client.query(str_query)
+            points = rs.get_points()
+            for item in points:
+                mean = item['mean']
+                if mean:
+                    return float(mean)
+            return 0
+        except Exception as e:
+            print(e)
+            exit(1)
+
+    @staticmethod
+    def average_resp_time(prefix, start, finish):
+        return Main.mean_query(prefix, start, finish, 'pct95.0')
 
     @staticmethod
     def main(argv):
@@ -143,6 +166,7 @@ class Main():
         print('Total requests {}'.format(Main.total_reguests(prefix, start_time, finish_time)))
         print('Failed requests {}'.format(Main.failed_reguests(prefix, start_time, finish_time)))
         print('Successfull requests {}'.format(Main.successful_reguests(prefix, start_time, finish_time)))
+        print('Average response time {}'.format(Main.average_resp_time(prefix, start_time, finish_time)))
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
