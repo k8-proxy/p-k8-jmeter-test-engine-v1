@@ -1,25 +1,24 @@
 from influxdb import InfluxDBClient
 from config_params import Config
-from datetime import datetime
 
 
 # Connect to influx database, check if tests database exists. If it does not, create it.
 
 
 def connect_to_influxdb():
-    client = InfluxDBClient(host=Config.influx_host, port=8086)
+    client = InfluxDBClient(host=Config.influx_host, port=Config.influx_port)
     client.create_database("ResultsDB")
     client.switch_database("ResultsDB")
     return client
 
 
 # inserts additional info for use in conjunction with other table containing test run results
-def database_insert_test(config, run_id, grafana_uid):
+def database_insert_test(config, run_id, grafana_uid, start_time, final_time):
     run_id = str(run_id)
     client = connect_to_influxdb()
     client.write_points([{"measurement": "TestResults", "fields": {
         "RunId": run_id,
-        "StartTime": str(datetime.now()),
+        "StartTime": start_time,
         "Duration": config.duration,
         "GrafanaUid": grafana_uid,
         "Prefix": config.prefix,

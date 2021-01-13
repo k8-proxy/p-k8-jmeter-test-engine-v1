@@ -21,6 +21,7 @@ class Config(object):
         minio_output_bucket = os.getenv("MINIO_OUTPUT_BUCKET")
         influxdb_url = os.getenv("INFLUXDB_URL")
         influx_host = os.getenv("INFLUX_HOST",'localhost')
+        influx_port = os.getenv("INFLUX_PORT", 8086)
         prefix = os.getenv("PREFIX")
         icap_server = os.getenv("ICAP_SERVER_URL")
         icap_endpoint_url = os.getenv("ICAP_SERVER_URL")
