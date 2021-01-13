@@ -186,11 +186,11 @@ export class SharedService {
         } else if (loadType === "Proxy") {
             name += "-proxy-site-live-performance-dashboard"
         }
-        
-        if(!this.grafanaUrl.startsWith("http://")) {
+
+        if (!this.grafanaUrl.startsWith("http://")) {
             this.grafanaUrl = "http://" + this.grafanaUrl;
         }
-        if(!this.grafanaUrl.endsWith('/')){
+        if (!this.grafanaUrl.endsWith('/')) {
             this.grafanaUrl += '/';
         }
         let link = this.grafanaUrl + 'd/' + grafanaUid + '/' + name + "?&from=" + start + "&to=" + end;
