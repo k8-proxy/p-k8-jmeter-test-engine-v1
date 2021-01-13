@@ -1,5 +1,5 @@
 from influxdb import InfluxDBClient
-from create_stack import Config
+from config_params import Config
 from datetime import datetime
 
 
