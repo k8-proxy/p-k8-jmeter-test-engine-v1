@@ -177,16 +177,22 @@ export class SharedService {
         return name;
     }
 
-    public buildGrafanaLink(prefix: string, loadType: string, startTime: Date, runTime: number, grafanaUid: string) {
+    public buildGrafanaLink(prefix: string, loadType: string, startTime: Date, duration: number, grafanaUid: string) {
         let start = startTime.getTime(); //gets time in epoch, for use when setting grafana time window
-        let end = start + (runTime * 1000);
+        let end = start + (duration * 1000);
         let name = prefix;
         if (loadType === "Direct") {
             name += "-icap-live-performance-dashboard"
         } else if (loadType === "Proxy") {
             name += "-proxy-site-live-performance-dashboard"
         }
-
+        
+        if(!this.grafanaUrl.startsWith("http://")) {
+            this.grafanaUrl = "http://" + this.grafanaUrl;
+        }
+        if(!this.grafanaUrl.endsWith('/')){
+            this.grafanaUrl += '/';
+        }
         let link = this.grafanaUrl + 'd/' + grafanaUid + '/' + name + "?&from=" + start + "&to=" + end;
         return link;
     }
