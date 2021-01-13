@@ -53,15 +53,45 @@ class Main():
 
     @staticmethod
     def final_time(prefix):
-        rs = Main.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
-        points = rs.get_points()
-        for item in points:
-            time = item['time']
-            if time:
-                return time
-        print('Error getting initial time')
-        exit(1)
+        try:
+            rs = Main.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
+            points = rs.get_points()
+            for item in points:
+                time = item['time']
+                if time:
+                    return time
+            print('Error getting initial time')
+        except Exception as e:
+            print(e)
+            exit(1)
 
+    @staticmethod
+    def record_count(prefix):
+        try:
+            rs = Main.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
+            points = rs.get_points()
+            for item in points:
+                time = item['time']
+                if time:
+                    return time
+            print('Error getting initial time')
+        except Exception as e:
+            print(e)
+            exit(1)
+ 
+    @staticmethod
+    def total_reguests(prefix):
+        try:
+            rs = Main.jmeter_db_client.query('SELECT COUNT("avg") FROM ' + prefix + '_jmetericap WHERE transaction =~ /ICAP-Document-Process/;')
+            points = rs.get_points()
+            for item in points:
+                count = item['count']
+                if count:
+                    return count
+            print('Error getting total number of requests')
+        except Exception as e:
+            print(e)
+            exit(1)
 
     @staticmethod
     def main(argv):
@@ -88,6 +118,7 @@ class Main():
 
         print('Initial time {}'.format(Main.initial_time('demo')))
         print('Final time {}'.format(Main.final_time('demo')))
+        print('Total requests {}'.format(Main.total_reguests('demo')))
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
