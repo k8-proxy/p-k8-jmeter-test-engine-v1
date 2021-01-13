@@ -80,13 +80,13 @@ class Main():
             exit(1)
  
     @staticmethod
-    def total_reguests(prefix, start, finish):
+    def count_query(prefix, start, finish, condition):
         try:
             str_query = 'SELECT COUNT("avg") FROM '\
-                    + prefix \
-                    + '_jmetericap WHERE transaction =~ /ICAP-Document-Process/' \
-                    + ' AND time >= \'' + start + '\'' \
-                    + ' AND time <= \'' + finish + '\''\
+                    + prefix + '_jmetericap WHERE '\
+                    + ' time >= \'' + start + '\' AND ' \
+                    + ' time <= \'' + finish + '\' AND '\
+                    + condition \
                     + ';'
             #print (str_query)
             rs = Main.jmeter_db_client.query(str_query)
@@ -95,10 +95,22 @@ class Main():
                 count = item['count']
                 if count:
                     return count
-            print('Error getting total number of requests')
+            return 0
         except Exception as e:
             print(e)
             exit(1)
+
+    @staticmethod
+    def total_reguests(prefix, start, finish):
+        return Main.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/')
+
+    @staticmethod
+    def failed_reguests(prefix, start, finish):
+        return Main.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut=\'ko\'')
+
+    @staticmethod
+    def successful_reguests(prefix, start, finish):
+        return Main.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut=\'ok\'')
 
     @staticmethod
     def main(argv):
@@ -129,6 +141,8 @@ class Main():
         print('Initial time {}'.format(start_time))
         print('Final time {}'.format(finish_time))
         print('Total requests {}'.format(Main.total_reguests(prefix, start_time, finish_time)))
+        print('Failed requests {}'.format(Main.failed_reguests(prefix, start_time, finish_time)))
+        print('Successfull requests {}'.format(Main.successful_reguests(prefix, start_time, finish_time)))
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
