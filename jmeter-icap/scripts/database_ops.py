@@ -3,10 +3,7 @@ from config_params import Config
 from metrics import InfluxDBMetrics
 
 
-
 # Connect to influx database, check if tests database exists. If it does not, create it.
-
-
 def connect_to_influxdb():
     client = InfluxDBClient(host=Config.influx_host, port=Config.influx_port)
     client.create_database("ResultsDB")
@@ -14,7 +11,6 @@ def connect_to_influxdb():
     return client
 
 
-# inserts additional info for use in conjunction with other table containing test run results
 def database_insert_test(config, run_id, grafana_uid, start_time, final_time):
     run_id = str(run_id)
     client = connect_to_influxdb()
