@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from aws_secrets import get_secret_value
 from threading import Thread
 from time import sleep
+from database_ops import database_insert_test
+import uuid
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
@@ -45,6 +47,7 @@ class Config(object):
         preserve_stack = os.getenv("PRESERVE_STACK")
         icap_server_port = os.getenv("ICAP_SERVER_PORT")
         enable_tls = os.getenv("ENABLE_TLS")
+        store_results = True
         jmx_file_path = os.getenv("JMX_FILE_PATH")
         tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
         proxy_static_ip = os.getenv("PROXY_STATIC_IP")
@@ -139,6 +142,9 @@ def __get_commandline_args():
     parser.add_argument('--proxy_static_ip', '-proxy', default=Config.proxy_static_ip,
                         help='Static IP for when proxy is used')
 
+    parser.add_argument('--store_results', '-sr', action='store_true',
+                        help='Setting this option will cause all test runs to be recorded into influxdb')
+
     parser.add_argument('--load_type', '-load', default=Config.load_type,
                         help='Load type: Direct or Proxy')
 
@@ -220,6 +226,12 @@ def run_using_ui(ui_json_params):
 
     return dashboard_url
 
+def store_and_analyze_after_duration(config, grafana_uid):
+    sleep(int(config.duration))
+    run_id = uuid.uuid4()
+    database_insert_test(config, run_id, grafana_uid)
+    print("test complete, storing in database")
+    # Here the results analyzer will be called
 
 def stop_tests_using_ui(prefix=''):
 
@@ -271,7 +283,7 @@ def main(config, additional_delay, prefix, duration):
         print("Dashboard will not be created")
     else:
         print("Creating dashboard...")
-        dashboard_url = create_dashboard.main(config)
+        dashboard_url, grafana_uid = create_dashboard.main(config)
 
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
@@ -288,6 +300,10 @@ def main(config, additional_delay, prefix, duration):
     else:
         delete_stack_thread = Thread(target=__start_delete_stack, args=(additional_delay, prefix, duration))
         delete_stack_thread.start()
+
+    if config.store_results:
+        analyzer_thread = Thread(target=store_and_analyze_after_duration, args=(config, grafana_uid))
+        analyzer_thread.start()
 
     return dashboard_url
 
@@ -327,8 +343,13 @@ if __name__ == "__main__":
         Config.preserve_stack = int(Config.preserve_stack) == 1
 
     Config.enable_tls = (int(args.enable_tls) == 1)
-
+    
     Config.jmx_file_path = args.jmx_file_path
+
+    if args.store_results:
+        Config.store_results = True
+    elif Config.store_results:
+        Config.store_results = int(Config.store_results) == 1
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
     # if not Config.grafana_api_key and not Config.grafana_secret:
