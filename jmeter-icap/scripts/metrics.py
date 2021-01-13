@@ -38,7 +38,7 @@ class Main():
         Main.proxysite_db_client = InfluxDBClient(Main.hostname, Main.hostport, database='proxysite')
         Main.verify_database(Main.proxysite_db_client)
 
-        print('Initialization Passed')
+        print('Metrics module initialization PASSED')
 
     @staticmethod
     def initial_time(prefix):
@@ -80,9 +80,16 @@ class Main():
             exit(1)
  
     @staticmethod
-    def total_reguests(prefix):
+    def total_reguests(prefix, start, finish):
         try:
-            rs = Main.jmeter_db_client.query('SELECT COUNT("avg") FROM ' + prefix + '_jmetericap WHERE transaction =~ /ICAP-Document-Process/;')
+            str_query = 'SELECT COUNT("avg") FROM '\
+                    + prefix \
+                    + '_jmetericap WHERE transaction =~ /ICAP-Document-Process/' \
+                    + ' AND time >= \'' + start + '\'' \
+                    + ' AND time <= \'' + finish + '\''\
+                    + ';'
+            #print (str_query)
+            rs = Main.jmeter_db_client.query(str_query)
             points = rs.get_points()
             for item in points:
                 count = item['count']
@@ -111,14 +118,17 @@ class Main():
                 Main.hostport = arg
 
         Main.log_level(LOG_LEVEL)
-        print("host name - {}".format(Main.hostname))
-        print("host port - {}".format(Main.hostport))
+        #print("host name - {}".format(Main.hostname))
+        #print("host port - {}".format(Main.hostport))
 
         Main.init()
 
-        print('Initial time {}'.format(Main.initial_time('demo')))
-        print('Final time {}'.format(Main.final_time('demo')))
-        print('Total requests {}'.format(Main.total_reguests('demo')))
+        prefix = 'demo'
+        start_time = Main.initial_time(prefix)
+        finish_time = Main.final_time(prefix)
+        print('Initial time {}'.format(start_time))
+        print('Final time {}'.format(finish_time))
+        print('Total requests {}'.format(Main.total_reguests(prefix, start_time, finish_time)))
 
 if __name__ == "__main__":
     Main.main(sys.argv[1:])
