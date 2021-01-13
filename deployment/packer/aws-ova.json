@@ -19,30 +19,30 @@
             "ssh_username": "ubuntu",
             "ami_name": "packer-ova-k8s-{{timestamp}}",
             "tags": {
-              "Stack": "JMeterTestEngine",
+              "Stack": "k8s-JMeterTestEngine",
               "Release": "Latest"
             }
         }
         
     ],
-   "provisioners":[
-       {
-       "type": "shell",
-       "script": "k8-installation.sh"
-       },
-       {
+    "provisioners":[
+        {
+         "type": "shell",
+         "script": "ui.sh"
+         },
+        {
         "type": "shell",
-        "script": "anglular-comp.sh"
+        "script": "k8-installation.sh"
         },
         {
-            "type": "shell",
-            "script": "setting-up-ui.sh"
+         "type": "shell-local",
+         "inline": "aws ec2 create-instance-export-task --region eu-west-1 --instance-id {{build `ID`}} --target-environment vmware --export-to-s3-task file://file.json > out.json"
         },
         {
-            "type": "shell",
-            "script": "ova-check.sh"
+             "type": "shell-local",
+             "script": "ova-check.sh"
         }
-    ],
+     ],
     "post-processors":[
         {
             "type": "manifest"
