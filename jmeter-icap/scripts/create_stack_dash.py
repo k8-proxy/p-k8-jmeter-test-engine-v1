@@ -191,9 +191,9 @@ def run_using_ui(ui_json_params):
 
 def store_and_analyze_after_duration(config, grafana_uid):
     start_time = str(datetime.now())
-    #sleep(int(config.duration))
+    sleep(int(config.duration))
     run_id = uuid.uuid4()
-    print("test complete, storing in database")
+    print("test completed, storing results to the database")
     final_time = str(datetime.now())
     database_insert_test(config, run_id, grafana_uid, start_time, final_time)
     # Here the results analyzer will be called

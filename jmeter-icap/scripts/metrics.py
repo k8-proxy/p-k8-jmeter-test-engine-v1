@@ -7,7 +7,7 @@ from influxdb import InfluxDBClient
 logger = logging.getLogger('proxy-sites')
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
-class Main():
+class InfluxDBMetrics():
 
     hostname = ''
     hostport = ''
@@ -20,7 +20,7 @@ class Main():
         try:
             db.query('SHOW RETENTION POLICIES;')
         except Exception as e:
-            print(e)
+            print("ERROR: metrics.verify_database: {}".format(e))
             exit(1)
 
     @staticmethod
@@ -29,32 +29,21 @@ class Main():
 
     @staticmethod
     def init():
-        Main.jmeter_db_client = InfluxDBClient(Main.hostname, Main.hostport, database='jmeter')
-        Main.verify_database(Main.jmeter_db_client)
+        InfluxDBMetrics.jmeter_db_client = InfluxDBClient(InfluxDBMetrics.hostname, InfluxDBMetrics.hostport, database='jmeter')
+        InfluxDBMetrics.verify_database(InfluxDBMetrics.jmeter_db_client)
 
-        Main.icapserver_db_client = InfluxDBClient(Main.hostname, Main.hostport, database='icapserver')
-        Main.verify_database(Main.icapserver_db_client)
+        InfluxDBMetrics.icapserver_db_client = InfluxDBClient(InfluxDBMetrics.hostname, InfluxDBMetrics.hostport, database='icapserver')
+        InfluxDBMetrics.verify_database(InfluxDBMetrics.icapserver_db_client)
 
-        Main.proxysite_db_client = InfluxDBClient(Main.hostname, Main.hostport, database='proxysite')
-        Main.verify_database(Main.proxysite_db_client)
+        InfluxDBMetrics.proxysite_db_client = InfluxDBClient(InfluxDBMetrics.hostname, InfluxDBMetrics.hostport, database='proxysite')
+        InfluxDBMetrics.verify_database(InfluxDBMetrics.proxysite_db_client)
 
         print('Metrics module initialization PASSED')
 
     @staticmethod
     def initial_time(prefix):
-        rs = Main.jmeter_db_client.query('SELECT FIRST("avg") FROM ' + prefix + '_jmetericap;')
-        points = rs.get_points()
-        for item in points:
-            time = item['time']
-            if time:
-                return time
-        print('Error getting initial time')
-        exit(1)
-
-    @staticmethod
-    def final_time(prefix):
         try:
-            rs = Main.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
+            rs = InfluxDBMetrics.jmeter_db_client.query('SELECT FIRST("avg") FROM ' + prefix + '_jmetericap;')
             points = rs.get_points()
             for item in points:
                 time = item['time']
@@ -62,13 +51,28 @@ class Main():
                     return time
             print('Error getting initial time')
         except Exception as e:
-            print(e)
+            print("ERROR: metrics.initial_time: {}".format(e))
+            exit(1)
+
+
+    @staticmethod
+    def final_time(prefix):
+        try:
+            rs = InfluxDBMetrics.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
+            points = rs.get_points()
+            for item in points:
+                time = item['time']
+                if time:
+                    return time
+            print('Error getting initial time')
+        except Exception as e:
+            print("ERROR: metrics.final_time: {}".format(e))
             exit(1)
 
     @staticmethod
     def record_count(prefix):
         try:
-            rs = Main.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
+            rs = InfluxDBMetrics.jmeter_db_client.query('SELECT LAST("avg") FROM ' + prefix + '_jmetericap;')
             points = rs.get_points()
             for item in points:
                 time = item['time']
@@ -76,7 +80,7 @@ class Main():
                     return time
             print('Error getting initial time')
         except Exception as e:
-            print(e)
+            print("ERROR: metrics.record_count: {}".format(e))
             exit(1)
  
     @staticmethod
@@ -89,7 +93,7 @@ class Main():
                     + condition \
                     + ';'
             #print (str_query)
-            rs = Main.jmeter_db_client.query(str_query)
+            rs = InfluxDBMetrics.jmeter_db_client.query(str_query)
             points = rs.get_points()
             for item in points:
                 count = item['count']
@@ -97,20 +101,20 @@ class Main():
                     return int(count)
             return 0
         except Exception as e:
-            print(e)
+            print("ERROR: metrics.count_query: {}".format(e))
             exit(1)
 
     @staticmethod
     def total_reguests(prefix, start, finish):
-        return Main.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/')
+        return InfluxDBMetrics.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/')
 
     @staticmethod
     def failed_reguests(prefix, start, finish):
-        return Main.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut=\'ko\'')
+        return InfluxDBMetrics.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut=\'ko\'')
 
     @staticmethod
     def successful_reguests(prefix, start, finish):
-        return Main.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut=\'ok\'')
+        return InfluxDBMetrics.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut=\'ok\'')
 
     @staticmethod
     def mean_query(prefix, start, finish, field):
@@ -120,7 +124,7 @@ class Main():
                     + ' time >= \'' + start + '\' AND ' \
                     + ' time <= \'' + finish + '\';'
             #print (str_query)
-            rs = Main.jmeter_db_client.query(str_query)
+            rs = InfluxDBMetrics.jmeter_db_client.query(str_query)
             points = rs.get_points()
             for item in points:
                 mean = item['mean']
@@ -128,12 +132,12 @@ class Main():
                     return float(mean)
             return 0
         except Exception as e:
-            print(e)
+            print("ERROR: metrics.mean_query: {}".format(e))
             exit(1)
 
     @staticmethod
     def average_resp_time(prefix, start, finish):
-        return Main.mean_query(prefix, start, finish, 'pct95.0')
+        return InfluxDBMetrics.mean_query(prefix, start, finish, 'pct95.0')
 
     @staticmethod
     def main(argv):
@@ -148,25 +152,25 @@ class Main():
                 print (help_string)
                 sys.exit()
             elif opt in ('-n', '--name'):
-                Main.hostname = arg
+                InfluxDBMetrics.hostname = arg
             elif opt in ('-p', '--port'):
-                Main.hostport = arg
+                InfluxDBMetrics.hostport = arg
 
-        Main.log_level(LOG_LEVEL)
-        #print("host name - {}".format(Main.hostname))
-        #print("host port - {}".format(Main.hostport))
+        InfluxDBMetrics.log_level(LOG_LEVEL)
+        #print("host name - {}".format(InfluxDBMetrics.hostname))
+        #print("host port - {}".format(InfluxDBMetrics.hostport))
 
-        Main.init()
+        InfluxDBMetrics.init()
 
         prefix = 'demo'
-        start_time = Main.initial_time(prefix)
-        finish_time = Main.final_time(prefix)
+        start_time = InfluxDBMetrics.initial_time(prefix)
+        finish_time = InfluxDBMetrics.final_time(prefix)
         print('Initial time {}'.format(start_time))
         print('Final time {}'.format(finish_time))
-        print('Total requests {}'.format(Main.total_reguests(prefix, start_time, finish_time)))
-        print('Failed requests {}'.format(Main.failed_reguests(prefix, start_time, finish_time)))
-        print('Successfull requests {}'.format(Main.successful_reguests(prefix, start_time, finish_time)))
-        print('Average response time {}'.format(Main.average_resp_time(prefix, start_time, finish_time)))
+        print('Total requests {}'.format(InfluxDBMetrics.total_reguests(prefix, start_time, finish_time)))
+        print('Failed requests {}'.format(InfluxDBMetrics.failed_reguests(prefix, start_time, finish_time)))
+        print('Successfull requests {}'.format(InfluxDBMetrics.successful_reguests(prefix, start_time, finish_time)))
+        print('Average response time {}'.format(InfluxDBMetrics.average_resp_time(prefix, start_time, finish_time)))
 
 if __name__ == "__main__":
-    Main.main(sys.argv[1:])
+    InfluxDBMetrics.main(sys.argv[1:])
