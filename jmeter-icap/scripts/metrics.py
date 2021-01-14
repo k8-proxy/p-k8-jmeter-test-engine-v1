@@ -121,6 +121,7 @@ class InfluxDBMetrics():
         try:
             str_query = 'SELECT MEAN("' + field + '") FROM '\
                     + prefix + '_jmetericap WHERE '\
+                    + 'statut =~ /o/ AND ' \
                     + ' time >= \'' + start + '\' AND ' \
                     + ' time <= \'' + finish + '\';'
             #print (str_query)
