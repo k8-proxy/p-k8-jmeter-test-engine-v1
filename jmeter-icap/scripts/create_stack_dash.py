@@ -155,7 +155,7 @@ def get_args_list(config, options):
 
 
 def run_using_ui(ui_json_params):
-    ui_config = Config()
+    ui_config = Config
     additional_delay = 0
     # Set Config values gotten from front end
     if ui_json_params['total_users']:
