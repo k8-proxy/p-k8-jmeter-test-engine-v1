@@ -33,13 +33,13 @@ class Config(object):
         preserve_stack = os.getenv("PRESERVE_STACK")
         icap_server_port = os.getenv("ICAP_SERVER_PORT")
         enable_tls = os.getenv("ENABLE_TLS")
-        store_results = True
+        store_results = os.getenv("STORE_RESULTS",True)
         jmx_file_path = os.getenv("JMX_FILE_PATH")
         tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
         proxy_static_ip = os.getenv("PROXY_STATIC_IP")
         load_type = os.getenv("LOAD_TYPE")
-        grafana_username = os.getenv("GRAFANA_USERNAME")
-        grafana_password = os.getenv("GRAFANA_PASSWORD")
+        grafana_username = os.getenv("GRAFANA_USERNAME",'admin')
+        grafana_password = os.getenv("GRAFANA_PASSWORD",'admin@123')
     except Exception as e:
         print(
             "Please create config.env file similar to config.env.sample or set environment variables for all variables in config.env.sample file")

@@ -270,6 +270,11 @@ def main(config, additional_delay):
         delete_stack_thread = Thread(target=__start_delete_stack, args=(config, additional_delay))
         delete_stack_thread.start()
 
+    if config.store_results:
+        print('Starting the analyzer thread')
+        analyzer_thread = Thread(target=store_and_analyze_after_duration, args=(config, grafana_uid))
+        analyzer_thread.start()
+
     return dashboard_url, grafana_uid
 
 def handle_grafana_authentication(config):
