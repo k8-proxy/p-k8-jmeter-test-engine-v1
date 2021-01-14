@@ -38,6 +38,8 @@ class Config(object):
         tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
         proxy_static_ip = os.getenv("PROXY_STATIC_IP")
         load_type = os.getenv("LOAD_TYPE")
+        grafana_username = os.getenv("GRAFANA_USERNAME")
+        grafana_password = os.getenv("GRAFANA_PASSWORD")
     except Exception as e:
         print(
             "Please create config.env file similar to config.env.sample or set environment variables for all variables in config.env.sample file")

@@ -111,13 +111,19 @@ def __get_commandline_args():
     parser.add_argument('--load_type', '-load', default=Config.load_type,
                         help='Load type: Direct or Proxy')
 
+    parser.add_argument('--grafana_username', '-un', default=Config.grafana_username,
+                        help='Load type: Direct or Proxy')
+
+    parser.add_argument('--grafana_password', '-pw', default=Config.grafana_password,
+                        help='Load type: Direct or Proxy')
+
     return parser.parse_args()
 
 
 # Starts the process of calling delete_stack after duration. Starts timer and displays messages updating users on status
-def __start_delete_stack(additional_delay, prefix, duration):
-    delete_stack_args = ["--prefix", prefix]
-    total_wait_time = additional_delay + int(duration)
+def __start_delete_stack(config, additional_delay):
+    delete_stack_args = ["--prefix", config.prefix]
+    total_wait_time = additional_delay + int(config.duration)
     minutes = total_wait_time / 60
     finish_time = datetime.now(timezone.utc) + timedelta(seconds=total_wait_time)
     start_time = datetime.now(timezone.utc)
@@ -131,7 +137,7 @@ def __start_delete_stack(additional_delay, prefix, duration):
                     total_wait_time - diff.seconds) / 60))
             sleep(MESSAGE_INTERVAL)
 
-    print("Deleting stack with prefix: {0}".format(prefix))
+    print("Deleting stack with prefix: {0}".format(config.prefix))
     delete_stack.Main.main(argv=delete_stack_args)
 
 
@@ -149,43 +155,42 @@ def get_args_list(config, options):
 
 
 def run_using_ui(ui_json_params):
+    ui_config = Config()
     additional_delay = 0
-    prefix = ''
-    duration = ''
     # Set Config values gotten from front end
     if ui_json_params['total_users']:
-        Config.total_users = ui_json_params['total_users']
+        ui_config.total_users = ui_json_params['total_users']
     if ui_json_params['ramp_up_time']:
-        Config.ramp_up_time = ui_json_params['ramp_up_time']
+        ui_config.ramp_up_time = ui_json_params['ramp_up_time']
     if ui_json_params['duration']:
-        Config.duration = ui_json_params['duration']
-        duration = ui_json_params['duration']
+        ui_config.duration = ui_json_params['duration']
     if ui_json_params['prefix']:
-        Config.prefix = ui_json_params['prefix']
-        prefix = ui_json_params['prefix']
+        ui_config.prefix = ui_json_params['prefix']
     if ui_json_params['icap_endpoint_url']:
-        Config.load_type = ui_json_params['load_type']
+        ui_config.load_type = ui_json_params['load_type']
         if ui_json_params['load_type'] == "Direct":
-            Config.icap_server = ui_json_params['icap_endpoint_url']
+            ui_config.icap_server = ui_json_params['icap_endpoint_url']
         elif ui_json_params['load_type'] == "Proxy":
             # this comes as "icap_endpoint_url" from front end, but may also represent proxy IP if proxy load selected
-            Config.proxy_static_ip = ui_json_params['icap_endpoint_url']
+            ui_config.proxy_static_ip = ui_json_params['icap_endpoint_url']
 
-    __ui_set_files_for_load_type(ui_json_params['load_type'])
+    __ui_set_files_for_load_type(ui_config)
 
     # If Grafana API key provided, that takes precedence. Otherwise get key from AWS. If neither method provided, error output.
-    if not Config.grafana_api_key:
-        print("Must include a Grafana API key in config.env")
-        exit(0)
+    handle_grafana_authentication(ui_config)
 
     # ensure that preserve stack and create_dashboard are at default values
-    Config.preserve_stack = False
-    Config.exclude_dashboard = False
+    ui_config.preserve_stack = False
+    ui_config.exclude_dashboard = False
 
-    __ui_set_tls_and_port_params(ui_json_params['load_type'], ui_json_params['enable_tls'],
+    __ui_set_tls_and_port_params(ui_config, ui_json_params['load_type'], ui_json_params['enable_tls'],
                                  ui_json_params['tls_ignore_error'], ui_json_params['port'])
 
-    dashboard_url = main(Config, additional_delay, prefix, duration)
+    dashboard_url, grafana_uid = main(ui_config, additional_delay)
+
+    if bool(int(ui_config.store_results)):
+        results_analysis_thread = Thread(target=store_and_analyze_after_duration, args=(ui_config, grafana_uid))
+        results_analysis_thread.start()
 
     return dashboard_url
 
@@ -196,7 +201,6 @@ def store_and_analyze_after_duration(config, grafana_uid):
     print("test completed, storing results to the database")
     final_time = str(datetime.now())
     database_insert_test(config, run_id, grafana_uid, start_time, final_time)
-    # Here the results analyzer will be called
 
 def stop_tests_using_ui(prefix=''):
 
@@ -207,43 +211,43 @@ def stop_tests_using_ui(prefix=''):
         delete_stack.Main.main(argv=delete_stack_options)
 
 
-def __ui_set_tls_and_port_params(input_load_type, input_enable_tls, input_tls_ignore_verification, input_port):
+def __ui_set_tls_and_port_params(config, input_load_type, input_enable_tls, input_tls_ignore_verification, input_port):
     if input_load_type == "Direct":
 
         # enable/disable tls based on user input
-        Config.enable_tls = str(input_enable_tls)
+        config.enable_tls = str(input_enable_tls)
 
         # if user entered a port, use that. Otherwise port will be set depending on tls_enabled below.
         if input_port:
-            Config.icap_server_port = input_port
+            config.icap_server_port = input_port
 
         # if user did not provide port, set one depending on whether or not tls is enabled
         if not input_port:
             if input_enable_tls:
-                Config.icap_server_port = "443"
+                config.icap_server_port = "443"
             else:
-                Config.icap_server_port = "1344"
+                config.icap_server_port = "1344"
 
         # If TLS is enabled, get the user preference as to whether or not TLS verification should be used
         if input_enable_tls:
-            Config.tls_verification_method = "tls-no-verify" if input_tls_ignore_verification else ""
+            config.tls_verification_method = "tls-no-verify" if input_tls_ignore_verification else ""
 
 
-def __ui_set_files_for_load_type(load: str):
-    if load == "Direct":
-        Config.jmx_file_path = './ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
-        Config.grafana_file = './ICAP-Direct-File-Processing/k8-test-engine-dashboard.json'
-        Config.list = './ICAP-Direct-File-Processing/gov_uk_files.csv'
+def __ui_set_files_for_load_type(config):
+    if config.load_type == "Direct":
+        config.jmx_file_path = './ICAP-Direct-File-Processing/ICAP_Direct_FileProcessing_k8_v3.jmx'
+        config.grafana_file = './ICAP-Direct-File-Processing/k8-test-engine-dashboard.json'
+        config.list = './ICAP-Direct-File-Processing/gov_uk_files.csv'
 
-    elif load == "Proxy":
-        Config.jmx_file_path = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
-        Config.grafana_file = './ICAP-Proxy-Site/ProxySite_Dashboard_Template.json'
-        Config.list = './ICAP-Proxy-Site/proxyfiles.csv'
+    elif config.load_type == "Proxy":
+        config.jmx_file_path = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
+        config.grafana_file = './ICAP-Proxy-Site/ProxySite_Dashboard_Template.json'
+        config.list = './ICAP-Proxy-Site/proxyfiles.csv'
 
 
-def main(config, additional_delay, prefix, duration):
+def main(config, additional_delay):
     dashboard_url = ''
-
+    grafana_uid = ''
     if config.exclude_dashboard:
         print("Dashboard will not be created")
     else:
@@ -253,7 +257,7 @@ def main(config, additional_delay, prefix, duration):
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
                "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
-               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path", "proxy_static_ip"]
+               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path", "proxy_static_ip", "load_type"]
 
     create_stack_args = get_args_list(config, create_stack_options)
 
@@ -263,15 +267,24 @@ def main(config, additional_delay, prefix, duration):
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
     else:
-        delete_stack_thread = Thread(target=__start_delete_stack, args=(additional_delay, prefix, duration))
+        delete_stack_thread = Thread(target=__start_delete_stack, args=(config, additional_delay))
         delete_stack_thread.start()
 
-    if config.store_results:
-        analyzer_thread = Thread(target=store_and_analyze_after_duration, args=(config, grafana_uid))
-        analyzer_thread.start()
+    return dashboard_url, grafana_uid
 
-    return dashboard_url
+def handle_grafana_authentication(config):
 
+    # Use Grafana key obtained either from config.env or from AWS secrets, or use username/password. Key from config.env/AWS gets priority.
+    if not config.grafana_api_key and not config.grafana_secret and not (config.grafana_username and config.grafana_password):
+        print("Must input either grafana_api_key, grafana_secret, or username/password in config.env or using args")
+        exit(0)
+    elif not config.grafana_api_key and not config.exclude_dashboard and not (
+            config.grafana_username and config.grafana_password):
+        secret_response = get_secret_value(config=config, secret_id=config.grafana_secret)
+        secret_val = next(iter(secret_response.values()))
+        config.grafana_api_key = secret_val
+        if secret_val:
+            print("Grafana secret key retrieved.")
 
 if __name__ == "__main__":
     args = __get_commandline_args()
@@ -297,6 +310,9 @@ if __name__ == "__main__":
     Config.tls_verification_method = args.tls_verification_method
     Config.proxy_static_ip = args.proxy_static_ip
     Config.load_type = args.load_type
+    Config.grafana_username = args.grafana_username
+    Config.grafana_password = args.grafana_password
+
     # these are flag/boolean arguments
     if args.exclude_dashboard:
         Config.exclude_dashboard = True
@@ -308,24 +324,13 @@ if __name__ == "__main__":
     elif Config.preserve_stack:
         Config.preserve_stack = int(Config.preserve_stack) == 1
 
-    Config.enable_tls = (int(args.enable_tls) == 1)
-    
-    Config.jmx_file_path = args.jmx_file_path
-
     if args.store_results:
         Config.store_results = True
     elif Config.store_results:
         Config.store_results = int(Config.store_results) == 1
 
-    # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
-    # if not Config.grafana_api_key and not Config.grafana_secret:
-    #     print("Must input either grafana_api_key or grafana_secret in config.env or using args")
-    #     exit(0)
-    # elif not Config.grafana_api_key and not Config.exclude_dashboard:
-    #     secret_response = get_secret_value(config=Config, secret_id=Config.grafana_secret)
-    #     secret_val = next(iter(secret_response.values()))
-    #     Config.grafana_api_key = secret_val
-    #     if secret_val:
-    #         print("Grafana secret key retrieved.")
+    handle_grafana_authentication(Config)
+    Config.enable_tls = (int(args.enable_tls) == 1)
+    Config.jmx_file_path = args.jmx_file_path
 
-    main(Config, DELETE_TIME_OFFSET, Config.prefix, Config.duration)
+    main(Config, DELETE_TIME_OFFSET)
