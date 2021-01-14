@@ -106,7 +106,7 @@ class InfluxDBMetrics():
 
     @staticmethod
     def total_reguests(prefix, start, finish):
-        return InfluxDBMetrics.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/')
+        return InfluxDBMetrics.count_query(prefix, start, finish, ' transaction =~ /ICAP-Document-Process/ AND statut =~ /o/')
 
     @staticmethod
     def failed_reguests(prefix, start, finish):
