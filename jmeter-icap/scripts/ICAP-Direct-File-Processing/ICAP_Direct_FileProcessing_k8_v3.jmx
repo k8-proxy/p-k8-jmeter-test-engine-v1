@@ -281,7 +281,7 @@ File f = new File(inFileName);
 if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
 {
 
-log.info("Processing " + inFileName);
+log.info(&quot;Processing &quot; + inFileName);
 
 String command1 = &quot;&quot;;
 String command2 = &quot;&quot;;
@@ -404,12 +404,6 @@ while( (line = in.readLine()) != null) {
      log.info(&quot;My line is &quot;+line);
   }
 
-  if (!threadRebuildHash.equals(out_checksum)) {
-  	SampleResult.setSuccessful(false);
-     SampleResult.setResponseCode(&quot;555&quot;);
-     log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot;+out_checksum);
-  }
-  
   if (line.contains(&quot;ICAP/1.0 204&quot;)) {
      SampleResult.setResponseCode(&quot;204&quot;);
      SampleResult.setSuccessful(true);
@@ -494,6 +488,13 @@ while( (line = in.readLine()) != null) {
      SampleResult.setSuccessful(true);
      break;
   }
+    if (!threadRebuildHash.equals(out_checksum)) {
+  	SampleResult.setSuccessful(false);
+     SampleResult.setResponseCode(&quot;555&quot;);
+     log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot;+out_checksum);
+     break;
+  }
+  
 }
 
 in.close();
@@ -501,7 +502,7 @@ log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());
 
 }
 else {
-  log.info("CANNOT process " + inFileName);
+  log.info(&quot;CANNOT process &quot; + inFileName);
 }
 </stringProp>
             <stringProp name="scriptLanguage">java</stringProp>
@@ -544,7 +545,7 @@ outFileName=&quot;${outputPath}/&quot;+ uuid +&quot;_&quot; + threadFileName;
 File f = new File(outFileName); 
 if(f.exists() &amp;&amp; f.isFile() &amp;&amp; f.canRead() ) 
 {
-  log.error("Uploading " + outFileName)
+  log.error(&quot;Uploading &quot; + outFileName)
 
 try {
       MinioClient minioClient =
@@ -574,7 +575,7 @@ try {
 }
 else
 {
-  log.error("CANNOT upload " + outFileName)
+  log.error(&quot;CANNOT upload &quot; + outFileName)
 }    
     </stringProp>
           </JSR223Sampler>
