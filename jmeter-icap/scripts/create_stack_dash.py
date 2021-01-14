@@ -186,11 +186,11 @@ def run_using_ui(ui_json_params):
     __ui_set_tls_and_port_params(ui_config, ui_json_params['load_type'], ui_json_params['enable_tls'],
                                  ui_json_params['tls_ignore_error'], ui_json_params['port'])
 
-    dashboard_url, grafana_uid = main(ui_config, additional_delay)
+    dashboard_url, grafana_uid = main(ui_config, additional_delay, True)
 
-    #if bool(int(ui_config.store_results)):
-    #    results_analysis_thread = Thread(target=store_and_analyze_after_duration, args=(ui_config, grafana_uid))
-    #    results_analysis_thread.start()
+    if bool(int(ui_config.store_results)):
+        results_analysis_thread = Thread(target=store_and_analyze_after_duration, args=(ui_config, grafana_uid))
+        results_analysis_thread.start()
 
     return dashboard_url
 
@@ -245,7 +245,7 @@ def __ui_set_files_for_load_type(config):
         config.list = './ICAP-Proxy-Site/proxyfiles.csv'
 
 
-def main(config, additional_delay):
+def main(config, additional_delay, ui_run = False):
     dashboard_url = ''
     grafana_uid = ''
     if config.exclude_dashboard:
@@ -270,7 +270,7 @@ def main(config, additional_delay):
         delete_stack_thread = Thread(target=__start_delete_stack, args=(config, additional_delay))
         delete_stack_thread.start()
 
-    if config.store_results:
+    if not ui_run and config.store_results:
         print('Starting the analyzer thread')
         analyzer_thread = Thread(target=store_and_analyze_after_duration, args=(config, grafana_uid))
         analyzer_thread.start()
