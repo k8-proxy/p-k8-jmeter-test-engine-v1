@@ -4,56 +4,19 @@ from datetime import timedelta, datetime, timezone
 import delete_stack
 import create_stack
 import create_dashboard
-from dotenv import load_dotenv
 from aws_secrets import get_secret_value
 from threading import Thread
 from time import sleep
+from database_ops import database_insert_test
+from config_params import Config
+
+import uuid
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
 DELETE_TIME_OFFSET = 900
 
 # Interval for how often "time elapsed" messages are displayed for delete stack process
 MESSAGE_INTERVAL = 600
-
-
-class Config(object):
-    # Load configuration
-    BASEDIR = os.path.abspath(os.path.dirname(__file__))
-    load_dotenv(os.path.join(BASEDIR, 'config.env'), override=True)
-    try:
-        # these field names should not be changed as they correspond exactly to the names of create_stack's params.
-        aws_profile_name = os.getenv("AWS_PROFILE_NAME")
-        region = os.getenv("REGION")
-        total_users = int(os.getenv("TOTAL_USERS"))
-        users_per_instance = int(os.getenv("USERS_PER_INSTANCE"))
-        duration = os.getenv("DURATION")
-        list = os.getenv("TEST_DATA_FILE")
-        minio_url = os.getenv("MINIO_URL")
-        minio_external_url = os.getenv("MINIO_EXTERNAL_URL")
-        minio_access_key = os.getenv("MINIO_ACCESS_KEY")
-        minio_secret_key = os.getenv("MINIO_SECRET_KEY")
-        minio_input_bucket = os.getenv("MINIO_INPUT_BUCKET")
-        minio_output_bucket = os.getenv("MINIO_OUTPUT_BUCKET")
-        influxdb_url = os.getenv("INFLUXDB_URL")
-        prefix = os.getenv("PREFIX")
-        icap_server = os.getenv("ICAP_SERVER_URL")
-        grafana_url = os.getenv("GRAFANA_URL")
-        grafana_api_key = os.getenv("GRAFANA_API_KEY")
-        grafana_file = os.getenv("GRAFANA_FILE")
-        grafana_secret = os.getenv("GRAFANA_SECRET")
-        exclude_dashboard = os.getenv("EXCLUDE_DASHBOARD")
-        preserve_stack = os.getenv("PRESERVE_STACK")
-        icap_server_port = os.getenv("ICAP_SERVER_PORT")
-        enable_tls = os.getenv("ENABLE_TLS")
-        jmx_file_path = os.getenv("JMX_FILE_PATH")
-        tls_verification_method = os.getenv("TLS_VERIFICATION_METHOD")
-        proxy_static_ip = os.getenv("PROXY_STATIC_IP")
-        load_type = os.getenv("LOAD_TYPE")
-    except Exception as e:
-        print(
-            "Please create config.env file similar to config.env.sample or set environment variables for all variables in config.env.sample file")
-        print(str(e))
-        raise
 
 
 # set all possible arguments/options that can be input into the script
@@ -93,6 +56,9 @@ def __get_commandline_args():
 
     parser.add_argument('--influxdb_url', '-x', default=Config.influxdb_url,
                         help='Influx DB URL (default: "influxdb.influxdb.svc.cluster.local")')
+
+    parser.add_argument('--influx_host', '-ih', default=Config.influx_host,
+                        help=f'Influx DB host (default: {Config.influx_host})')
 
     parser.add_argument('--prefix', '-p', default=Config.prefix,
                         help='Prefix for stack name (default: "")')
@@ -138,6 +104,9 @@ def __get_commandline_args():
 
     parser.add_argument('--proxy_static_ip', '-proxy', default=Config.proxy_static_ip,
                         help='Static IP for when proxy is used')
+
+    parser.add_argument('--store_results', '-sr', action='store_true',
+                        help='Setting this option will cause all test runs to be recorded into influxdb')
 
     parser.add_argument('--load_type', '-load', default=Config.load_type,
                         help='Load type: Direct or Proxy')
@@ -220,6 +189,14 @@ def run_using_ui(ui_json_params):
 
     return dashboard_url
 
+def store_and_analyze_after_duration(config, grafana_uid):
+    start_time = str(datetime.now())
+    sleep(int(config.duration))
+    run_id = uuid.uuid4()
+    print("test completed, storing results to the database")
+    final_time = str(datetime.now())
+    database_insert_test(config, run_id, grafana_uid, start_time, final_time)
+    # Here the results analyzer will be called
 
 def stop_tests_using_ui(prefix=''):
 
@@ -271,7 +248,7 @@ def main(config, additional_delay, prefix, duration):
         print("Dashboard will not be created")
     else:
         print("Creating dashboard...")
-        dashboard_url = create_dashboard.main(config)
+        dashboard_url, grafana_uid = create_dashboard.main(config)
 
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
@@ -289,6 +266,10 @@ def main(config, additional_delay, prefix, duration):
         delete_stack_thread = Thread(target=__start_delete_stack, args=(additional_delay, prefix, duration))
         delete_stack_thread.start()
 
+    if config.store_results:
+        analyzer_thread = Thread(target=store_and_analyze_after_duration, args=(config, grafana_uid))
+        analyzer_thread.start()
+
     return dashboard_url
 
 
@@ -305,6 +286,7 @@ if __name__ == "__main__":
     Config.minio_input_bucket = args.minio_input_bucket
     Config.minio_output_bucket = args.minio_output_bucket
     Config.influxdb_url = args.influxdb_url
+    Config.influx_host = args.influx_host
     Config.prefix = args.prefix
     Config.icap_server = args.icap_server_url
     Config.grafana_url = args.grafana_url
@@ -327,8 +309,13 @@ if __name__ == "__main__":
         Config.preserve_stack = int(Config.preserve_stack) == 1
 
     Config.enable_tls = (int(args.enable_tls) == 1)
-
+    
     Config.jmx_file_path = args.jmx_file_path
+
+    if args.store_results:
+        Config.store_results = True
+    elif Config.store_results:
+        Config.store_results = int(Config.store_results) == 1
 
     # Use Grafana key obtained either from config.env or from AWS secrets. Key from config.env gets priority.
     # if not Config.grafana_api_key and not Config.grafana_secret:
