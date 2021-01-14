@@ -189,14 +189,14 @@ def run_using_ui(ui_json_params):
     dashboard_url, grafana_uid = main(ui_config, additional_delay, True)
 
     if bool(int(ui_config.store_results)):
-        results_analysis_thread = Thread(target=store_and_analyze_after_duration, args=(ui_config, grafana_uid))
+        results_analysis_thread = Thread(target=store_and_analyze_after_duration, args=(ui_config, grafana_uid, additional_delay))
         results_analysis_thread.start()
 
     return dashboard_url
 
-def store_and_analyze_after_duration(config, grafana_uid):
+def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
     start_time = str(datetime.now())
-    sleep(int(config.duration))
+    sleep(additional_delay + int(config.duration))
     run_id = uuid.uuid4()
     print("test completed, storing results to the database")
     final_time = str(datetime.now())
@@ -272,7 +272,7 @@ def main(config, additional_delay, ui_run = False):
 
     if not ui_run and config.store_results:
         print('Starting the analyzer thread')
-        analyzer_thread = Thread(target=store_and_analyze_after_duration, args=(config, grafana_uid))
+        analyzer_thread = Thread(target=store_and_analyze_after_duration, args=(config, grafana_uid, additional_delay))
         analyzer_thread.start()
 
     return dashboard_url, grafana_uid
