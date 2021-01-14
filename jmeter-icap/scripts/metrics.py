@@ -163,7 +163,7 @@ class InfluxDBMetrics():
 
         InfluxDBMetrics.init()
 
-        prefix = 'demo'
+        prefix = 'test'
         start_time = InfluxDBMetrics.initial_time(prefix)
         finish_time = InfluxDBMetrics.final_time(prefix)
         print('Initial time {}'.format(start_time))

@@ -329,15 +329,14 @@ class Main():
         print("TEST DURATION       {}".format(Main.duration))
         print("FILE LIST           {}".format(Main.filelist))
 
-        Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
-        Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
+
         print("MINIO URL           {}".format(Main.minio_url))
         print("MINIO EXTERNAL URL  {}".format(Main.minio_external_url))
         
         #print("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
         #print("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
         print("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
-        print("MINIO outPUT BUCKET {}".format(Main.minio_output_bucket))
+        print("MINIO OUTPUT BUCKET {}".format(Main.minio_output_bucket))
 
         Main.influxHost = Main.influxdb_url.replace('http://', '')
         Main.influxHost = Main.influxHost.split(':', 1)[0]
@@ -351,6 +350,7 @@ class Main():
         print("ENABLE TLS          {}".format(Main.enable_tls))
         print("TLS VERIFICATION    {}".format(Main.tls_verification_method))
 
+
         Main.get_microk8s()
         print("Micro k8s           {}".format(Main.microk8s))
 
@@ -359,6 +359,8 @@ class Main():
 
         Main.sanity_checks()
         Main.upload_to_minio(Main.filelist)
+        Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
+        Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
         Main.stop_jmeter_jobs()
         Main.start_jmeter_job()
 
