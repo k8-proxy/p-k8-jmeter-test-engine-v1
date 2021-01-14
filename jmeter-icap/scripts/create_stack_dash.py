@@ -188,9 +188,9 @@ def run_using_ui(ui_json_params):
 
     dashboard_url, grafana_uid = main(ui_config, additional_delay)
 
-    if bool(int(ui_config.store_results)):
-        results_analysis_thread = Thread(target=store_and_analyze_after_duration, args=(ui_config, grafana_uid))
-        results_analysis_thread.start()
+    #if bool(int(ui_config.store_results)):
+    #    results_analysis_thread = Thread(target=store_and_analyze_after_duration, args=(ui_config, grafana_uid))
+    #    results_analysis_thread.start()
 
     return dashboard_url
 
