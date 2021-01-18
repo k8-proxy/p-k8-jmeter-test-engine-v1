@@ -248,11 +248,6 @@ def __ui_set_files_for_load_type(config):
 def main(config, additional_delay, ui_run = False):
     dashboard_url = ''
     grafana_uid = ''
-    if config.exclude_dashboard:
-        print("Dashboard will not be created")
-    else:
-        print("Creating dashboard...")
-        dashboard_url, grafana_uid = create_dashboard.main(config)
 
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
     create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
@@ -269,6 +264,12 @@ def main(config, additional_delay, ui_run = False):
     else:
         delete_stack_thread = Thread(target=__start_delete_stack, args=(config, additional_delay))
         delete_stack_thread.start()
+
+    if config.exclude_dashboard:
+        print("Dashboard will not be created")
+    else:
+        print("Creating dashboard...")
+        dashboard_url, grafana_uid = create_dashboard.main(config)
 
     if not ui_run and config.store_results:
         print('Starting the analyzer thread')
