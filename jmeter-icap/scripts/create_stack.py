@@ -22,20 +22,20 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 class Main():
 
-    total_users = '100'
+    #total_users = '100'
     #users_per_instance = '25'
     #duration = '60'
     #filelist = ''
-    minio_url = 'http://minio-service.common:80'
-    minio_external_url = 'http://localhost:9000'
+    #minio_url = 'http://minio-service.common:80'
+    #minio_external_url = 'http://localhost:9000'
     minio_access_key = ''
     minio_secret_key = ''
-    minio_input_bucket = 'input'
-    minio_output_bucket = 'output'
-    influxdb_url = 'http://influxdb-service.common:80'
-    influxHost = 'influxdb-service.common'
-    prefix = 'test'
-    icap_server = 'icap02.glasswall-icap.com'
+    #minio_input_bucket = 'input'
+    #minio_output_bucket = 'output'
+    #influxdb_url = 'http://influxdb-service.common:80'
+    influxHost = ''
+    #prefix = 'test'
+    #icap_server = 'icap02.glasswall-icap.com'
     requests_memory = '768'
     requests_cpu = '300'
     limits_memory = '768'
@@ -44,10 +44,10 @@ class Main():
     Xmx_value = '512'
     parallelism = 1
     microk8s = False
-    icap_server_port = '1344'
+    #icap_server_port = '1344'
     #enable_tls = False
     #tls_verification_method = 'no-verify'
-    jmx_file_path = 'none'
+    #jmx_file_path = 'none'
     filelist_bucket = 'filelist'
     kubectl_string = ''
     #proxy_static_ip = ''
@@ -156,8 +156,8 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$number_of_threads$", str(Config.users_per_instance))
             Main.replace_in_file(jmeter_script_name,"$duration_in_seconds$", str(Config.duration))
             Main.replace_in_file(jmeter_script_name,"$minio_endpoint$", Config.minio_url)
-            Main.replace_in_file(jmeter_script_name,"$minio_access_key$", Config.minio_access_key)
-            Main.replace_in_file(jmeter_script_name,"$minio_secret_key$", Config.minio_secret_key)
+            Main.replace_in_file(jmeter_script_name,"$minio_access_key$", Main.minio_access_key)
+            Main.replace_in_file(jmeter_script_name,"$minio_secret_key$", Main.minio_secret_key)
             Main.replace_in_file(jmeter_script_name,"$minio_input_bucket$", Config.minio_input_bucket)
             Main.replace_in_file(jmeter_script_name,"$minio_output_bucket$", Config.minio_output_bucket)
             Main.replace_in_file(jmeter_script_name,"$influxdb_url$", Config.influxdb_url)
@@ -243,7 +243,7 @@ class Main():
             Main.replace_in_file('job-0.yaml','$limits_cpu$', Main.limits_cpu)
             Main.replace_in_file('job-0.yaml','$Xms_value$', Main.Xms_value)
             Main.replace_in_file('job-0.yaml','$Xmx_value$', Main.Xmx_value)
-            Main.replace_in_file('job-0.yaml','$prefix$', Main.prefix)
+            Main.replace_in_file('job-0.yaml','$prefix$', Config.prefix)
 
             os.system(Main.kubectl_string + "create -f job-0.yaml")
 
@@ -258,13 +258,13 @@ class Main():
     def upload_to_minio(file_path):
         try:
             logger.info('Uploading file {}.'.format(file_path))
-            s3 = boto3.resource('s3', endpoint_url=Main.minio_external_url, aws_access_key_id=Main.minio_access_key,
-                                aws_secret_access_key=Main.minio_secret_key, config=botocore.client.Config(signature_version='s3v4'))
+            s3 = boto3.resource('s3', endpoint_url=Config.minio_external_url, aws_access_key_id=Config.minio_access_key,
+                                aws_secret_access_key=Config.minio_secret_key, config=botocore.client.Config(signature_version='s3v4'))
             logger.debug('Checking if the Bucket to upload files exists or not.')
             if (s3.Bucket(Main.filelist_bucket) in s3.buckets.all()) == False:
                 logger.info('Bucket not Found. Creating Bucket.')
                 s3.create_bucket(Bucket=Main.filelist_bucket)
-            logger.debug('Uploading file to bucket {} minio {}'.format(Main.filelist_bucket, Main.minio_external_url))
+            logger.debug('Uploading file to bucket {} minio {}'.format(Main.filelist_bucket, Config.minio_external_url))
             s3.Bucket(Main.filelist_bucket).upload_file(file_path, 'files')
             #s3.Bucket(Main.filelist_bucket).download_file('files', 'files')
         except Exception as e:
@@ -291,26 +291,26 @@ class Main():
             #    Config.duration = arg
             #elif opt in ("-l", "--list"):
             #    Config.list = arg
-            elif opt in ("-m", "--minio_url"):
-                Main.minio_url = arg
-            elif opt in ("-me", "--minio_external_url"):
-                Main.minio_external_url = arg
-            elif opt in ("-a", "--minio_access_key"):
-                Main.minio_access_key = arg
-            elif opt in ("-s", "--minio_secret_key"):
-                Main.minio_secret_key = arg
-            elif opt in ("-i", "--minio_input_bucket"):
-                Main.minio_input_bucket = arg
-            elif opt in ("-o", "--minio_output_bucket"):
-                Main.minio_output_bucket = arg
-            elif opt in ("-x", "--influxdb_url"):
-                Main.influxdb_url = arg
-            elif opt in ("-p", "--prefix"):
-                Main.prefix = arg
-            elif opt in ("-v", "--icap_server"):
-                Main.icap_server = arg
-            elif opt in ("-port", "--icap_server_port"):
-                Main.icap_server_port = arg
+            #elif opt in ("-m", "--minio_url"):
+            #    Config.minio_url = arg
+            #elif opt in ("-me", "--minio_external_url"):
+            #    Config.minio_external_url = arg
+            #elif opt in ("-a", "--minio_access_key"):
+            #    Config.minio_access_key = arg
+            #elif opt in ("-s", "--minio_secret_key"):
+            #    Main.minio_secret_key = arg
+            #elif opt in ("-i", "--minio_input_bucket"):
+            #    Config.minio_input_bucket = arg
+            #elif opt in ("-o", "--minio_output_bucket"):
+            #    Config.minio_output_bucket = arg
+            #elif opt in ("-x", "--influxdb_url"):
+            #    Config.influxdb_url = arg
+            #elif opt in ("-p", "--prefix"):
+            #    Config.prefix = arg
+            #elif opt in ("-v", "--icap_server"):
+            #    Config.icap_server = arg
+            #elif opt in ("-port", "--icap_server_port"):
+            #    Config.icap_server_port = arg
             #elif opt in ("-et", "--enable_tls"):
             #    Config.enable_tls = arg
             #elif opt in ("-tls", "--tls_verification_method"):
@@ -331,22 +331,22 @@ class Main():
         print("FILE LIST           {}".format(Config.list))
 
 
-        print("MINIO URL           {}".format(Main.minio_url))
-        print("MINIO EXTERNAL URL  {}".format(Main.minio_external_url))
+        print("MINIO URL           {}".format(Config.minio_url))
+        print("MINIO EXTERNAL URL  {}".format(Config.minio_external_url))
         
-        #print("MINIO ACCESS KEY    {}".format(Main.minio_access_key))
-        #print("MINIO SECRET KEY    {}".format(Main.minio_secret_key))
-        print("MINIO INPUT BUCKET  {}".format(Main.minio_input_bucket))
-        print("MINIO OUTPUT BUCKET {}".format(Main.minio_output_bucket))
+        #print("MINIO ACCESS KEY    {}".format(Config.minio_access_key))
+        #print("MINIO SECRET KEY    {}".format(Config.minio_secret_key))
+        print("MINIO INPUT BUCKET  {}".format(Config.minio_input_bucket))
+        print("MINIO OUTPUT BUCKET {}".format(Config.minio_output_bucket))
 
-        Main.influxHost = Main.influxdb_url.replace('http://', '')
+        Main.influxHost = Config.influxdb_url.replace('http://', '')
         Main.influxHost = Main.influxHost.split(':', 1)[0]
-        print("INFLUXDB URL        {}".format(Main.influxdb_url))
+        print("INFLUXDB URL        {}".format(Config.influxdb_url))
         print("INFLUX HOST         {}".format(Main.influxHost))
-        print("PREFIX              {}".format(Main.prefix))
+        print("PREFIX              {}".format(Config.prefix))
 
-        print("ICAP SERVER         {}".format(Main.icap_server))
-        print("ICAP SERVER PORT    {}".format(Main.icap_server_port))
+        print("ICAP SERVER         {}".format(Config.icap_server))
+        print("ICAP SERVER PORT    {}".format(Config.icap_server_port))
 
         print("ENABLE TLS          {}".format(Config.enable_tls))
         print("TLS VERIFICATION    {}".format(Config.tls_verification_method))
@@ -360,8 +360,8 @@ class Main():
 
         Main.sanity_checks()
         Main.upload_to_minio(Config.list)
-        Main.minio_access_key = Main.minio_access_key.replace('&','&amp;')
-        Main.minio_secret_key = Main.minio_secret_key.replace('&','&amp;')
+        Main.minio_access_key = Config.minio_access_key.replace('&','&amp;')
+        Main.minio_secret_key = Config.minio_secret_key.replace('&','&amp;')
         Main.stop_jmeter_jobs()
         Main.start_jmeter_job()
 
