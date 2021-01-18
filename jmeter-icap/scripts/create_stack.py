@@ -295,6 +295,12 @@ class Main():
         print("JMX FILE PATH       {}".format(Main.config_copy.jmx_file_path))
         print("PROXY STATIC IP     {}".format(Main.config_copy.proxy_static_ip))
 
+        if Main.config_copy.sharepoint_ip:
+            print("SHAREPOINT IP     {}".format(Main.config_copy.sharepoint_ip))
+
+        if Main.config_copy.sharepoint_host_names:
+            print("SHAREPOINT HOSTS  {}".format(Main.config_copy.sharepoint_host_names))
+
         Main.sanity_checks()
         Main.upload_to_minio(Main.config_copy.list)
         Main.minio_access_key = Main.config_copy.minio_access_key.replace('&','&amp;')
