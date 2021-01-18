@@ -367,7 +367,7 @@ File outFile = new File(&quot;${outputPath}/&quot;+uuid+&quot;_&quot;+threadFile
  
 //Use MD5 algorithm
 MessageDigest out_Digest = MessageDigest.getInstance(&quot;SHA-256&quot;);
-String out_checksum=&quot;out&quot;;
+String out_checksum=&quot;not found&quot;;
  try {
 //Get the checksum
  out_checksum = getFileChecksum(out_Digest, outFile);
@@ -473,7 +473,7 @@ while( (line = in.readLine()) != null) {
      break;
   }
 
-   if (line.contains(&quot;Failed to connect to icap server&quot;)) {
+   if (line.contains(&quot;Failed to connect to icap server&quot;)||line.contains(&quot;failed/timedout&quot;)) {
      SampleResult.setResponseCode(&quot;522&quot;);
      SampleResult.setResponseMessage(&quot;522 Failed to connect to icap server&quot;);
      log.info(&quot;Response Code is 522&quot;);
@@ -488,7 +488,7 @@ while( (line = in.readLine()) != null) {
      SampleResult.setSuccessful(true);
      break;
   }
-    if (!threadRebuildHash.equals(out_checksum)) {
+    if (!threadRebuildHash.equals(out_checksum)&amp;&amp;!out_checksum.equals(&quot;not found&quot;)) {
   	SampleResult.setSuccessful(false);
      SampleResult.setResponseCode(&quot;555&quot;);
      log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot;+out_checksum);
