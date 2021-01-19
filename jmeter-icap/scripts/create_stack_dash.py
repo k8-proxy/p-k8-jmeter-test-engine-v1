@@ -117,6 +117,15 @@ def __get_commandline_args():
     parser.add_argument('--grafana_password', '-pw', default=Config.grafana_password,
                         help='Load type: Direct or Proxy')
 
+    parser.add_argument('--sharepoint_endpoint_url', '-spurl', default=Config.sharepoint_endpoint_url,
+                        help='Sharepoint Endpoint URL')
+
+    parser.add_argument('--sharepoint_ip', '-spip', default=Config.sharepoint_ip,
+                        help='Sharepoint IP address to use in hosts file')
+
+    parser.add_argument('--sharepoint_host_names', '-', default=Config.sharepoint_host_names,
+                        help='SharePoint Hostnames to use in hosts file')
+
     return parser.parse_args()
 
 
@@ -177,7 +186,8 @@ def run_using_ui(ui_json_params):
             ui_config.proxy_static_ip = ui_json_params['icap_endpoint_url']
         elif ui_json_params['load_type'] == "Proxy SharePoint":
             ui_config.load_type = 'SharePoint'
-            sharepoint_field_input = str(ui_json_params['icap_endpoint_url'])
+            ui_config.sharepoint_endpoint_url = ui_json_params['icap_endpoint_url']
+            sharepoint_field_input = str(ui_json_params['sharepoint_hosts'])
             (sharepoint_ip, sharepoint_hosts) = sharepoint_field_input.split(maxsplit=1)
             ui_config.sharepoint_ip = sharepoint_ip
             ui_config.sharepoint_host_names = sharepoint_hosts
@@ -333,6 +343,9 @@ if __name__ == "__main__":
     Config.load_type = args.load_type
     Config.grafana_username = args.grafana_username
     Config.grafana_password = args.grafana_password
+    Config.sharepoint_endpoint_url = args.sharepoint_endpoint_url
+    Config.sharepoint_ip = args.sharepoint_ip
+    Config.sharepoint_host_names = args.sharepoint_host_names
 
     # these are flag/boolean arguments
     if args.exclude_dashboard:
