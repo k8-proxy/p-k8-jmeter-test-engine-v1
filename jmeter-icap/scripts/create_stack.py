@@ -111,6 +111,15 @@ class Main():
                 print("ERROR: Invalid Proxy IP address {}".format(Main.config_copy.proxy_static_ip))
                 exit(1)
 
+        if Main.config_copy.sharepoint_ip:
+            try:
+                if not type(ip_address(Main.config_copy.sharepoint_ip)) is IPv4Address:
+                    print("ERROR: Invalid Sharepoint IP address {}".format(Main.config_copy.sharepoint_ip))
+                    exit(1)
+            except Exception as e:
+                print(e)
+                exit(1)
+
     @staticmethod
     def stop_jmeter_jobs():
         try:
