@@ -1,11 +1,10 @@
 /*
     This service is responsible for querying the database and storing retrieved data for use in other componenets
 */
-
+import { AppSettings } from './../app settings/AppSettings';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-import { AppSettings } from '../app settings/AppSettings';
 
 export interface TestRowElement {
     position: number;
@@ -77,7 +76,7 @@ export class SharedService {
 
     buildResultsDataRow(dataRow, columnArray): ResultsRowElement {
         let _testName = this.buildTestName(dataRow[this.getDataItemIndex('Prefix', columnArray)], dataRow[this.getDataItemIndex('LoadType', columnArray)]);
-        let _startTime = new Date(dataRow[this.getDataItemIndex('StartTime', columnArray)]);
+        let _startTime = new Date(dataRow[this.getDataItemIndex('time', columnArray)]);
         let _runId = dataRow[this.getDataItemIndex('RunId', columnArray)];
         let _duration = dataRow[this.getDataItemIndex('Duration', columnArray)];
         let _rampUp = dataRow[this.getDataItemIndex('RampUp', columnArray)];
@@ -88,6 +87,7 @@ export class SharedService {
         let _averageResponseTime = dataRow[this.getDataItemIndex('AverageResponseTime', columnArray)];
         let _maxConcurrentPods = dataRow[this.getDataItemIndex('TotalUsers', columnArray)];
         let grafanaUid = dataRow[this.getDataItemIndex('GrafanaUid', columnArray)];
+        _startTime = new Date(_startTime.getTime() - (parseFloat(_duration) * 1000))
         let _dashboardUrl = this.buildGrafanaLink(dataRow[this.getDataItemIndex('Prefix', columnArray)], dataRow[this.getDataItemIndex('LoadType', columnArray)], _startTime, _duration, grafanaUid);
         let _status = dataRow[this.getDataItemIndex('Status', columnArray)]
         let row: ResultsRowElement = {
@@ -169,17 +169,20 @@ export class SharedService {
 
     public buildTestName(prefix: string, loadType: string): string {
         let name = prefix;
-        if (loadType === "Direct") {
-            name += " ICAP Live Performance Dashboard"
-        } else if (loadType === "Proxy") {
-            name += " Proxy Site Live Performance Dashboard"
+        //in order: Direct, Proxy Offline, Proxy SharePoint
+        if (loadType === AppSettings.loadTypes[0]) {
+            name += " " + AppSettings.testNames[0];
+        } else if (loadType === AppSettings.loadTypes[1]) {
+            name += " " + AppSettings.testNames[1];
+        } else if (loadType === AppSettings.loadTypes[2]) {
+            name += " " + AppSettings.testNames[2];
         }
         return name;
     }
 
-    public buildGrafanaLink(prefix: string, loadType: string, startTime: Date, duration: number, grafanaUid: string) {
+    public buildGrafanaLink(prefix: string, loadType: string, startTime: Date, runTime: number, grafanaUid: string) {
         let start = startTime.getTime(); //gets time in epoch, for use when setting grafana time window
-        let end = start + (duration * 1000);
+        let end = start + (runTime * 1000);
         let name = prefix;
         if (loadType === "Direct") {
             name += "-icap-live-performance-dashboard"
@@ -187,12 +190,6 @@ export class SharedService {
             name += "-proxy-site-live-performance-dashboard"
         }
 
-        if (!this.grafanaUrl.startsWith("http://")) {
-            this.grafanaUrl = "http://" + this.grafanaUrl;
-        }
-        if (!this.grafanaUrl.endsWith('/')) {
-            this.grafanaUrl += '/';
-        }
         let link = this.grafanaUrl + 'd/' + grafanaUid + '/' + name + "?&from=" + start + "&to=" + end;
         return link;
     }
