@@ -221,11 +221,12 @@ class Main():
                 Sharepoint.main(Main.config_copy, 'job-0.yaml')
             elif Main.config_copy.load_type == 'Proxy':
                 shutil.copyfile('jmeter-proxy-job-tmpl.yaml','job-0.yaml')
-                Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.proxy_static_ip)
+                Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.config_copy.proxy_static_ip)
                 proxy_sites.Main.file_path = Main.config_copy.list
                 proxy_sites.Main.yaml_file = 'job-0.yaml'
                 proxy_sites.Main.get_domains()
                 proxy_sites.Main.update_yaml()
+                Sharepoint.main(Main.config_copy, 'job-0.yaml')
 
             Main.parallelism = math.ceil(Main.config_copy.total_users / Main.config_copy.users_per_instance)
             print("Number of pods to be created: {}".format(Main.parallelism))
