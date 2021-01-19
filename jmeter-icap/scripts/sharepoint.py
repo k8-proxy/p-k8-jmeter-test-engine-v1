@@ -9,7 +9,7 @@ from config_params import Config
 logger = logging.getLogger('sharepoint')
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
-class Main():
+class Sharepoint():
 
     yaml_file = ''
     domains = set()
@@ -23,12 +23,12 @@ class Main():
 
     @staticmethod
     def get_domains():
-        if not Main.config_copy.sharepoint_host_names:
+        if not Sharepoint.config_copy.sharepoint_host_names:
             return
-        domain_list = Main.config_copy.sharepoint_host_names.split(' ')
+        domain_list = Sharepoint.config_copy.sharepoint_host_names.split(' ')
         for item in domain_list:
-            if Main.isValidDomain(item):
-                Main.domains.add(item)
+            if Sharepoint.isValidDomain(item):
+                Sharepoint.domains.add(item)
 
     @staticmethod
     def isValidDomain(str):
@@ -57,23 +57,20 @@ class Main():
     @staticmethod
     def update_yaml():
         # check if there are valid domains in the set
-        if len(Main.domains) == 0:
+        if len(Sharepoint.domains) == 0:
             return
 
         try:
-            with open(Main.yaml_file, 'r') as file:
+            with open(Sharepoint.yaml_file, 'r') as file:
                 data = yaml.load(file, Loader=yaml.FullLoader)
 
                 hostAliases = {
-                    'hostAliases': [{'ip': Main.config_copy.sharepoint_ip, 'hostnames': list(Main.domains)}]
+                    'hostAliases': [{'ip': Sharepoint.config_copy.sharepoint_ip, 'hostnames': list(Sharepoint.domains)}]
                 }
 
-                #print(data['spec']['template']['spec'])
-                #print('\n\n')
                 data['spec']['template']['spec'].update(hostAliases)
-                #print(data['spec']['template']['spec'])
 
-                with open(Main.yaml_file, "w") as yaml_file:
+                with open(Sharepoint.yaml_file, "w") as yaml_file:
                     yaml.dump(data, yaml_file)
 
         except Exception as e:
@@ -92,15 +89,13 @@ class Main():
         if not config.sharepoint_host_names:
             return
 
-        Main.log_level(LOG_LEVEL)
-        #print("{}".format(config.sharepoint_ip))        
-        #print("{}".format(config.sharepoint_host_names))    
-        Main.verify_file(yaml_file)
-        Main.yaml_file = yaml_file
-        Main.config_copy = config
-        Main.get_domains()
-        Main.update_yaml()
+        Sharepoint.log_level(LOG_LEVEL)
+        Sharepoint.verify_file(yaml_file)
+        Sharepoint.yaml_file = yaml_file
+        Sharepoint.config_copy = config
+        Sharepoint.get_domains()
+        Sharepoint.update_yaml()
 
 if __name__ == "__main__":
-    Main.main(Config(), 'job-0.yaml')
-    #Main.main(Config(), 'jmeter-proxy-job-tmpl.yaml')
+    Sharepoint.main(Config(), 'job-0.yaml')
+    #Sharepoint.main(Config(), 'jmeter-proxy-job-tmpl.yaml')

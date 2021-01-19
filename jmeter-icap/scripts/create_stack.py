@@ -15,6 +15,7 @@ from botocore.exceptions import ClientError
 from ipaddress import ip_address, IPv4Address
 import proxy_sites
 from config_params import Config
+from sharepoint import Sharepoint
 
 logger = logging.getLogger('create_stack')
 
@@ -217,6 +218,7 @@ class Main():
 
             if Main.config_copy.load_type == 'Direct':
                 shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
+                Sharepoint.main(Main.config_copy, 'job-0.yaml')
             elif Main.config_copy.load_type == 'Proxy':
                 shutil.copyfile('jmeter-proxy-job-tmpl.yaml','job-0.yaml')
                 Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.proxy_static_ip)
