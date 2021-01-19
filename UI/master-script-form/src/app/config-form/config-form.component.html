@@ -129,4 +129,7 @@
     <div *ngIf="formSubmitted && !hideSubmitMessages" class="alert alert-primary" role="alert">
         Test submitted. Generating Load...
     </div>
+    <div *ngIf="gotResponse && !hideSubmitMessages" class="alert alert-success" role="alert">
+        Success! View test dashboard below.
+    </div>
 </form>
