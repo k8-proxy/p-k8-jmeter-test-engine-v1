@@ -170,9 +170,14 @@ def run_using_ui(ui_json_params):
         ui_config.load_type = ui_json_params['load_type']
         if ui_json_params['load_type'] == "Direct":
             ui_config.icap_server = ui_json_params['icap_endpoint_url']
-        elif ui_json_params['load_type'] == "Proxy":
+        elif ui_json_params['load_type'] == "Proxy Offline":
             # this comes as "icap_endpoint_url" from front end, but may also represent proxy IP if proxy load selected
             ui_config.proxy_static_ip = ui_json_params['icap_endpoint_url']
+        elif ui_json_params['load_type'] == "Proxy SharePoint":
+            sharepoint_field_input = str(ui_json_params['icap_endpoint_url'])
+            (sharepoint_ip, sharepoint_hosts) = sharepoint_field_input.split(maxsplit=1)
+            ui_config.sharepoint_ip = sharepoint_ip
+            ui_config.sharepoint_host_names = sharepoint_hosts
 
     __ui_set_files_for_load_type(ui_config)
 
@@ -239,10 +244,15 @@ def __ui_set_files_for_load_type(config):
         config.grafana_file = './ICAP-Direct-File-Processing/k8-test-engine-dashboard.json'
         config.list = './ICAP-Direct-File-Processing/gov_uk_files.csv'
 
-    elif config.load_type == "Proxy":
+    elif config.load_type == "Proxy Offline":
         config.jmx_file_path = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
         config.grafana_file = './ICAP-Proxy-Site/ProxySite_Dashboard_Template.json'
         config.list = './ICAP-Proxy-Site/proxyfiles.csv'
+
+    elif config.load_type == "Proxy SharePoint":
+        config.jmx_file_path = './ICAP-Sharepoint-Site/ICAP-Sharepoint-Upload-Download-v1.jmx'
+        config.grafana_file = './ICAP-Sharepoint-Site/Sharepoint-Demo-Dashboard.json'
+        config.list = './ICAP-Sharepoint-Site/sharepoint_files.csv'
 
 
 def main(config, additional_delay, ui_run = False):
@@ -278,6 +288,7 @@ def main(config, additional_delay, ui_run = False):
 
     return dashboard_url, grafana_uid
 
+
 def handle_grafana_authentication(config):
 
     # Use Grafana key obtained either from config.env or from AWS secrets, or use username/password. Key from config.env/AWS gets priority.
@@ -291,6 +302,7 @@ def handle_grafana_authentication(config):
         config.grafana_api_key = secret_val
         if secret_val:
             print("Grafana secret key retrieved.")
+
 
 if __name__ == "__main__":
     args = __get_commandline_args()
