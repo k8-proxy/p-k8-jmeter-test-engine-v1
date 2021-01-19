@@ -1,12 +1,12 @@
 <h1><img src="assets/gwl.png"> ICAP Performance Testing </h1>
 
-<a href="https://github.com/k8-proxy/p-k8-jmeter-test-engine/blob/master/instructions/How%20to%20generate%20load%20with%20OVA%20utilizing%20user%20interface.md" target="_blank" style="float: right;">Instructions on How to Generate Load</a>
+<a href="https://github.com/k8-proxy/aws-jmeter-test-engine/blob/master/jmeter-icap/instructions/How-to-Generate-Load-with-OVA.md" target="_blank" style="float: right;">Instructions on How to Generate Load</a>
 
 <form [formGroup]="configForm" (ngSubmit)="onSubmit()" name="configForm">
     <div class="form-group">
         <label>Total Users</label>
         <input type="text" class="form-control" formControlName="total_users" placeholder="Default: 25">
-        <small id="totalUsersHelp" class="form-text text-muted">Total number of users in the test (minimum 1 user, maximum 400 users)</small>
+        <small id="totalUsersHelp" class="form-text text-muted">Total number of users in the test (minimum 1 user, maximum 4000 users)</small>
         <div *ngIf="total_users.dirty && total_users.invalid">
             <div class="alert alert-danger" *ngIf="total_users.errors.pattern">Please provide only number values.</div>
             <div class="alert alert-danger" *ngIf="total_users.errors.cannotContainSpaces">Field cannot contain spaces.
@@ -61,7 +61,7 @@
 
     <div class="form-group">
         <label>{{ LoadTypeFieldTitle }}</label>
-        <input type="text" class="form-control" formControlName="icap_endpoint_url" placeholder="{{ LoadTypeFieldExample }}">
+        <input type="text" class="form-control" formControlName="icap_endpoint_url" placeholder="Required">
         <small class="form-text text-muted">*this field is required</small>
         <div *ngIf="icap_endpoint_url.invalid">
             <div class="alert alert-danger" *ngIf="icap_endpoint_url.touched && icap_endpoint_url.errors.required">This field is required.</div>
@@ -69,6 +69,16 @@
             <div class="alert alert-danger" *ngIf="icap_endpoint_url.touched && icap_endpoint_url.errors.pattern">Please provide a valid IP address.</div>
         </div>
     </div>
+
+    <div *ngIf="enableSharePointHostsField" class="form-group">
+        <label>SharePoint Proxy IP and Hostnames*</label>
+        <input type="text" class="form-control" formControlName="sharepoint_hosts" placeholder="Ex: 12.34.56.78 example1.sharepoint.com example2.sharepoint.com...">
+        <small class="form-text text-muted">*this field is required</small>
+        <div *ngIf="sharepoint_hosts.invalid && sharepoint_hosts.touched">
+            <div class="alert alert-danger" *ngIf="sharepoint_hosts.errors.required">This field is required.</div>
+        </div>
+    </div>
+    
 
     <div class="form-group">
         <label>Port</label>
@@ -118,8 +128,5 @@
 
     <div *ngIf="formSubmitted && !hideSubmitMessages" class="alert alert-primary" role="alert">
         Test submitted. Generating Load...
-    </div>
-    <div *ngIf="gotResponse && !hideSubmitMessages" class="alert alert-success" role="alert">
-        Success! View test dashboard below.
     </div>
 </form>
