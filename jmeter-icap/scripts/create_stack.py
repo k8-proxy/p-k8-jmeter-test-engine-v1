@@ -218,7 +218,7 @@ class Main():
 
             if Main.config_copy.load_type == 'Direct':
                 shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
-                Sharepoint.main(Main.config_copy, 'job-0.yaml')
+                #Sharepoint.main(Main.config_copy, 'job-0.yaml')
             elif Main.config_copy.load_type == 'Proxy':
                 shutil.copyfile('jmeter-proxy-job-tmpl.yaml','job-0.yaml')
                 Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.config_copy.proxy_static_ip)
