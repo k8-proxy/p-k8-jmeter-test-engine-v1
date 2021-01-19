@@ -64,11 +64,14 @@ class Sharepoint():
             with open(Sharepoint.yaml_file, 'r') as file:
                 data = yaml.load(file, Loader=yaml.FullLoader)
 
-                hostAliases = {
-                    'hostAliases': [{'ip': Sharepoint.config_copy.sharepoint_ip, 'hostnames': list(Sharepoint.domains)}]
-                }
-
-                data['spec']['template']['spec'].update(hostAliases)
+                if 'hostAliases' in data['spec']['template']['spec'].keys():
+                    new_entry = {'ip': Sharepoint.config_copy.sharepoint_ip, 'hostnames': list(Sharepoint.domains)}
+                    data['spec']['template']['spec']['hostAliases'].append(new_entry)
+                else:
+                    hostAliases = {
+                        'hostAliases': [{'ip': Sharepoint.config_copy.sharepoint_ip, 'hostnames': list(Sharepoint.domains)}]
+                    }
+                    data['spec']['template']['spec'].update(hostAliases)
 
                 with open(Sharepoint.yaml_file, "w") as yaml_file:
                     yaml.dump(data, yaml_file)
@@ -97,5 +100,5 @@ class Sharepoint():
         Sharepoint.update_yaml()
 
 if __name__ == "__main__":
-    Sharepoint.main(Config(), 'job-0.yaml')
-    #Sharepoint.main(Config(), 'jmeter-proxy-job-tmpl.yaml')
+    Sharepoint.main(Config(), 'jmeter-job-tmpl copy.yaml')
+    Sharepoint.main(Config(), 'jmeter-proxy-job-tmpl copy.yaml')
