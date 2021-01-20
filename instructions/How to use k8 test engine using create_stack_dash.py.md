@@ -67,6 +67,9 @@ PRESERVE_STACK=0
 ICAP_SERVER_PORT=1344
 ENABLE_TLS=0
 TLS_VERIFICATION_METHOD=no-verify
+STORE_RESULTS=1
+GRAFANA_USERNAME=admin
+GRAFANA_PASSWORD=admin
 ```
 
 These parameters have corresponding options that can be used during script execution, they do not have to be set in config.env. Many of the parameters above are also optional, they can be omitted. Any options input manually via the command line will override options within the config.env file. For example, if the config.env file is set to allow dashboard creation:
@@ -197,19 +200,65 @@ This takes no arguments. If set (ex: create_stack_dash -s), it will prevent the 
 This takes no arguments. If set (ex: create_stack_dash -x), a Grafana dashboard will not be created when the script is run.
 </td>
 </tr>
+<tr>
 <td> --icap_server_port, -port </td> <td>ICAP_SERVER_PORT</td>
 <td>
 Port used for ICAP server
 </td>
 </tr>
+<tr>
 <td> --tls_verification_method, -tls </td> <td>ENABLE_TLS</td>
 <td>
 Whether or not to enable TLS (=0: disabled, =1: enabled)
 </td>
 </tr>
+<tr>
 <td> --enable_tls, -et </td> <td>TLS_VERIFICATION_METHOD</td>
 <td>
 Method used for TLS verification
+</td>
+</tr>
+<tr>
+<td> --load_type, -load </td> <td>LOAD_TYPE</td>
+<td>
+Type of load being generated: "Direct", "Proxy" or "SharePoint"
+</td>
+</tr>
+<tr>
+<tr>
+<td> --store_results, -sr </td> <td>STORE_RESULTS</td>
+<td>
+If set through args (ex: create_stack_dash -sr), test results will not be stored in the database. In config.env, =0: false, =1: true.
+</td>
+</tr>
+<tr>
+<td> --grafana_username, -un </td> <td>GRAFANA_USERNAME</td>
+<td>
+Grafana username to use for Grafana dashboard creation. If this is provided, the grafana_password parameter must also be passed to the script via args or config.env. If an API key is provided, this will not be used.
+</td>
+</tr>
+<tr>
+<td> --grafana_password, -pw </td> <td>GRAFANA_PASSWORD</td>
+<td>
+Grafana password to use for Grafana dashboard creation. If this is provided, the grafana_username parameter must also be passed to the script via args or config.env. If an API key is provided, this will not be used.
+</td>
+</tr>
+<tr>
+<td> --sharepoint_endpoint_url, -spurl </td> <td>SHAREPOINT_ENDPOINT_URL</td>
+<td>
+Sharepoint Endpoint URL
+</td>
+</tr>
+<tr>
+<td> --sharepoint_ip, -spip </td> <td>SHAREPOINT_IP</td>
+<td>
+Sharepoint IP address
+</td>
+</tr>
+<tr>
+<td> --sharepoint_host_names, -sphosts </td> <td>SHAREPOINT_HOST_NAMES</td>
+<td>
+SharePoint Hostnames
 </td>
 </tr>
 </table>
