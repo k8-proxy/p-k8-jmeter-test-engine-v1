@@ -112,18 +112,15 @@ def __get_commandline_args():
                         help='Load type: Direct or Proxy')
 
     parser.add_argument('--grafana_username', '-un', default=Config.grafana_username,
-                        help='Load type: Direct or Proxy')
+                        help='Grafana Username')
 
     parser.add_argument('--grafana_password', '-pw', default=Config.grafana_password,
-                        help='Load type: Direct or Proxy')
-
-    parser.add_argument('--sharepoint_endpoint_url', '-spurl', default=Config.sharepoint_endpoint_url,
-                        help='Sharepoint Endpoint URL')
+                        help='Grafana Password')
 
     parser.add_argument('--sharepoint_ip', '-spip', default=Config.sharepoint_ip,
                         help='Sharepoint IP address to use in hosts file')
 
-    parser.add_argument('--sharepoint_host_names', '-', default=Config.sharepoint_host_names,
+    parser.add_argument('--sharepoint_host_names', '-sphosts', default=Config.sharepoint_host_names,
                         help='SharePoint Hostnames to use in hosts file')
 
     return parser.parse_args()
@@ -186,9 +183,15 @@ def run_using_ui(ui_json_params):
             ui_config.proxy_static_ip = ui_json_params['icap_endpoint_url']
         elif ui_json_params['load_type'] == "Proxy SharePoint":
             ui_config.load_type = 'SharePoint'
-            ui_config.sharepoint_endpoint_url = ui_json_params['icap_endpoint_url']
+            ui_config.icap_server = ui_json_params['icap_endpoint_url']
             sharepoint_field_input = str(ui_json_params['sharepoint_hosts'])
-            (sharepoint_ip, sharepoint_hosts) = sharepoint_field_input.split(maxsplit=1)
+            sharepoint_ip = sharepoint_field_input #set it to the field's input, it will later contain on the IP address if hosts are provided
+            sharepoint_hosts = ""
+            try:
+                (sharepoint_ip, sharepoint_hosts) = sharepoint_field_input.split(maxsplit=1)
+            except ValueError:
+                print("Please insert both sharepoint IP and Sharepoint Hosts")
+
             ui_config.sharepoint_ip = sharepoint_ip
             ui_config.sharepoint_host_names = sharepoint_hosts
 
@@ -343,7 +346,6 @@ if __name__ == "__main__":
     Config.load_type = args.load_type
     Config.grafana_username = args.grafana_username
     Config.grafana_password = args.grafana_password
-    Config.sharepoint_endpoint_url = args.sharepoint_endpoint_url
     Config.sharepoint_ip = args.sharepoint_ip
     Config.sharepoint_host_names = args.sharepoint_host_names
 

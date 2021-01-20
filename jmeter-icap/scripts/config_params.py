@@ -40,7 +40,6 @@ class Config(object):
         load_type = os.getenv("LOAD_TYPE")
         grafana_username = os.getenv("GRAFANA_USERNAME",'admin')
         grafana_password = os.getenv("GRAFANA_PASSWORD",'admin@123')
-        sharepoint_endpoint_url = os.getenv("SHAREPOINT_ENDPOINT_URL", '')
         sharepoint_ip = os.getenv("SHAREPOINT_IP",'')
         sharepoint_host_names = os.getenv("SHAREPOINT_HOST_NAMES",'')
     except Exception as e:
