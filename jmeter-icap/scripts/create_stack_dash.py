@@ -123,7 +123,7 @@ def __get_commandline_args():
     parser.add_argument('--sharepoint_ip', '-spip', default=Config.sharepoint_ip,
                         help='Sharepoint IP address to use in hosts file')
 
-    parser.add_argument('--sharepoint_host_names', '-', default=Config.sharepoint_host_names,
+    parser.add_argument('--sharepoint_host_names', '-sphosts', default=Config.sharepoint_host_names,
                         help='SharePoint Hostnames to use in hosts file')
 
     return parser.parse_args()
