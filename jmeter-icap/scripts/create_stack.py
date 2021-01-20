@@ -99,11 +99,11 @@ class Main():
             print("ERROR: File {} does not exist".format(Main.config_copy.jmx_file_path))
             exit(1)
 
-        load_type_values = ['Direct','Proxy']
+        load_type_values = ['Direct','Proxy Offline','Proxy SharePoint']
         if not Main.config_copy.load_type in load_type_values:
             print("ERROR: Unsupported load type: {}".format(Main.config_copy.load_type))
             exit(1)
-        elif Main.config_copy.load_type == 'Proxy':
+        elif Main.config_copy.load_type == 'Proxy Offline':
             try: 
                 if not type(ip_address(Main.config_copy.proxy_static_ip)) is IPv4Address:
                     print("ERROR: Invalid Proxy IP address {}".format(Main.config_copy.proxy_static_ip))
@@ -111,14 +111,13 @@ class Main():
             except ValueError: 
                 print("ERROR: Invalid Proxy IP address {}".format(Main.config_copy.proxy_static_ip))
                 exit(1)
-
-        if Main.config_copy.sharepoint_ip:
-            try:
+        elif Main.config_copy.load_type == 'Proxy SharePoint':
+            try: 
                 if not type(ip_address(Main.config_copy.sharepoint_ip)) is IPv4Address:
-                    print("ERROR: Invalid Sharepoint IP address {}".format(Main.config_copy.sharepoint_ip))
+                    print("ERROR: Invalid Sharepoint IP address {}".format(Main.config_copy.proxy_static_ip))
                     exit(1)
-            except Exception as e:
-                print(e)
+            except ValueError: 
+                print("ERROR: Invalid Sharepoint IP address {}".format(Main.config_copy.proxy_static_ip))
                 exit(1)
 
     @staticmethod
@@ -218,15 +217,19 @@ class Main():
 
             if Main.config_copy.load_type == 'Direct':
                 shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
-                #Sharepoint.main(Main.config_copy, 'job-0.yaml')
-            elif Main.config_copy.load_type == 'Proxy':
+                #print("Direct detected")
+            elif Main.config_copy.load_type == 'Proxy Offline':
                 shutil.copyfile('jmeter-proxy-job-tmpl.yaml','job-0.yaml')
                 Main.replace_in_file('job-0.yaml','$proxy-static-ip$', Main.config_copy.proxy_static_ip)
                 proxy_sites.Main.file_path = Main.config_copy.list
                 proxy_sites.Main.yaml_file = 'job-0.yaml'
                 proxy_sites.Main.get_domains()
                 proxy_sites.Main.update_yaml()
+                #print("Proxy Offline detected")
+            elif Main.config_copy.load_type == 'Proxy SharePoint':
+                shutil.copyfile('jmeter-job-tmpl.yaml','job-0.yaml')
                 Sharepoint.main(Main.config_copy, 'job-0.yaml')
+                #print("Proxy SharePoint detected")
 
             Main.parallelism = math.ceil(Main.config_copy.total_users / Main.config_copy.users_per_instance)
             print("Number of pods to be created: {}".format(Main.parallelism))
