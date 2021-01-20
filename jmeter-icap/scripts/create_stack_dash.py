@@ -165,7 +165,7 @@ def run_using_ui(ui_json_params):
     additional_delay = 0
     # Set Config values gotten from front end
     if ui_json_params['total_users']:
-        ui_config.total_users = ui_json_params['total_users']
+        ui_config.total_users = int(ui_json_params['total_users'])
     if ui_json_params['ramp_up_time']:
         ui_config.ramp_up_time = ui_json_params['ramp_up_time']
     if ui_json_params['duration']:
@@ -173,16 +173,13 @@ def run_using_ui(ui_json_params):
     if ui_json_params['prefix']:
         ui_config.prefix = ui_json_params['prefix']
     if ui_json_params['icap_endpoint_url']:
-
+        ui_config = ui_json_params['load_type']
         if ui_json_params['load_type'] == "Direct":
-            ui_config.load_type = 'Direct'
             ui_config.icap_server = ui_json_params['icap_endpoint_url']
         elif ui_json_params['load_type'] == "Proxy Offline":
             # this comes as "icap_endpoint_url" from front end, but may also represent proxy IP if proxy load selected
-            ui_config.load_type = 'Proxy'
             ui_config.proxy_static_ip = ui_json_params['icap_endpoint_url']
         elif ui_json_params['load_type'] == "Proxy SharePoint":
-            ui_config.load_type = 'SharePoint'
             ui_config.icap_server = ui_json_params['icap_endpoint_url']
             sharepoint_field_input = str(ui_json_params['sharepoint_hosts'])
             sharepoint_ip = sharepoint_field_input #set it to the field's input, it will later contain on the IP address if hosts are provided
@@ -215,6 +212,7 @@ def run_using_ui(ui_json_params):
 
     return dashboard_url
 
+
 def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
     start_time = str(datetime.now())
     sleep(additional_delay + int(config.duration))
@@ -222,6 +220,7 @@ def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
     print("test completed, storing results to the database")
     final_time = str(datetime.now())
     database_insert_test(config, run_id, grafana_uid, start_time, final_time)
+
 
 def stop_tests_using_ui(prefix=''):
 
@@ -260,12 +259,12 @@ def __ui_set_files_for_load_type(config):
         config.grafana_file = './ICAP-Direct-File-Processing/k8-test-engine-dashboard.json'
         config.list = './ICAP-Direct-File-Processing/gov_uk_files.csv'
 
-    elif config.load_type == "Proxy":
+    elif config.load_type == "Proxy Offline":
         config.jmx_file_path = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
         config.grafana_file = './ICAP-Proxy-Site/ProxySite_Dashboard_Template.json'
         config.list = './ICAP-Proxy-Site/proxyfiles.csv'
 
-    elif config.load_type == "SharePoint":
+    elif config.load_type == "Proxy SharePoint":
         config.jmx_file_path = './ICAP-Sharepoint-Site/ICAP-Sharepoint-Upload-Download-v1.jmx'
         config.grafana_file = './ICAP-Sharepoint-Site/Sharepoint-Demo-Dashboard.json'
         config.list = './ICAP-Sharepoint-Site/sharepoint_files.csv'
