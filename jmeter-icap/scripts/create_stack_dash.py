@@ -112,10 +112,10 @@ def __get_commandline_args():
                         help='Load type: Direct or Proxy')
 
     parser.add_argument('--grafana_username', '-un', default=Config.grafana_username,
-                        help='Load type: Direct or Proxy')
+                        help='Grafana Username')
 
     parser.add_argument('--grafana_password', '-pw', default=Config.grafana_password,
-                        help='Load type: Direct or Proxy')
+                        help='Grafana Password')
 
     parser.add_argument('--sharepoint_endpoint_url', '-spurl', default=Config.sharepoint_endpoint_url,
                         help='Sharepoint Endpoint URL')
