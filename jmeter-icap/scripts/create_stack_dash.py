@@ -185,7 +185,13 @@ def run_using_ui(ui_json_params):
             ui_config.load_type = 'SharePoint'
             ui_config.icap_server = ui_json_params['icap_endpoint_url']
             sharepoint_field_input = str(ui_json_params['sharepoint_hosts'])
-            (sharepoint_ip, sharepoint_hosts) = sharepoint_field_input.split(maxsplit=1)
+            sharepoint_ip = sharepoint_field_input #set it to the field's input, it will later contain on the IP address if hosts are provided
+            sharepoint_hosts = ""
+            try:
+                (sharepoint_ip, sharepoint_hosts) = sharepoint_field_input.split(maxsplit=1)
+            except ValueError:
+                print("Please insert both sharepoint IP and Sharepoint Hosts")
+
             ui_config.sharepoint_ip = sharepoint_ip
             ui_config.sharepoint_host_names = sharepoint_hosts
 
