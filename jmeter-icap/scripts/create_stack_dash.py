@@ -165,7 +165,7 @@ def run_using_ui(ui_json_params):
     additional_delay = 0
     # Set Config values gotten from front end
     if ui_json_params['total_users']:
-        ui_config.total_users = ui_json_params['total_users']
+        ui_config.total_users = int(ui_json_params['total_users'])
     if ui_json_params['ramp_up_time']:
         ui_config.ramp_up_time = ui_json_params['ramp_up_time']
     if ui_json_params['duration']:
@@ -215,6 +215,7 @@ def run_using_ui(ui_json_params):
 
     return dashboard_url
 
+
 def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
     start_time = str(datetime.now())
     sleep(additional_delay + int(config.duration))
@@ -222,6 +223,7 @@ def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
     print("test completed, storing results to the database")
     final_time = str(datetime.now())
     database_insert_test(config, run_id, grafana_uid, start_time, final_time)
+
 
 def stop_tests_using_ui(prefix=''):
 
