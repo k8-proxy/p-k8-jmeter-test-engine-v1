@@ -173,7 +173,7 @@ def run_using_ui(ui_json_params):
     if ui_json_params['prefix']:
         ui_config.prefix = ui_json_params['prefix']
     if ui_json_params['icap_endpoint_url']:
-        ui_config = ui_json_params['load_type']
+        ui_config.load_type = ui_json_params['load_type']
         if ui_json_params['load_type'] == "Direct":
             ui_config.icap_server = ui_json_params['icap_endpoint_url']
         elif ui_json_params['load_type'] == "Proxy Offline":
