@@ -231,7 +231,7 @@ class Main():
                 Sharepoint.main(Main.config_copy, 'job-0.yaml')
                 #print("Proxy SharePoint detected")
 
-            Main.parallelism = math.ceil(Main.config_copy.total_users / Main.config_copy.users_per_instance)
+            Main.parallelism = math.ceil(int (Main.config_copy.total_users) / int(Main.config_copy.users_per_instance))
             print("Number of pods to be created: {}".format(Main.parallelism))
             Main.replace_in_file('job-0.yaml','$parallelism-number', str(Main.parallelism))
 
