@@ -49,10 +49,10 @@ export class ConfigFormComponent implements OnInit {
     this.configForm.valueChanges.subscribe((data) => {
       this.hideSubmitMessages = true;
     });
-    this.setSharePointHostNamesRequirement();
+    this.setValidatorsDependingOnLoadType();
   }
 
-  setSharePointHostNamesRequirement() {
+  setValidatorsDependingOnLoadType() {
     this.configForm.get('load_type').valueChanges.subscribe(loadType => {
       if (loadType == AppSettings.loadTypeNames[LoadTypes.Direct]) {
         this.sharepoint_hosts.setValidators([]);
@@ -123,7 +123,7 @@ export class ConfigFormComponent implements OnInit {
       this.endPointFieldPlaceholder = AppSettings.endPointFieldPlaceholders[LoadTypes.ProxySharePoint]
       this.endPointFieldDescription = AppSettings.endPointFieldDescriptions[LoadTypes.ProxySharePoint]
     }
-    this.setSharePointHostNamesRequirement();
+    this.setValidatorsDependingOnLoadType();
   }
 
   onTlsChange() {
