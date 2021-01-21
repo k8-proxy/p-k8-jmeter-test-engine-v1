@@ -112,10 +112,16 @@ def __get_commandline_args():
                         help='Load type: Direct or Proxy')
 
     parser.add_argument('--grafana_username', '-un', default=Config.grafana_username,
-                        help='Load type: Direct or Proxy')
+                        help='Grafana Username')
 
     parser.add_argument('--grafana_password', '-pw', default=Config.grafana_password,
-                        help='Load type: Direct or Proxy')
+                        help='Grafana Password')
+
+    parser.add_argument('--sharepoint_ip', '-spip', default=Config.sharepoint_ip,
+                        help='Sharepoint IP address to use in hosts file')
+
+    parser.add_argument('--sharepoint_host_names', '-sphosts', default=Config.sharepoint_host_names,
+                        help='SharePoint Hostnames to use in hosts file')
 
     return parser.parse_args()
 
@@ -159,7 +165,7 @@ def run_using_ui(ui_json_params):
     additional_delay = 0
     # Set Config values gotten from front end
     if ui_json_params['total_users']:
-        ui_config.total_users = ui_json_params['total_users']
+        ui_config.total_users = int(ui_json_params['total_users'])
     if ui_json_params['ramp_up_time']:
         ui_config.ramp_up_time = ui_json_params['ramp_up_time']
     if ui_json_params['duration']:
@@ -170,9 +176,21 @@ def run_using_ui(ui_json_params):
         ui_config.load_type = ui_json_params['load_type']
         if ui_json_params['load_type'] == "Direct":
             ui_config.icap_server = ui_json_params['icap_endpoint_url']
-        elif ui_json_params['load_type'] == "Proxy":
+        elif ui_json_params['load_type'] == "Proxy Offline":
             # this comes as "icap_endpoint_url" from front end, but may also represent proxy IP if proxy load selected
             ui_config.proxy_static_ip = ui_json_params['icap_endpoint_url']
+        elif ui_json_params['load_type'] == "Proxy SharePoint":
+            ui_config.icap_server = ui_json_params['icap_endpoint_url']
+            sharepoint_field_input = str(ui_json_params['sharepoint_hosts'])
+            sharepoint_ip = sharepoint_field_input #set it to the field's input, it will later contain on the IP address if hosts are provided
+            sharepoint_hosts = ""
+            try:
+                (sharepoint_ip, sharepoint_hosts) = sharepoint_field_input.split(maxsplit=1)
+            except ValueError:
+                print("Please insert both sharepoint IP and Sharepoint Hosts")
+
+            ui_config.sharepoint_ip = sharepoint_ip
+            ui_config.sharepoint_host_names = sharepoint_hosts
 
     __ui_set_files_for_load_type(ui_config)
 
@@ -194,6 +212,7 @@ def run_using_ui(ui_json_params):
 
     return dashboard_url
 
+
 def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
     start_time = str(datetime.now())
     sleep(additional_delay + int(config.duration))
@@ -201,6 +220,7 @@ def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
     print("test completed, storing results to the database")
     final_time = str(datetime.now())
     database_insert_test(config, run_id, grafana_uid, start_time, final_time)
+
 
 def stop_tests_using_ui(prefix=''):
 
@@ -239,10 +259,15 @@ def __ui_set_files_for_load_type(config):
         config.grafana_file = './ICAP-Direct-File-Processing/k8-test-engine-dashboard.json'
         config.list = './ICAP-Direct-File-Processing/gov_uk_files.csv'
 
-    elif config.load_type == "Proxy":
+    elif config.load_type == "Proxy Offline":
         config.jmx_file_path = './ICAP-Proxy-Site/ProxySite_Processing_v1.jmx'
         config.grafana_file = './ICAP-Proxy-Site/ProxySite_Dashboard_Template.json'
         config.list = './ICAP-Proxy-Site/proxyfiles.csv'
+
+    elif config.load_type == "Proxy SharePoint":
+        config.jmx_file_path = './ICAP-Sharepoint-Site/ICAP-Sharepoint-Upload-Download-v1.jmx'
+        config.grafana_file = './ICAP-Sharepoint-Site/Sharepoint-Demo-Dashboard.json'
+        config.list = './ICAP-Sharepoint-Site/sharepoint_files.csv'
 
 
 def main(config, additional_delay, ui_run = False):
@@ -278,6 +303,7 @@ def main(config, additional_delay, ui_run = False):
 
     return dashboard_url, grafana_uid
 
+
 def handle_grafana_authentication(config):
 
     # Use Grafana key obtained either from config.env or from AWS secrets, or use username/password. Key from config.env/AWS gets priority.
@@ -291,6 +317,7 @@ def handle_grafana_authentication(config):
         config.grafana_api_key = secret_val
         if secret_val:
             print("Grafana secret key retrieved.")
+
 
 if __name__ == "__main__":
     args = __get_commandline_args()
@@ -318,6 +345,8 @@ if __name__ == "__main__":
     Config.load_type = args.load_type
     Config.grafana_username = args.grafana_username
     Config.grafana_password = args.grafana_password
+    Config.sharepoint_ip = args.sharepoint_ip
+    Config.sharepoint_host_names = args.sharepoint_host_names
 
     # these are flag/boolean arguments
     if args.exclude_dashboard:
