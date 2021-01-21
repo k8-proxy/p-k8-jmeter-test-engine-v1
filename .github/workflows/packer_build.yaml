@@ -39,5 +39,5 @@ jobs:
         
     - name: Build AMI/OVA
       run: |
-        packer build jmeter-icap/deployment/packer/aws-ova.json
+        packer build deployment/packer/aws-ova.json
       
