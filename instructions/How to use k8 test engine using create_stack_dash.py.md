@@ -70,6 +70,9 @@ TLS_VERIFICATION_METHOD=no-verify
 STORE_RESULTS=1
 GRAFANA_USERNAME=admin
 GRAFANA_PASSWORD=admin
+TENANT_ID=
+CLIENT_ID=
+CLIENT_SECRET=
 ```
 
 These parameters have corresponding options that can be used during script execution, they do not have to be set in config.env. Many of the parameters above are also optional, they can be omitted. Any options input manually via the command line will override options within the config.env file. For example, if the config.env file is set to allow dashboard creation:
@@ -244,21 +247,21 @@ Grafana password to use for Grafana dashboard creation. If this is provided, the
 </td>
 </tr>
 <tr>
-<td> --sharepoint_endpoint_url, -spurl </td> <td>SHAREPOINT_ENDPOINT_URL</td>
+<td>--tenant_id, -tid</td><td>TENANT_ID</td>
 <td>
-Sharepoint Endpoint URL
+Tenant ID value (for use with SharePoint)
 </td>
 </tr>
 <tr>
-<td> --sharepoint_ip, -spip </td> <td>SHAREPOINT_IP</td>
+<td>--client_id, -cid</td><td>CLIENT_ID</td>
 <td>
-Sharepoint IP address
+Client ID value (for use with SharePoint)
 </td>
 </tr>
 <tr>
-<td> --sharepoint_host_names, -sphosts </td> <td>SHAREPOINT_HOST_NAMES</td>
+<td>--client_secret, -cs</td><td>CLIENT_SECRET</td>
 <td>
-SharePoint Hostnames
+Client Secret value (for use with SharePoint)
 </td>
 </tr>
 </table>
