@@ -250,14 +250,14 @@ def main(config, additional_delay, ui_run = False):
     grafana_uid = ''
 
     # options to look out for when using create_stack, used to exclude all other unrelated options in config
-    create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
-               "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
-               "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path", "proxy_static_ip", "load_type"]
+    #create_stack_options = ["total_users", "users_per_instance", "duration", "list", "minio_url", "minio_external_url", "minio_access_key",
+    #           "minio_secret_key", "minio_input_bucket", "minio_output_bucket", "influxdb_url", "prefix", "icap_server",
+    #           "icap_server_port", "enable_tls", "tls_verification_method", "jmx_file_path", "proxy_static_ip", "load_type"]
 
-    create_stack_args = get_args_list(config, create_stack_options)
+    #create_stack_args = get_args_list(config, create_stack_options)
 
     print("Creating Load Generators...")
-    create_stack.Main.main(create_stack_args)
+    create_stack.Main.main(config)
 
     if config.preserve_stack:
         print("Stack will not be automatically deleted.")
