@@ -32,7 +32,7 @@
          },
         {
         "type": "shell",
-        "script": "deployment/packer/provisioning_scripts/k8-installation.sh"
+        "script": "deployment/packer/provisioning_scripts/micro-k8s-installation.sh"
         },
         {
          "type": "shell-local",
