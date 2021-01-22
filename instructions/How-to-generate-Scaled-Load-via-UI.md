@@ -89,7 +89,7 @@ The Load Generator UI form has the following options:
     - Proxy Sharepoint: this load type will generate traffic against proxied sharepoint site.
         -  SharePoint Endpoint URL name: without http/https. Example: mysite.sharepoint.com
         -  SharePoint Proxy IP and Hostnames*: This is needed in order to modify hosts file in LoadGenerators so that traffic goes via proxy.
-        -  see https://github.com/k8-proxy/p-k8-jmeter-test-engine/tree/master/instructions/How-to-Generate-Load-against-Proxied-SharePoint.md for more details
+        -  see ["How to generate load against proxied Sharepoint site"](./How-to-Generate-Load-against-Proxied-SharePoint.md) for more details
 
 - Prefix: prefix is used to distinquish different dashboards and measurements. For different kind of load scenarios it is good to use their own prefix so that dashboard view would be unique for that specific scenario
 
