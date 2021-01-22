@@ -17,9 +17,17 @@ There are certain configurations needed on the local PC to be able to successful
 
 This document will explain those needed configuration details and UI interface features.
 
+## Prepare test files for Direct Load Generation
+
+Direct ICAP server load generation expects all the test files to be uploaded to the Minio server provisioned in the K8S cluster.
+A way to accoplish the task is to get those files from an AWS S3 bucke and upload those to the Minio server.
+Details in the article below:
+
+["Download files from S3 and upload to Minio"](.../jmeter-icap/scripts/s3-to-minio-utility)
+
 ## What do I need to configire on the local PC?
 
-Clone the github repository to your user folder.
+On a Linux machine, clone the repository to your user home folder.
 
 Go to the scripts folder and open config.env file for editing:
 
@@ -39,7 +47,7 @@ In case of Proxy Sharepoint load type, the following additional parameters are a
 - CLIENT_ID: this is client id
 - CLIENT_SECRET: this is client secret. 
 
-["How to generate load against proxied Sharepoint site"](How-to-Generate-Load-against-Proxied-SharePoint.md) instructions has details about how to setup Proxied Sharepoint load.
+["How to generate load against proxied Sharepoint site"](./How-to-Generate-Load-against-Proxied-SharePoint.md) instructions has details about how to setup Proxied Sharepoint load.
 
 save the file and restart the following service:
 
