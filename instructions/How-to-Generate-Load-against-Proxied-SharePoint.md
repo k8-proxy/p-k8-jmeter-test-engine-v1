@@ -105,7 +105,7 @@ Above modifications are specific to sharepoint, see ["How to generate Scaled Loa
 
 Load generation can be triggered via provided UI interface.
 
-UI interface looks like this and accessible via http://give-virtual-machine-ip
+UI interface looks like this and accessible via http://virtual-machine-ip
 
 ![vm_load_vision](pngs/Share-Point-Load-UI.png)
 

@@ -5,7 +5,7 @@ This section assumes basic Load Test framework setup is done using the instructi
 For Azure AKS - ["Provision an AKS Cluster"](../deployment/terraform/aks/README.MD)<br/>
 For AWS EKS see ["Provision an EKS Cluster"](../deployment/terraform/eks/README.md)
 
-The Kubernetes Performance Test Execution Framework provided possibility to run scaled load via it's UI interface.
+The Kubernetes Performance Test Execution Framework provided possibility to run scaled load via the UI interface.
 
 UI interface provided possibility to run 3 types of Load:
 
@@ -13,15 +13,15 @@ UI interface provided possibility to run 3 types of Load:
 - Proxy Offline: this load will generate traffic against proxied offline gov.uk site
 - Proxy Sharepoint: this load will generate traffic against proxied sharepoint site.
 
-Once EC2 instance created using provided AMI, there are certain configurations needed in that EC2 machine to be able to successfull run scaled load against target systems.
+There are certain configurations needed on the local PC to be able to successfull run scaled load against target systems.
 
 This document will explain those needed configuration details and UI interface features.
 
-## What do I need to configire in EC2?
+## What do I need to configire the local PC?
 
-In EC2 virtual machine created via provided AMI, the following manual configurations needed to be done:
+Clone the github repository to your user folder.
 
-- Go to scripts folder and open config.env file for editing:
+Go to the scripts folder and open config.env file for editing:
 
 ```bash
 sudo nano ~/p-k8-jmeter-test-engine/jmeter-icap/scripts/config.env
@@ -34,7 +34,7 @@ sudo nano ~/p-k8-jmeter-test-engine/jmeter-icap/scripts/config.env
  - MINIO_INPUT_BUCKET - Minio server bucket where the files to be processed are located
  - MINIO_OUTPUT_BUCKET - Minio server bucket where the resulting files will be placed
  
-In case of Proxy Sharepoint load type, the following additional parameters needs to be modified :
+In case of Proxy Sharepoint load type, the following additional parameters are also to be modified :
 - TENANT_ID : This is tenant id
 - CLIENT_ID: this is client id
 - CLIENT_SECRET: this is client secret. 
@@ -53,7 +53,7 @@ sudo systemctl status flask_scaled
 
 Load generation can be triggered via provided UI interface.
 
-UI interface looks like this and accessible via http://give-virtual-machine-ip
+UI interface looks like this and accessible via http://virtual-machine-ip
 
 ![vm_load_vision](pngs/Share-Point-Load-UI.png)
 
