@@ -23,7 +23,7 @@ Direct ICAP server load generation expects all the test files to be uploaded to 
 A way to accoplish the task is to get those files from an AWS S3 bucke and upload those to the Minio server.
 Details in the article below:
 
-["Download files from S3 and upload to Minio"](.../jmeter-icap/scripts/s3-to-minio-utility)
+["Download files from S3 and upload to Minio"](../jmeter-icap/scripts/s3-to-minio-utility)
 
 ## What do I need to configire on the local PC?
 
