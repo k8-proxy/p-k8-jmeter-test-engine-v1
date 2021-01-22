@@ -17,7 +17,7 @@ There are certain configurations needed on the local PC to be able to successful
 
 This document will explain those needed configuration details and UI interface features.
 
-## What do I need to configire the local PC?
+## What do I need to configire on the local PC?
 
 Clone the github repository to your user folder.
 
