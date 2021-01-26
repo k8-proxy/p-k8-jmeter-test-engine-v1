@@ -22,5 +22,7 @@ For AWS EKS see ["Provision an EKS Cluster"](deployment/terraform/eks/README.md)
 
 Note: The cluster deployment is done using Terraform Script which is tested on Linux Platform. Try and use Linux Platform for Cluster Deployment.
 
-## 3. Using create_stack_dash.py to Create Load Generators and Corresponding Dashboards
-For detailed instructions on how to execute Test Using create_stack_dash.py  See the following instruction [jmeter-icap/scripts/README.md](jmeter-icap/scripts/README.md)
+## 3. Load Generation Instructions
+ - ["Using create_stack_dash.py to Create Load Generators and Corresponding Dashboards"](jmeter-icap/scripts/README.md)
+ - ["How to generate Scaled Load Via UI"](instructions/How-to-generate-Scaled-Load-via-UI.md)
+ - ["How to generate load against proxied Sharepoint site"](instructions/How-to-Generate-Load-against-Proxied-SharePoint.md)
