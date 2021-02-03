@@ -97,7 +97,7 @@
 				"fillGradient": 0,
 				"gridPos": {
 					"h": 9,
-					"w": 12,
+					"w": 8,
 					"x": 0,
 					"y": 2
 				},
@@ -507,7 +507,7 @@
                   "measurement": "jmetericap",
                   "orderByTime": "ASC",
                   "policy": "default",
-                  "query": "SELECT sum(\"countError\") * 100/sum(\"count\") FROM \"logfilters_jmetericap\" WHERE (\"statut\" = 'all') AND $timeFilter",
+                  "query": "SELECT sum(\"countError\") * 100/sum(\"count\") FROM \"jmetericap\" WHERE (\"statut\" = 'all') AND $timeFilter",
                   "rawQuery": true,
                   "refId": "B",
                   "resultFormat": "time_series",
