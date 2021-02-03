@@ -97,7 +97,7 @@
 				"fillGradient": 0,
 				"gridPos": {
 					"h": 9,
-					"w": 8,
+					"w": 12,
 					"x": 0,
 					"y": 2
 				},
@@ -457,80 +457,86 @@
 				"type": "gauge"
 			},
 			{
-				"datasource": "InfluxDB",
-				"fieldConfig": {
-					"defaults": {
-						"custom": {},
-						"mappings": [],
-						"thresholds": {
-							"mode": "absolute",
-							"steps": [
-								{
-									"color": "green",
-									"value": null
-								},
-								{
-									"color": "green",
-									"value": 5
-								}
-							]
-						}
-					},
-					"overrides": []
-				},
-				"gridPos": {
-					"h": 9,
-					"w": 4,
-					"x": 20,
-					"y": 2
-				},
-				"id": 22,
-				"options": {
-					"reduceOptions": {
-						"calcs": [
-							"sum"
-						],
-						"fields": "",
-						"values": false
-					},
-					"showThresholdLabels": false,
-					"showThresholdMarkers": true
-				},
-				"pluginVersion": "7.3.2",
-				"targets": [
-					{
-						"alias": "Total Requests",
-						"groupBy": [],
-						"measurement": "jmetericap",
-						"orderByTime": "ASC",
-						"policy": "default",
-						"refId": "B",
-						"resultFormat": "time_series",
-						"select": [
-							[
-								{
-									"params": [
-										"count"
-									],
-									"type": "field"
-								}
-							]
-						],
-						"tags": [
-							{
-								"key": "transaction",
-								"operator": "=~",
-								"value": "/ICAP-Document-Process/"
-							}
-						]
-					}
-				],
-				"timeFrom": null,
-				"timeShift": null,
-				"title": "Total  Requests",
-				"type": "gauge"
-			},
-			{
+              "datasource": "InfluxDB",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "align": null,
+                    "filterable": false
+                  },
+                  "mappings": [],
+                  "noValue": "0",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 4,
+                "x": 20,
+                "y": 2
+              },
+              "id": 22,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "last"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "pluginVersion": "7.3.2",
+              "targets": [
+                {
+                  "alias": "Error Rate",
+                  "groupBy": [],
+                  "measurement": "jmetericap",
+                  "orderByTime": "ASC",
+                  "policy": "default",
+                  "query": "SELECT sum(\"countError\") * 100/sum(\"count\") FROM \"logfilters_jmetericap\" WHERE (\"statut\" = 'all') AND $timeFilter",
+                  "rawQuery": true,
+                  "refId": "B",
+                  "resultFormat": "time_series",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "countError"
+                        ],
+                        "type": "field"
+                      }
+                    ]
+                  ],
+                  "tags": [
+                    {
+                      "key": "statut",
+                      "operator": "=",
+                      "value": "all"
+                    }
+                  ]
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Error Rate",
+              "transformations": [],
+              "type": "stat"
+            },
+            {
 				"aliasColors": {},
 				"bars": false,
 				"dashLength": 10,
