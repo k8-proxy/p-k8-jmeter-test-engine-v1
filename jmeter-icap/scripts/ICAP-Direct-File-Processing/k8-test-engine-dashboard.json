@@ -465,16 +465,32 @@
                     "filterable": false
                   },
                   "mappings": [],
-                  "noValue": "0",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
                       {
                         "color": "green",
                         "value": null
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 10
+                      },
+                      {
+                        "color": "#6ED0E0",
+                        "value": 20
+                      },
+                      {
+                        "color": "#EF843C",
+                        "value": 30
+                      },
+                      {
+                        "color": "#E24D42",
+                        "value": 40
                       }
                     ]
-                  }
+                  },
+                  "unit": "percent"
                 },
                 "overrides": []
               },
@@ -486,9 +502,6 @@
               },
               "id": 22,
               "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": {
                   "calcs": [
@@ -497,7 +510,8 @@
                   "fields": "",
                   "values": false
                 },
-                "textMode": "auto"
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true
               },
               "pluginVersion": "7.3.2",
               "targets": [
@@ -507,7 +521,7 @@
                   "measurement": "jmetericap",
                   "orderByTime": "ASC",
                   "policy": "default",
-                  "query": "SELECT sum(\"countError\") * 100/sum(\"count\") FROM \"jmetericap\" WHERE (\"statut\" = 'all') AND $timeFilter",
+                  "query": "SELECT sum(FailedRequests) * 100 / sum(TotalRequests) FROM \"statistics\" WHERE $timeFilter",
                   "rawQuery": true,
                   "refId": "B",
                   "resultFormat": "time_series",
@@ -534,7 +548,7 @@
               "timeShift": null,
               "title": "Error Rate",
               "transformations": [],
-              "type": "stat"
+              "type": "gauge"
             },
             {
 				"aliasColors": {},
