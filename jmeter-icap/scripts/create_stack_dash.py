@@ -9,6 +9,7 @@ from threading import Thread
 from time import sleep
 from database_ops import database_insert_test
 from config_params import Config
+from metrics import InfluxDBMetrics
 
 import uuid
 
@@ -214,13 +215,22 @@ def run_using_ui(ui_json_params):
 
 
 def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
+
+    InfluxDBMetrics.hostname = config.influx_host
+    InfluxDBMetrics.hostport = config.influx_port
+    InfluxDBMetrics.init()
+
     total_wait_time = additional_delay + int(config.duration)
     start_time = datetime.now()
     final_time = start_time + timedelta(seconds=total_wait_time)
-    print(final_time)
+    first_point = second_point = start_time
+
     while datetime.now() < final_time:
-        print(datetime.now())
-        sleep(30)
+        sleep(1)
+        first_point = second_point
+        second_point = datetime.now()
+        InfluxDBMetrics.save_statistics(config.load_type, config.prefix, str(first_point), str(second_point))
+
     run_id = uuid.uuid4()
     print("test completed, storing results to the database")
     database_insert_test(config, run_id, grafana_uid, str(start_time), str(final_time))
