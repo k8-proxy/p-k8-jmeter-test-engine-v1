@@ -518,30 +518,34 @@
                 {
                   "alias": "Error Rate",
                   "groupBy": [],
-                  "measurement": "jmetericap",
+                  "measurement": "statistics",
                   "orderByTime": "ASC",
                   "policy": "default",
                   "query": "SELECT sum(FailedRequests) * 100 / sum(TotalRequests) FROM \"statistics\" WHERE $timeFilter",
-                  "rawQuery": true,
+                  "rawQuery": false,
                   "refId": "B",
                   "resultFormat": "time_series",
                   "select": [
                     [
                       {
                         "params": [
-                          "countError"
+                          "FailedRequests"
                         ],
                         "type": "field"
+                      },
+                      {
+                        "params": [],
+                        "type": "sum"
+                      },
+                      {
+                        "params": [
+                          " * 100 /  sum(\"TotalRequests\")"
+                        ],
+                        "type": "math"
                       }
                     ]
                   ],
-                  "tags": [
-                    {
-                      "key": "statut",
-                      "operator": "=",
-                      "value": "all"
-                    }
-                  ]
+                  "tags": []
                 }
               ],
               "timeFrom": null,
