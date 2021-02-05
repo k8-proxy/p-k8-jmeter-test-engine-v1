@@ -13,7 +13,7 @@ from config_params import Config
 import uuid
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
-DELETE_TIME_OFFSET = 900
+DELETE_TIME_OFFSET = 30
 
 # Interval for how often "time elapsed" messages are displayed for delete stack process
 MESSAGE_INTERVAL = 600
@@ -214,13 +214,16 @@ def run_using_ui(ui_json_params):
 
 
 def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
-    start_time = str(datetime.now())
-    sleep(additional_delay + int(config.duration))
+    total_wait_time = additional_delay + int(config.duration)
+    start_time = datetime.now()
+    final_time = start_time + timedelta(seconds=total_wait_time)
+    print(final_time)
+    while datetime.now() < final_time:
+        print(datetime.now())
+        sleep(30)
     run_id = uuid.uuid4()
     print("test completed, storing results to the database")
-    final_time = str(datetime.now())
-    database_insert_test(config, run_id, grafana_uid, start_time, final_time)
-
+    database_insert_test(config, run_id, grafana_uid, str(start_time), str(final_time))
 
 def stop_tests_using_ui(prefix=''):
 
