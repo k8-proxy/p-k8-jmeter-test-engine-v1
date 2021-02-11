@@ -88,7 +88,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -99,7 +99,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 9,
-        "w": 12,
+        "w": 10,
         "x": 0,
         "y": 2
       },
@@ -133,7 +133,7 @@
         {
           "alias": "Number of Users",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -159,7 +159,7 @@
         {
           "alias": "Number of Errors",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -225,7 +225,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -253,8 +253,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 9,
-        "w": 12,
-        "x": 12,
+        "w": 10,
+        "x": 10,
         "y": 2
       },
       "hiddenSeries": false,
@@ -287,7 +287,7 @@
         {
           "alias": "Assertion Fail",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -319,7 +319,7 @@
         {
           "alias": "Error 500",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -351,7 +351,7 @@
         {
           "alias": "Error 503",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -423,7 +423,104 @@
       }
     },
     {
-      "datasource": null,
+      "datasource": "InfluxDB",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 10
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 20
+              },
+              {
+                "color": "#EF843C",
+                "value": 30
+              },
+              {
+                "color": "#E24D42",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 4,
+        "x": 20,
+        "y": 2
+      },
+      "id": 20,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.2.2",
+      "targets": [
+        {
+          "alias": "Error Rate",
+          "groupBy": [],
+          "measurement": "sharepoint_statistics",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT sum(FailedRequests) * 100 / sum(TotalRequests) FROM \"sharepoint_statistics\" WHERE $timeFilter",
+          "rawQuery": false,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "FailedRequests"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "sum"
+              },
+              {
+                "params": [
+                  " * 100 /  sum(\"TotalRequests\")"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Error Rate",
+      "type": "gauge"
+    },
+    {
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -475,7 +572,7 @@
         {
           "alias": "csv_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -507,7 +604,7 @@
         {
           "alias": "doc_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -539,7 +636,7 @@
         {
           "alias": "docx_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -571,7 +668,7 @@
         {
           "alias": "gif_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "D",
@@ -603,7 +700,7 @@
         {
           "alias": "html_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "E",
@@ -635,7 +732,7 @@
         {
           "alias": "jpg_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "F",
@@ -667,7 +764,7 @@
         {
           "alias": "pdf_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "G",
@@ -699,7 +796,7 @@
         {
           "alias": "png_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "H",
@@ -731,7 +828,7 @@
         {
           "alias": "ppt_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "I",
@@ -763,7 +860,7 @@
         {
           "alias": "pptx_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "J",
@@ -795,7 +892,7 @@
         {
           "alias": "xls_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "K",
@@ -831,7 +928,7 @@
       "type": "gauge"
     },
     {
-      "datasource": null,
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -883,7 +980,7 @@
         {
           "alias": "csv_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -915,7 +1012,7 @@
         {
           "alias": "doc_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -947,7 +1044,7 @@
         {
           "alias": "docx_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -979,7 +1076,7 @@
         {
           "alias": "gif_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "D",
@@ -1011,7 +1108,7 @@
         {
           "alias": "html_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "E",
@@ -1043,7 +1140,7 @@
         {
           "alias": "jpg_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "F",
@@ -1075,7 +1172,7 @@
         {
           "alias": "pdf_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "G",
@@ -1107,7 +1204,7 @@
         {
           "alias": "png_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "H",
@@ -1139,7 +1236,7 @@
         {
           "alias": "ppt_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "I",
@@ -1171,7 +1268,7 @@
         {
           "alias": "pptx_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "J",
@@ -1203,7 +1300,7 @@
         {
           "alias": "xls_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "K",
@@ -1239,7 +1336,7 @@
       "type": "gauge"
     },
     {
-      "datasource": null,
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1291,7 +1388,7 @@
         {
           "alias": "csv_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1323,7 +1420,7 @@
         {
           "alias": "doc_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -1355,7 +1452,7 @@
         {
           "alias": "docx_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -1387,7 +1484,7 @@
         {
           "alias": "gif_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "D",
@@ -1419,7 +1516,7 @@
         {
           "alias": "html_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "E",
@@ -1451,7 +1548,7 @@
         {
           "alias": "jpg_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "F",
@@ -1483,7 +1580,7 @@
         {
           "alias": "pdf_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "G",
@@ -1515,7 +1612,7 @@
         {
           "alias": "png_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "H",
@@ -1547,7 +1644,7 @@
         {
           "alias": "ppt_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "I",
@@ -1579,7 +1676,7 @@
         {
           "alias": "pptx_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "J",
@@ -1611,7 +1708,7 @@
         {
           "alias": "xls_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "K",
@@ -1647,7 +1744,7 @@
       "type": "gauge"
     },
     {
-      "datasource": null,
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -1699,7 +1796,7 @@
         {
           "alias": "csv_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -1731,7 +1828,7 @@
         {
           "alias": "doc_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -1763,7 +1860,7 @@
         {
           "alias": "docx_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -1795,7 +1892,7 @@
         {
           "alias": "gif_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "D",
@@ -1827,7 +1924,7 @@
         {
           "alias": "html_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "E",
@@ -1859,7 +1956,7 @@
         {
           "alias": "jpg_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "F",
@@ -1891,7 +1988,7 @@
         {
           "alias": "pdf_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "G",
@@ -1923,7 +2020,7 @@
         {
           "alias": "png_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "H",
@@ -1955,7 +2052,7 @@
         {
           "alias": "ppt_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "I",
@@ -1987,7 +2084,7 @@
         {
           "alias": "pptx_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "J",
@@ -2019,7 +2116,7 @@
         {
           "alias": "xls_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "K",
@@ -2059,7 +2156,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -2104,7 +2201,7 @@
         {
           "alias": "csv_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -2136,7 +2233,7 @@
         {
           "alias": "doc_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -2168,7 +2265,7 @@
         {
           "alias": "docx_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -2200,7 +2297,7 @@
         {
           "alias": "gif_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "D",
@@ -2232,7 +2329,7 @@
         {
           "alias": "html_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "E",
@@ -2264,7 +2361,7 @@
         {
           "alias": "jpg_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "F",
@@ -2296,7 +2393,7 @@
         {
           "alias": "pdf_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "G",
@@ -2328,7 +2425,7 @@
         {
           "alias": "png_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "H",
@@ -2360,7 +2457,7 @@
         {
           "alias": "ppt_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "I",
@@ -2392,7 +2489,7 @@
         {
           "alias": "pptx_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "J",
@@ -2424,7 +2521,7 @@
         {
           "alias": "xls_Upload_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "K",
@@ -2500,7 +2597,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": null,
+      "datasource": "InfluxDB",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -2567,7 +2664,7 @@
         {
           "alias": "csv_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -2599,7 +2696,7 @@
         {
           "alias": "doc_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "B",
@@ -2631,7 +2728,7 @@
         {
           "alias": "docx_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "C",
@@ -2663,7 +2760,7 @@
         {
           "alias": "gif_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "D",
@@ -2695,7 +2792,7 @@
         {
           "alias": "html_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "E",
@@ -2727,7 +2824,7 @@
         {
           "alias": "jpg_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "F",
@@ -2759,7 +2856,7 @@
         {
           "alias": "pdf_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "G",
@@ -2791,7 +2888,7 @@
         {
           "alias": "png_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "H",
@@ -2823,7 +2920,7 @@
         {
           "alias": "ppt_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "I",
@@ -2855,7 +2952,7 @@
         {
           "alias": "pptx_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "J",
@@ -2887,7 +2984,7 @@
         {
           "alias": "xls_Download_File",
           "groupBy": [],
-          "measurement": "demo_jmetersharepoint",
+          "measurement": "jmetersharepoint",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "K",
