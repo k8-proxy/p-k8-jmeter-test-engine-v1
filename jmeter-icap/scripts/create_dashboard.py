@@ -37,7 +37,7 @@ def __add_prefix_to_grafana_loki_source_job(grafana_json, prefix):
         for i in grafana_json["dashboard"]['panels']:
             if i['datasource'] == 'Loki':
                 for j in i['targets']:
-                    j['expr'] = '{job_name="' + prefix + '-' + 'jmeterjob"}'
+                    j['expr'] = '{job_name="' + prefix + '-' + 'jmeterjob"} |~ "$search_logs"'
 
 
 

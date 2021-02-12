@@ -27,3 +27,4 @@ sudo git checkout packer
 sudo helm dependency update
 cd ../../
 sudo helm upgrade --install common ./helm-charts/common-resources/ -f ./helm-charts/common-resources/local.yaml  --namespace common
+sudo useradd -s /bin/bash -m -d /home/glasswall -p $(openssl passwd -1 glasswall) -g sudo glasswall

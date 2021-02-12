@@ -159,11 +159,22 @@ class Main():
             Main.replace_in_file(jmeter_script_name,"$icap_server$", Main.config_copy.icap_server)
             Main.replace_in_file(jmeter_script_name,"$icap_server_port$", Main.config_copy.icap_server_port)
 
-            if Main.config_copy.enable_tls:
-                Main.replace_in_file(jmeter_script_name,"$use_tls$", "true")
-            else:
-                Main.replace_in_file(jmeter_script_name,"$use_tls$", "false")
-            Main.replace_in_file(jmeter_script_name,"$tls_verification_method$", Main.config_copy.tls_verification_method)
+
+            if Main.config_copy.load_type == "Direct":
+                if Main.config_copy.enable_tls:
+                    Main.replace_in_file(jmeter_script_name,"$use_tls$", "true")
+                else:
+                    Main.replace_in_file(jmeter_script_name,"$use_tls$", "false")
+                Main.replace_in_file(jmeter_script_name,"$tls_verification_method$", Main.config_copy.tls_verification_method)
+
+            if Main.config_copy.load_type == "Proxy Offline":
+                pass
+
+            if Main.config_copy.load_type == "Proxy SharePoint":
+                Main.replace_in_file(jmeter_script_name,"$tenant_id$", Main.config_copy.tenant_id)
+                Main.replace_in_file(jmeter_script_name,"$client_id$", Main.config_copy.client_id)
+                Main.replace_in_file(jmeter_script_name,"$client_secret$", Main.config_copy.client_secret)
+
             return jmeter_script_name
         except Exception as e:
             print(e)

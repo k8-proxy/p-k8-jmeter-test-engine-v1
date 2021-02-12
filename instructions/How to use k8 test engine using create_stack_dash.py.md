@@ -246,6 +246,17 @@ Grafana username to use for Grafana dashboard creation. If this is provided, the
 Grafana password to use for Grafana dashboard creation. If this is provided, the grafana_username parameter must also be passed to the script via args or config.env. If an API key is provided, this will not be used.
 </td>
 </tr>
+<td> --sharepoint_ip, -spip </td> <td>SHAREPOINT_IP</td>
+<td>
+Sharepoint IP address that will be used in load generators
+</td>
+</tr>
+<tr>
+<td> --sharepoint_host_names, -sphosts </td> <td>SHAREPOINT_HOST_NAMES</td>
+<td>
+SharePoint Hostnames that will be used in load generators
+</td>
+</tr>
 <tr>
 <td>--tenant_id, -tid</td><td>TENANT_ID</td>
 <td>
