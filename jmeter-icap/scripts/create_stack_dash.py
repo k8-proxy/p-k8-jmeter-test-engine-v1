@@ -9,11 +9,12 @@ from threading import Thread
 from time import sleep
 from database_ops import database_insert_test
 from config_params import Config
+from metrics import InfluxDBMetrics
 
 import uuid
 
 # Stacks are deleted duration + offset seconds after creation; should be set to 900.
-DELETE_TIME_OFFSET = 900
+DELETE_TIME_OFFSET = 30
 
 # Interval for how often "time elapsed" messages are displayed for delete stack process
 MESSAGE_INTERVAL = 600
@@ -214,13 +215,25 @@ def run_using_ui(ui_json_params):
 
 
 def store_and_analyze_after_duration(config, grafana_uid, additional_delay):
-    start_time = str(datetime.now())
-    sleep(additional_delay + int(config.duration))
+
+    InfluxDBMetrics.hostname = config.influx_host
+    InfluxDBMetrics.hostport = config.influx_port
+    InfluxDBMetrics.init()
+
+    total_wait_time = additional_delay + int(config.duration)
+    start_time = datetime.now()
+    final_time = start_time + timedelta(seconds=total_wait_time)
+    first_point = second_point = start_time
+
+    while datetime.now() < final_time:
+        sleep(1)
+        first_point = second_point
+        second_point = datetime.now()
+        InfluxDBMetrics.save_statistics(config.load_type, config.prefix, str(first_point), str(second_point))
+
     run_id = uuid.uuid4()
     print("test completed, storing results to the database")
-    final_time = str(datetime.now())
-    database_insert_test(config, run_id, grafana_uid, start_time, final_time)
-
+    database_insert_test(config, run_id, grafana_uid, str(start_time), str(final_time))
 
 def stop_tests_using_ui(prefix=''):
 
