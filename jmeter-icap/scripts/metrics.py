@@ -164,27 +164,30 @@ class InfluxDBMetrics():
 
     @staticmethod
     def save_statistics(load_type, prefix, start_time, final_time):
-        if load_type == "Direct":
-            InfluxDBMetrics.jmeter_db_client.write_points([{"measurement": prefix + "_statistics", "fields": {
-                "TotalRequests": InfluxDBMetrics.total_reguests(prefix, start_time, final_time),
-                "SuccessfulRequests": InfluxDBMetrics.successful_reguests(prefix, start_time, final_time),
-                "FailedRequests": InfluxDBMetrics.failed_reguests(prefix, start_time, final_time),
-            }}])
-            return
-        if load_type == "Proxy Offline":
-            InfluxDBMetrics.jmeter_db_client.write_points([{"measurement": prefix + "_proxy_statistics", "fields": {
-                "TotalRequests": InfluxDBMetrics.total_reguests_proxysite(prefix, start_time, final_time),
-                "SuccessfulRequests": InfluxDBMetrics.successful_reguests_proxysite(prefix, start_time, final_time),
-                "FailedRequests": InfluxDBMetrics.failed_reguests_proxysite(prefix, start_time, final_time),
-            }}])
-            return
-        if load_type == "Proxy SharePoint":
-            InfluxDBMetrics.jmeter_db_client.write_points([{"measurement": prefix + "_sharepoint_statistics", "fields": {
-                "TotalRequests": InfluxDBMetrics.total_reguests_sharepoint(prefix, start_time, final_time),
-                "SuccessfulRequests": InfluxDBMetrics.successful_reguests_sharepoint(prefix, start_time, final_time),
-                "FailedRequests": InfluxDBMetrics.failed_reguests_sharepoint(prefix, start_time, final_time),
-            }}])
-            return
+        try:
+            if load_type == "Direct":
+                InfluxDBMetrics.jmeter_db_client.write_points([{"measurement": prefix + "_statistics", "fields": {
+                    "TotalRequests": InfluxDBMetrics.total_reguests(prefix, start_time, final_time),
+                    "SuccessfulRequests": InfluxDBMetrics.successful_reguests(prefix, start_time, final_time),
+                    "FailedRequests": InfluxDBMetrics.failed_reguests(prefix, start_time, final_time),
+                }}])
+                return
+            if load_type == "Proxy Offline":
+                InfluxDBMetrics.jmeter_db_client.write_points([{"measurement": prefix + "_proxy_statistics", "fields": {
+                    "TotalRequests": InfluxDBMetrics.total_reguests_proxysite(prefix, start_time, final_time),
+                    "SuccessfulRequests": InfluxDBMetrics.successful_reguests_proxysite(prefix, start_time, final_time),
+                    "FailedRequests": InfluxDBMetrics.failed_reguests_proxysite(prefix, start_time, final_time),
+                }}])
+                return
+            if load_type == "Proxy SharePoint":
+                InfluxDBMetrics.jmeter_db_client.write_points([{"measurement": prefix + "_sharepoint_statistics", "fields": {
+                    "TotalRequests": InfluxDBMetrics.total_reguests_sharepoint(prefix, start_time, final_time),
+                    "SuccessfulRequests": InfluxDBMetrics.successful_reguests_sharepoint(prefix, start_time, final_time),
+                    "FailedRequests": InfluxDBMetrics.failed_reguests_sharepoint(prefix, start_time, final_time),
+                }}])
+                return
+        except Exception as e:
+            print("ERROR: save_statistics: {}".format(e))
 
     @staticmethod
     def main(argv):
