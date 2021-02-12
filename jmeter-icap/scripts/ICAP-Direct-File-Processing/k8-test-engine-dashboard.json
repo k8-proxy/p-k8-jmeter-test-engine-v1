@@ -457,80 +457,104 @@
 				"type": "gauge"
 			},
 			{
-				"datasource": "InfluxDB",
-				"fieldConfig": {
-					"defaults": {
-						"custom": {},
-						"mappings": [],
-						"thresholds": {
-							"mode": "absolute",
-							"steps": [
-								{
-									"color": "green",
-									"value": null
-								},
-								{
-									"color": "green",
-									"value": 5
-								}
-							]
-						}
-					},
-					"overrides": []
-				},
-				"gridPos": {
-					"h": 9,
-					"w": 4,
-					"x": 20,
-					"y": 2
-				},
-				"id": 22,
-				"options": {
-					"reduceOptions": {
-						"calcs": [
-							"sum"
-						],
-						"fields": "",
-						"values": false
-					},
-					"showThresholdLabels": false,
-					"showThresholdMarkers": true
-				},
-				"pluginVersion": "7.3.2",
-				"targets": [
-					{
-						"alias": "Total Requests",
-						"groupBy": [],
-						"measurement": "jmetericap",
-						"orderByTime": "ASC",
-						"policy": "default",
-						"refId": "B",
-						"resultFormat": "time_series",
-						"select": [
-							[
-								{
-									"params": [
-										"count"
-									],
-									"type": "field"
-								}
-							]
-						],
-						"tags": [
-							{
-								"key": "transaction",
-								"operator": "=~",
-								"value": "/ICAP-Document-Process/"
-							}
-						]
-					}
-				],
-				"timeFrom": null,
-				"timeShift": null,
-				"title": "Total  Requests",
-				"type": "gauge"
-			},
-			{
+              "datasource": "InfluxDB",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "align": null,
+                    "filterable": false
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 10
+                      },
+                      {
+                        "color": "#6ED0E0",
+                        "value": 20
+                      },
+                      {
+                        "color": "#EF843C",
+                        "value": 30
+                      },
+                      {
+                        "color": "#E24D42",
+                        "value": 40
+                      }
+                    ]
+                  },
+                  "unit": "percent"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 9,
+                "w": 4,
+                "x": 20,
+                "y": 2
+              },
+              "id": 22,
+              "options": {
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "last"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true
+              },
+              "pluginVersion": "7.3.2",
+              "targets": [
+                {
+                  "alias": "Error Rate",
+                  "groupBy": [],
+                  "measurement": "statistics",
+                  "orderByTime": "ASC",
+                  "policy": "default",
+                  "query": "SELECT sum(FailedRequests) * 100 / sum(TotalRequests) FROM \"statistics\" WHERE $timeFilter",
+                  "rawQuery": false,
+                  "refId": "B",
+                  "resultFormat": "time_series",
+                  "select": [
+                    [
+                      {
+                        "params": [
+                          "FailedRequests"
+                        ],
+                        "type": "field"
+                      },
+                      {
+                        "params": [],
+                        "type": "sum"
+                      },
+                      {
+                        "params": [
+                          " * 100 /  sum(\"TotalRequests\")"
+                        ],
+                        "type": "math"
+                      }
+                    ]
+                  ],
+                  "tags": []
+                }
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Error Rate",
+              "transformations": [],
+              "type": "gauge"
+            },
+            {
 				"aliasColors": {},
 				"bars": false,
 				"dashLength": 10,
