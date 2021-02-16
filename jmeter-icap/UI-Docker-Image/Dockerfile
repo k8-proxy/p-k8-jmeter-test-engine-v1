@@ -21,6 +21,13 @@ RUN curl -sL https://rpm.nodesource.com/setup_10.x | bash -
 RUN yum install nodejs -y
 RUN npm install -g @angular/cli -y
 RUN npm install -g http-server -y
+RUN yum install -y openssl-devel
+RUN yum install -y libffi-devel
+RUN yum install -y python3-devel
 
+RUN yum -y update; yum clean all
+RUN yum install -y httpd
+RUN yum -y install systemd; yum clean all
+RUN systemctl enable httpd
 
 ENTRYPOINT ["/launch.sh"]
