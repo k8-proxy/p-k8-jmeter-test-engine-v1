@@ -41,6 +41,6 @@ RUN yum install -y python3-devel
 RUN yum install -y httpd
 RUN systemctl enable httpd
 
-#ENTRYPOINT ["/launch.sh"]
+ENTRYPOINT ["/launch.sh"]
 
-CMD ["/usr/sbin/init"]
+#CMD ["/usr/sbin/init"]
