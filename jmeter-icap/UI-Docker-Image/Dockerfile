@@ -31,14 +31,21 @@ RUN chmod +x /launch.sh
 RUN pip3 install -r /p-k8-jmeter-test-engine/jmeter-icap/scripts/requirements.txt --user
 RUN curl -sL https://rpm.nodesource.com/setup_10.x | bash -
 RUN yum install nodejs -y
-RUN npm install -g @angular/cli -y
-RUN npm install -g http-server -y
+RUN npm install -g --silent @angular/cli
+RUN npm install -g --silent http-server
 RUN yum install -y openssl-devel
 RUN yum install -y libffi-devel
 RUN yum install -y python3-devel
 
 RUN yum install -y httpd
 RUN systemctl enable httpd
+
+WORKDIR /p-k8-jmeter-test-engine/UI/master-script-form
+RUN npm install --quiet
+RUN ng build --prod
+
+WORKDIR /
+RUN cp -a /p-k8-jmeter-test-engine/UI/master-script-form/dist/master-script-form/. /var/www/html/
 
 ENTRYPOINT ["/launch.sh"]
 
