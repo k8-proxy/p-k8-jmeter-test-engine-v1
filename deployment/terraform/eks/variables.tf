@@ -78,7 +78,7 @@ variable prometheus_chart {
   default = "helm upgrade --install  prometheus --namespace=common stable/prometheus"
 }
 
-variable expose {
+variable expose_common_services {
   type = string
   default = "kubectl apply -f ext-services/"
 }
