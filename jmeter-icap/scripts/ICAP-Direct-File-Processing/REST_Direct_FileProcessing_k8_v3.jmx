@@ -289,13 +289,12 @@ String command2 = &quot;&quot;;
 log.info(Thread.currentThread().getName()+&quot;: &quot;+SampleLabel+&quot;: Document-Upload: &quot; + vars.get(&quot;icapServer&quot;));
 log.info(&quot;Use TLS set to: &quot;+vars.get(&quot;use_tls&quot;));
 
-command1 = &quot;curl --location --request POST &apos;http://&quot; + vars.get(&quot;icapServer&quot;) + &quot;:&quot; + vars.get(&quot;port&quot;) + &quot;/api/rebuild/file&apos; &quot;;
-command2 = &quot;--header &apos;Content-Type: multipart/form-data&apos; &quot; + 
-           &quot;--header &apos;Accept-Encoding: gzip, deflate, br&apos; &quot; + 
-           &quot;--header &apos;Connection: keep-alive&apos; &quot; + 
-           &quot;--header &apos;Content-Type: application/json&apos; &quot; + 
-           &quot;-F file=@${inPath}/&quot; + uuid + &quot;_&quot; + threadFileName +
-           &quot;--output ${outputPath}/&quot; + uuid +&quot;_&quot; + threadFileName +
+command1 = &quot;curl --location --request POST http://&quot; + 
+           vars.get(&quot;icapServer&quot;) + &quot;:&quot; + vars.get(&quot;port&quot;) + &quot;/api/rebuild/file &quot;;
+command2 = &quot; --header \&quot;Content-Type: multipart/form-data\&quot;&quot; + 
+           &quot; --header \&quot;Content-Type: application/json\&quot;&quot; + 
+           &quot; -F file=@${inPath}/&quot; + uuid + &quot;_&quot; + threadFileName +
+           &quot; --output ${outputPath}/&quot; + uuid +&quot;_&quot; + threadFileName +
            &quot; -v&quot;;
 
 String command=command1+command2;
@@ -398,79 +397,16 @@ while( (line = in.readLine()) != null) {
   logCommandOutput.append(line);
   log.info(&quot;line is &quot;+line);
 
-  if (line.contains(&quot;ICAP/1.0 200 OK&quot;)&amp;&amp;threadRebuildHash.equals(out_checksum)) {
+  if (line.contains(&quot;HTTP/1.1 200 OK&quot;)) {
      SampleResult.setSuccessful(true);
      SampleResult.setResponseCode(&quot;200&quot;);
      log.info(&quot;My line is &quot;+line);
   }
-
-  if (line.contains(&quot;ICAP/1.0 204&quot;)) {
-     SampleResult.setResponseCode(&quot;204&quot;);
+/*
+  if (line.contains(&quot;HTTP/1.1 200 OK&quot;)&amp;&amp;threadRebuildHash.equals(out_checksum)) {
      SampleResult.setSuccessful(true);
-     SampleResult.setResponseMessage(&quot;No modifications needed&quot;);
-     log.info(&quot;Response Code is 204&quot;);
-     break;
-  }
-  if (line.contains(&quot;ICAP/1.0 500&quot;)) {
-     SampleResult.setResponseCode(&quot;500&quot;);
-     SampleResult.setResponseMessage(&quot;500 Internal server error&quot;);
-     log.info(&quot;Response Code is 500&quot;);
-     break;
-  }
-
-  if (line.contains(&quot;ICAP/1.0 503&quot;)) {
-     SampleResult.setResponseCode(&quot;503&quot;);
-     SampleResult.setResponseMessage(&quot;Service overloaded&quot;);
-     log.info(&quot;Response Code is 503&quot;);
-     break;
-  }
-  if (line.contains(&quot;ICAP/1.0 400&quot;)) {
-     SampleResult.setResponseCode(&quot;400&quot;);
-     SampleResult.setResponseMessage(&quot;400 Bad request.&quot;);
-     log.info(&quot;Response Code is 400&quot;);
-     break;
-  }
-  if (line.contains(&quot;ICAP/1.0 502&quot;)) {
-     SampleResult.setResponseCode(&quot;502&quot;);
-     SampleResult.setResponseMessage(&quot;502 Bad gateway.&quot;);
-     log.info(&quot;Response Code is 502&quot;);
-     break;
-  }
-  if (line.contains(&quot;ICAP/1.0 506&quot;)) {
-     SampleResult.setResponseCode(&quot;506&quot;);
-     SampleResult.setResponseMessage(&quot;506 Server too busy.r&quot;);
-     log.info(&quot;Response Code is 506&quot;);
-     break;
-  }
-  if (line.contains(&quot;ICAP/1.0 551&quot;)) {
-     SampleResult.setResponseCode(&quot;551&quot;);
-     SampleResult.setResponseMessage(&quot;551 Resource unavailable.&quot;);
-     log.info(&quot;Response Code is 551&quot;);
-     break;
-  }
-  if (line.contains(&quot;ICAP/1.0 403&quot;)) {
-     SampleResult.setResponseCode(&quot;403&quot;);
-     SampleResult.setResponseMessage(&quot;403 Forbidden&quot;);
-     log.info(&quot;Response Code is 403&quot;);
-     break;
-  }
-   if (line.contains(&quot;ICAP/1.0 404&quot;)) {
-     SampleResult.setResponseCode(&quot;404&quot;);
-     SampleResult.setResponseMessage(&quot;404 Service Not Found&quot;);
-     log.info(&quot;Response Code is 404&quot;);
-     break;
-  }
-    if (line.contains(&quot;ICAP/1.0 405&quot;)) {
-     SampleResult.setResponseCode(&quot;405&quot;);
-     SampleResult.setResponseMessage(&quot;405 Method Not Allowed&quot;);
-     log.info(&quot;Response Code is 405&quot;);
-     break;
-  }
-    if (line.contains(&quot;ICAP/1.0 408&quot;)) {
-     SampleResult.setResponseCode(&quot;408&quot;);
-     SampleResult.setResponseMessage(&quot;408 Request Timeout&quot;);
-     log.info(&quot;Response Code is 408&quot;);
-     break;
+     SampleResult.setResponseCode(&quot;200&quot;);
+     log.info(&quot;My line is &quot;+line);
   }
 
    if (line.contains(&quot;Failed to connect to icap server&quot;)||line.contains(&quot;failed/timedout&quot;)) {
@@ -494,11 +430,11 @@ while( (line = in.readLine()) != null) {
      log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot;+out_checksum);
      break;
   }
-  
+*/
 }
 
 in.close();
-log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());
+//log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());
 
 }
 else {
@@ -673,7 +609,7 @@ s3p_out.waitFor();
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="ICAP-Check-Server-Status" enabled="true">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="ICAP-Check-Server-Status" enabled="false">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
@@ -729,13 +665,13 @@ log.info(&quot;Server Status check Output: &quot; + logCommandOutput.toString())
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="thinkTime" enabled="true">
+        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="thinkTime" enabled="false">
           <intProp name="ActionProcessor.action">1</intProp>
           <intProp name="ActionProcessor.target">0</intProp>
           <stringProp name="ActionProcessor.duration">${__Random(2000,5000,)}</stringProp>
         </TestAction>
         <hashTree/>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="ICAP-Check-Resource-Status" enabled="true">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="ICAP-Check-Resource-Status" enabled="false">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
           <boolProp name="TransactionController.parent">true</boolProp>
         </TransactionController>
@@ -791,7 +727,7 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
-        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="thinkTime" enabled="true">
+        <TestAction guiclass="TestActionGui" testclass="TestAction" testname="thinkTime" enabled="false">
           <intProp name="ActionProcessor.action">1</intProp>
           <intProp name="ActionProcessor.target">0</intProp>
           <stringProp name="ActionProcessor.duration">${__Random(2000,5000,)}</stringProp>
@@ -851,7 +787,7 @@ log.info(&quot;Resource Status check Output: &quot; + logCommandOutput.toString(
         <stringProp name="classname">org.apache.jmeter.visualizers.backend.influxdb.InfluxdbBackendListenerClient</stringProp>
       </BackendListener>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Get ICAP server status" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Get ICAP server status" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">startnextloop</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
