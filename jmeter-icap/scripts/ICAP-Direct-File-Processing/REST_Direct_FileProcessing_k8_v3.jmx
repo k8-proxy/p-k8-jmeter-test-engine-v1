@@ -400,22 +400,16 @@ while( (line = in.readLine()) != null) {
   if (line.contains(&quot;HTTP/1.1 200 OK&quot;)) {
      SampleResult.setSuccessful(true);
      SampleResult.setResponseCode(&quot;200&quot;);
-     log.info(&quot;My line is &quot;+line);
-  }
 /*
-  if (line.contains(&quot;HTTP/1.1 200 OK&quot;)&amp;&amp;threadRebuildHash.equals(out_checksum)) {
-     SampleResult.setSuccessful(true);
-     SampleResult.setResponseCode(&quot;200&quot;);
-     log.info(&quot;My line is &quot;+line);
+     if (!threadRebuildHash.equals(out_checksum) || !out_checksum.equals(&quot;not found&quot;)) {
+	  	SampleResult.setSuccessful(false);
+	     SampleResult.setResponseCode(&quot;555&quot;);
+	     log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot; + out_checksum);
+  	}
+*/
   }
 
-   if (line.contains(&quot;Failed to connect to icap server&quot;)||line.contains(&quot;failed/timedout&quot;)) {
-     SampleResult.setResponseCode(&quot;522&quot;);
-     SampleResult.setResponseMessage(&quot;522 Failed to connect to icap server&quot;);
-     log.info(&quot;Response Code is 522&quot;);
-     break;
-  }
-  if (line.contains(&quot;HTTP/1.0 403 Forbidden&quot;)) {
+  if (line.contains(&quot;403 Forbidden&quot;)) {
      SampleResult.setResponseCode(&quot;403&quot;);
      SampleResult.setSuccessful(false);
      SampleResult.setResponseMessage(&quot;403 Fordbidden&quot;);
@@ -424,14 +418,9 @@ while( (line = in.readLine()) != null) {
      SampleResult.setSuccessful(true);
      break;
   }
-    if (!threadRebuildHash.equals(out_checksum)&amp;&amp;!out_checksum.equals(&quot;not found&quot;)) {
-  	SampleResult.setSuccessful(false);
-     SampleResult.setResponseCode(&quot;555&quot;);
-     log.info(threadFileName + &quot; Hash is mismatching: &quot;+ &quot;Rebuild hash is &quot;+ threadRebuildHash+&quot;. Out File Hash is &quot;+out_checksum);
-     break;
-  }
-*/
 }
+
+
 
 in.close();
 //log.info(&quot;Upload Output: &quot; + logCommandOutput.toString());
